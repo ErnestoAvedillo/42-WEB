@@ -1,35 +1,31 @@
-version: '3'
+version: '3.8'
 
 services:
   nginx:
-    build:
-      context: ./config/nginx
-      dockerfile: Dockerfile
+    image: nginx:alpine
     container_name: camagru_nginx
     networks:
       - camagru_network
     volumes:
       - ./app/public:/var/www/html
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
-    restart: unless-stopped
     depends_on:
       - php
-
+    restart: unless-stopped
   php:
     build:
       context: ./config/php
       dockerfile: Dockerfile
-    container_name: camagru_php
-    networks:
-      - camagru_network
+    ports:
+      - "8080:80"
     volumes:
       - ./app/public:/var/www/html
     restart: unless-stopped
-    ports:
-      - "9000:9000"
-
 networks:
   camagru_network:
     driver: bridge
+volumes:
+  camagru_data:
+    driver: local

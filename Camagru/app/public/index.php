@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Welcome to Camagru</h1>
+    <h1>Welcome to Camagru.</h1>
     <p>This is a simple web application for sharing photos.</p>
     <p>Make sure to run the Docker containers using the Makefile commands.</p>
     <p>For more information, check the documentation.</p>

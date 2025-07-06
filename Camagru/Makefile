@@ -20,7 +20,8 @@ down:
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
 
 restart:
-	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) restart
+	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
+	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
 
 logs:
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) logs -f
@@ -55,5 +56,13 @@ help:
 	@echo "  make build"
 	@echo "  make debug container_name=<container_name>"
 	@echo "  make clean"
+
+clean: stop
+	@echo "Cleaning up..."
+	docker rm -f $$(docker ps -aq)
+	docker image rm -f $$(docker images -q)
+	docker network rm -f $$(docker network ls -q)
+	docker volume rm -f $$(docker volume ls -q)
+	docker system prune -f
 
 .PHONY: all build up down restart logs clean re fclean volumes compile run_pm del_vol rm_vol debug build_certs rebuild
