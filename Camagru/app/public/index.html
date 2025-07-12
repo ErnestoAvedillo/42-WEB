@@ -3,15 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Camagru</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
 </head>
-<body>
-    <h1>Welcome to Camagru</h1>
-    <p>This is a simple web application for sharing photos.</p>
-    <p>Make sure to run the Docker containers using the Makefile commands.</p>
-    <p>For more information, check the documentation.</p>
+  <body>
+    <header>
+      <h1>Camagru</h1>
+      <button id="toggleSidebarBtn">☰</button>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </nav>
+    </header>
+    <aside id="sidebar" style="display: none;">
+      <h2>Sidebar</h2>
+      <ul>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="settings.html">Settings</a></li>
+        <li><a href="help.html">Help</a></li>
+      </ul>
+    </aside>
+    <main>
+      <h1>Welcome to Camagru</h1>
+      <p>This is a simple web application for sharing photos.</p>
+      <p>Make sure to run the Docker containers using the Makefile commands.</p>
+      <p>For more information, check the documentation.</p>
+    </main>
+    <form>
+    <p>Enter an email address:</p>
+    <input id='email'>
+    <button type='submit' id='validate'>Validate!</button>
+    </form>
+    <h2 id='result'></h2>
     <footer>
         <p>&copy; 2023 Camagru</p>
     </footer>
-</body>
+    <script src="js/verify_mail.js"></script>
+    <script src="js/hide_bar.js"></script>
+  </body>
 </html>

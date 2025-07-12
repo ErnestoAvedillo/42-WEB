@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Camagru</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    aside {
+      width: 200px;
+      background-color: #f4f4f4;
+      padding: 1rem;
+      display: none; /* Oculto por defecto */
+      position: absolute;
+      top: 70px; /* debajo del header */
+      left: 0;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    aside.show {
+      display: block;
+    }
+
+    main {
+      margin-top: 100px;
+      padding: 1rem;
+    }
+
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Camagru</h1>
+    <button id="toggleSidebar">☰</button>
+    <nav>
+      <ul style="list-style: none; display: flex; gap: 1rem;">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Gallery</a></li>
+        <li><a href="#">Login</a></li>
+        <li><a href="#">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <aside id="sidebar">
+    <h2>Sidebar</h2>
+    <ul>
+      <li><a href="#">Profile</a></li>
+      <li><a href="#">Settings</a></li>
+      <li><a href="#">Help</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>Welcome to Camagru</h1>
+    <p>This is a simple web application for sharing photos.</p>
+    <form>
+      <p>Enter an email address:</p>
+      <input id="email" />
+      <button type="submit" id="validate">Validate!</button>
+    </form>
+    <h2 id="result"></h2>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Camagru</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggleBtn = document.getElementById('toggleSidebar');
+      const sidebar = document.getElementById('sidebar');
+
+      toggleBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('show');
+      });
+    });
+  </script>
+</body>
+</html>
