@@ -1,3 +1,15 @@
+/* CSS Variables */
+:root {
+  --header_color: #f10e0e;
+  --footer_color: #333;
+  --hover-color: #555;
+  --text-color: white;
+  --background-light: #f4f4f4;
+  --border-radius: 4px;
+  --header-padding: 1rem;
+  --transition-speed: 0.3s;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,19 +18,71 @@
 
 body {
   font-family: Arial, sans-serif;
+  padding-top: 80px; /* Space for fixed header */
+  min-height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
 }
 
 header {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #333;
-  color: white;
-  padding: 1rem;
+  background-color: var(--header_color);
+  color: var(--text-color);
+  padding: var(--header-padding);
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 1000;
+}
+
+
+/* Navigation menu styles */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin: 0;
+}
+
+nav a {
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-speed) ease;
+}
+
+nav a:hover {
+  background-color: var(--hover-color);
+}
+
+/* Active navigation link */
+nav a.active {
+  background-color: var(--hover-color);
+  font-weight: bold;
+}
+
+/* Toggle button styles */
+#toggleSidebarBtn {
+  background-color: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-speed) ease;
+}
+
+#toggleSidebarBtn:hover {
+  background-color: var(--hover-color);
 }
 
 .container-top{
@@ -28,14 +92,15 @@ header {
 
 aside {
   position: fixed;
-  top: 60px; /* debajo del header */
+  top: 80px; /* Match the body padding-top */
   left: 0;
-  height: 100%;
+  height: calc(100vh - 80px); /* Full height minus header */
   width: 200px;
-  background-color: #f4f4f4;
-  padding: 1rem;
-  transition: transform 0.3s ease;
+  background-color: var(--background-light);
+  padding: var(--header-padding);
+  transition: transform var(--transition-speed) ease;
   transform: translateX(0);
+  z-index: 999; /* Below header but above content */
 }
 aside.hidden {
   transform: translateX(-100%);
@@ -43,14 +108,13 @@ aside.hidden {
 }
 
 main {
-  flex: 1;
-  padding: 1rem;
+  margin-left: 200px; /* Default space for sidebar */
+  padding: var(--header-padding);
+  transition: margin-left var(--transition-speed) ease;
+  flex: 1; /* Takes up remaining space, pushing footer down */
 }
 
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
+/* When sidebar is hidden, main content takes full width */
+main.full-width {
+  margin-left: 0;
 }
- 
