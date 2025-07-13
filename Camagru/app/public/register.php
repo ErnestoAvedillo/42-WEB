@@ -22,7 +22,7 @@
   ?>
 
   <main id="mainContent">
-    <h1>Login</h1>
+    <h1>Register</h1>
     <form class="login-form-text">
       <div class="form-group">
         <label for="username">Username:</label>
@@ -32,9 +32,13 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
       </div>
-      <button type="submit">Login</button>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+      </div>
+      <button type="submit">Register</button>
     </form>
-    <p><a href="register.php">Don't have an account? Register here</a></p>
+    <p><a href="login.php">Already have an account? Login here</a></p>
   </main>
 
   <?php include 'views/footer.php'; ?>

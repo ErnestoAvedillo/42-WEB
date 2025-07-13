@@ -1,29 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const toggleBtn = document.getElementById('toggleSidebarBtn');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.querySelector('main');
-    
-    if (!toggleBtn || !sidebar) return;
+  const toggleBtn = document.getElementById('toggleSidebarBtn');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.querySelector('main');
 
-    // Initialize: sidebar visible by default
-    let sidebarVisible = true;
+  console.log('Toggle button:', toggleBtn);
+  console.log('Sidebar:', sidebar);
+  console.log('Main content:', mainContent);
 
-    toggleBtn.addEventListener('click', function () {
-        if (sidebarVisible) {
-            // Hide sidebar
-            sidebar.classList.add('hidden');
-            if (mainContent) {
-                mainContent.classList.add('full-width');
-            }
-            sidebarVisible = false;
-        } else {
-            // Show sidebar
-            sidebar.classList.remove('hidden');
-            if (mainContent) {
-                mainContent.classList.remove('full-width');
-            }
-            sidebarVisible = true;
-        }
-    });
+  if (!toggleBtn || !sidebar) {
+    console.error('Required elements not found!');
+    return;
+  }
+
+  // Initialize: sidebar visible by default
+  let sidebarVisible = true;
+
+  toggleBtn.addEventListener('click', function () {
+    console.log('Toggle button clicked! Current state:', sidebarVisible);
+    if (sidebarVisible) {
+      // Hide sidebar
+      sidebar.classList.add('hidden');
+      if (mainContent) {
+        mainContent.classList.add('full-width');
+      }
+      sidebarVisible = false;
+      console.log('Sidebar hidden');
+    } else {
+      // Show sidebar
+      sidebar.classList.remove('hidden');
+      if (mainContent) {
+        mainContent.classList.remove('full-width');
+      }
+      sidebarVisible = true;
+      console.log('Sidebar shown');
+    }
+  });
 });
 console.log("hide_bar.js loaded");

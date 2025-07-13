@@ -7,5 +7,6 @@
 </head>
 <body>
   <h1>Si ves el texto rojo, CSS funciona</h1>
+  <?php include 'views/footer.php'; ?>
 </body>
 </html>
