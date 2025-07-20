@@ -1,0 +1,80 @@
+/* Footer Styles */
+footer {
+  background-color: var(--footer_color);
+  color: var(--text-color);
+  text-align: center;
+  padding: var(--header-padding);
+  margin-top: auto;
+  /* Pushes footer to bottom */
+  border-top: 2px solid var(--hover-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.footer-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color var(--transition-speed) ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+.footer-links a:hover {
+  color: #ccc;
+  background-color: var(--hover-color);
+  text-decoration: none;
+}
+
+/* Footer responsive design */
+@media (max-width: 768px) {
+  footer {
+    padding: 1rem 0.5rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-links {
+    gap: 1rem;
+  }
+
+  footer p,
+  .footer-links a {
+    font-size: 0.8rem;
+  }
+}
+
+/* Footer hover effects */
+footer:hover {
+  background-color: var(--hover-color);
+  transition: background-color var(--transition-speed) ease;
+}
+
+/* Dark mode support (if you add it later) */
+@media (prefers-color-scheme: dark) {
+  footer {
+    background-color: #1a1a1a;
+    border-top-color: #444;
+  }
+}
