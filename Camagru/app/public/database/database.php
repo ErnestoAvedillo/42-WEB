@@ -13,12 +13,21 @@ class Database
         $this->conn = null;
 
         try {
-            // MongoDB connection without authentication for development
+            // MongoDB connection without authentication (matches your docker-compose.yml)
             $connection_string = "mongodb://{$this->host}:{$this->port}";
+
+            echo "<!-- Attempting MongoDB connection: $connection_string -->";
             $this->conn = new MongoDB\Driver\Manager($connection_string);
+
+            // Test the connection with a simple operation
+            $command = ['ping' => 1];
+            $query = new MongoDB\Driver\Query([], ['limit' => 1]);
+
+            echo "<!-- MongoDB connection successful -->";
             return $this->conn;
         } catch (Exception $e) {
-            echo "Connection error: " . $e->getMessage();
+            echo "<!-- Connection error: " . $e->getMessage() . " -->";
+            error_log("MongoDB Connection Error: " . $e->getMessage());
             return null;
         }
     }
