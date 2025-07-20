@@ -1,51 +1,32 @@
 <?php
-// Test de conexión MongoDB para debug
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
-echo "<h2>Test de Registro de Usuario</h2>";
-
-// Test básico de la clase User
 try {
-    require_once 'User.php';
-    echo "<p>✓ Clase User cargada correctamente</p>";
+    // Use Docker service name (from docker-compose.yml)
+    $dsn = "pgsql:host=postgre;port=5432;dbname=camagru_db";
+    $username = "camagru";
+    $password = "camagru";
     
-    $user = new User();
-    echo "<p>✓ Instancia de User creada correctamente</p>";
-    
-    // Test de registro con datos de prueba
-    $testUsername = 'testuser_' . time();
-    $testEmail = 'test_' . time() . '@example.com';
-    $testPassword = 'TestPass123!';
-    
-    echo "<p>Intentando registrar usuario de prueba:</p>";
-    echo "<ul>";
-    echo "<li>Username: $testUsername</li>";
-    echo "<li>Email: $testEmail</li>";
-    echo "<li>Password: [oculta]</li>";
-    echo "</ul>";
-    
-    $result = $user->register($testUsername, $testEmail, $testPassword, 'Test', 'User');
-    
-    echo "<h3>Resultado del registro:</h3>";
-    echo "<pre>";
-    print_r($result);
-    echo "</pre>";
-    
-    if ($result['success']) {
-        echo "<p style='color: green;'>✓ Usuario registrado exitosamente!</p>";
-    } else {
-        echo "<p style='color: red;'>✗ Error en el registro: " . $result['message'] . "</p>";
-    }
-    
-} catch (Exception $e) {
-    echo "<p style='color: red;'>✗ Error: " . $e->getMessage() . "</p>";
-    echo "<p>Stack trace:</p>";
-    echo "<pre>" . $e->getTraceAsString() . "</pre>";
-}
+    $pdo = new PDO($dsn, $username, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
 
-echo "<hr>";
-echo "<p><a href='main.php?page=register'>Volver al formulario de registro</a></p>";
-echo "<p><a href='main.php?page=debug'>Ir a página de debug</a></p>";
+    $users = [
+        ['username' => 'alice', 'email' => 'alice@example.com', 'password' => password_hash('password1', PASSWORD_DEFAULT)],
+        ['username' => 'bob', 'email' => 'bob@example.com', 'password' => password_hash('password2', PASSWORD_DEFAULT)],
+        ['username' => 'charlie', 'email' => 'charlie@example.com', 'password' => password_hash('password3', PASSWORD_DEFAULT)],
+    ];
+
+    $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
+
+    foreach ($users as $user) {
+        $stmt->execute([
+            ':username' => $user['username'],
+            ':email' => $user['email'],
+            ':password' => $user['password'],
+        ]);
+        echo "Inserted user: {$user['username']}<br>";
+    }
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+}
 ?>

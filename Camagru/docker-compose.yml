@@ -67,6 +67,22 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+  postgre:
+    build:
+      context: ./config/postgre
+      dockerfile: Dockerfile
+    container_name: camagru_postgres
+    networks:
+      - camagru_network
+    volumes:
+      - ./data/postgre:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: camagru
+      POSTGRES_PASSWORD: camagru
+      POSTGRES_DB: camagru_db
 
 networks:
   camagru_network:

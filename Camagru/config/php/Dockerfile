@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     pkg-config \
     libsasl2-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
@@ -16,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
     && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql mysqli \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mysqli \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
     && apt-get clean \

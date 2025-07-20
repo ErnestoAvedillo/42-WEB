@@ -1,7 +1,6 @@
 FROM nginx:alpine
 
-RUN apt-get update && apt-get install -y \
-    vim 
+RUN apk update && apk add --no-cache vim 
 # Copy the Nginx configuration file
 COPY nginx.conf /etc/nginx/nginx.conf
 #COPY nginx.conf /etc/nginx/conf.d
