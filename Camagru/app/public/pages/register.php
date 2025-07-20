@@ -1,4 +1,5 @@
 <?php
+
 // Obtener errores y datos previos si existen
 $errors = $_SESSION['register_errors'] ?? [];
 $data = $_SESSION['register_data'] ?? [];
@@ -29,7 +30,7 @@ unset($_SESSION['success_message']);
         </div>
     <?php endif; ?>
 
-    <form action="register_handler.php" method="post" id="registerForm">
+    <form action="../register_handler.php" method="post" id="registerForm">
         <div class="form-row">
             <div class="form-group">
                 <label for="first_name">First Name:</label>
@@ -73,7 +74,7 @@ unset($_SESSION['success_message']);
         <div class="form-group checkbox-group">
             <label>
                 <input type="checkbox" id="terms" name="terms" required>
-                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                I agree to the <a href="index.php?page=terms-and-cond" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
             </label>
         </div>
 
