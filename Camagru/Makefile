@@ -1,4 +1,3 @@
-
 COMPOSE = docker compose
 LIST_CURRENT_VOLUMES=$(shell docker volume ls -q)
 
@@ -9,7 +8,8 @@ CERTS=selfsigned.crt selfsigned.key
 all: build 
 
 build: 	build_certs 
-	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
+	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) build --no-cache
+	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
 
 build_certs: $(CERTS)
 
@@ -19,9 +19,8 @@ $(CERTS):
 down:
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
 
-restart:
-	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
-	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
+restart: down
+	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
 
 logs:
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) logs -f
@@ -31,6 +30,10 @@ stop :
 
 start : 
 	@$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) start
+
+rebuild: down build
+
+re: clean build
 
 help:
 	@echo "$(BLUE_COLOR)Available Makefile targets:$(RESET_COLOR)"
@@ -54,15 +57,28 @@ help:
 	@echo "$(GREEN_COLOR)  re$(RESET_COLOR)            - Fully cleans and rebuilds the project from scratch."
 	@echo "$(YELLOW_COLOR)Usage examples:$(RESET_COLOR)"
 	@echo "  make build"
-	@echo "  make debug container_name=<container_name>"
 	@echo "  make clean"
 
 clean: stop
 	@echo "Cleaning up..."
-	docker rm -f $$(docker ps -aq)
-	docker image rm -f $$(docker images -q)
-	docker network rm -f $$(docker network ls -q)
-	docker volume rm -f $$(docker volume ls -q)
-	docker system prune -f
+	-docker rm -f $$(docker ps -aq)
+	-docker image rm -f $$(docker images -q)
+	-docker network rm -f $$(docker network ls -q)
+	-docker volume rm -f $$(docker volume ls -q)
+	-docker system prune -f
+
+inspect:
+	@echo "Inspecting containers..."
+	-docker ps -a
+	@echo "Inspecting images..."
+	-docker images
+	@echo "Inspecting volumes..."
+	-docker volume ls
+	@echo "Inspecting networks..."
+	-docker network ls
+
+in:
+	@echo "Starting an interactive shell in the specified container..."
+	docker exec -it camagru_nginx sh
 
 .PHONY: all build up down restart logs clean re fclean volumes compile run_pm del_vol rm_vol debug build_certs rebuild
