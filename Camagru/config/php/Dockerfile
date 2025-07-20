@@ -5,6 +5,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
+    libsasl2-dev \
     zip \
     unzip \
     git \
@@ -13,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     --with-jpeg=/usr/include/ \
     && docker-php-ext-install gd \
     && docker-php-ext-install pdo pdo_mysql mysqli \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
