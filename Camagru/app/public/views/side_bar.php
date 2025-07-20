@@ -1,8 +1,17 @@
 <aside id="sidebar">
-    <h2>Sidebar</h2>
+  <link rel="stylesheet" href="css/side_bar.css">
+  <div class="sidebar-header">
+    <h2>Menu</h2>
+  </div>
+  <nav class="sidebar-nav">
     <ul>
-        <li><a href="profile.php">Profile</a></li>
-        <li><a href="settings.php">Settings</a></li>
-        <li><a href="help.php">Help</a></li>
+      <li><a href="index.php?page=home" <?php echo (!isset($_GET['page']) || $_GET['page'] == 'home') ? 'class="active"' : ''; ?>><span class="icon">🏠</span>Home</a></li>
+      <li><a href="index.php?page=gallery" <?php echo (isset($_GET['page']) && $_GET['page'] == 'gallery') ? 'class="active"' : ''; ?>><span class="icon">🖼️</span>Gallery</a></li>
+      <li><a href="index.php?page=upload" <?php echo (isset($_GET['page']) && $_GET['page'] == 'upload') ? 'class="active"' : ''; ?>><span class="icon">📤</span>Upload</a></li>
+      <li><a href="index.php?page=login" <?php echo (isset($_GET['page']) && $_GET['page'] == 'login') ? 'class="active"' : ''; ?>><span class="icon">🔐</span>Login</a></li>
+      <li><a href="index.php?page=register" <?php echo (isset($_GET['page']) && $_GET['page'] == 'register') ? 'class="active"' : ''; ?>><span class="icon">📝</span>Register</a></li>
     </ul>
+  </nav>
+
 </aside>
+<script src="js/hide_bar.js"></script>

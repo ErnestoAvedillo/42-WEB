@@ -1,12 +1,20 @@
 <header>
+  <link rel="stylesheet" href="css/header.css">
   <button id="toggleSidebarBtn">☰</button>
   <h1>Camagru</h1>
   <nav>
     <ul>
-      <li><a href="index.php" <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'class="active"' : ''; ?>>Home</a></li>
-      <li><a href="gallery.php" <?php echo (basename($_SERVER['PHP_SELF']) == 'gallery.php') ? 'class="active"' : ''; ?>>Gallery</a></li>
-      <li><a href="login.php" <?php echo (basename($_SERVER['PHP_SELF']) == 'login.php') ? 'class="active"' : ''; ?>>Login</a></li>
-      <li><a href="register.php" <?php echo (basename($_SERVER['PHP_SELF']) == 'register.php') ? 'class="active"' : ''; ?>>Register</a></li>
+      <li><a href="index.php?page=login" <?php echo (isset($_GET['page']) && $_GET['page'] == 'login') ? 'class="active"' : ''; ?>>Login</a></li>
+      <li><a href="index.php?page=register" <?php echo (isset($_GET['page']) && $_GET['page'] == 'register') ? 'class="active"' : ''; ?>>Register</a></li>
     </ul>
   </nav>
+  <div class="user-area">
+    <div class="user-info">
+      <div class="avatar">👤</div>
+      <div class="user-details">
+        <span class="username">Guest User</span>
+        <span class="status">Online</span>
+      </div>
+    </div>
+  </div>
 </header>

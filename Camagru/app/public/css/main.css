@@ -1,0 +1,14 @@
+main {
+    margin-left: 200px;
+    /* Default space for sidebar */
+    padding: var(--header-padding);
+    transition: margin-left var(--transition-speed) ease;
+    flex: 1;
+    /* Takes up remaining space, pushing footer down */
+    text-align: center;
+}
+
+/* When sidebar is hidden, main content takes full width */
+main.full-width {
+    margin-left: 0;
+}
