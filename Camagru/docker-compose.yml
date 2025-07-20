@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nginx:
     build:
@@ -26,9 +24,49 @@ services:
       - camagru_network
     volumes:
       - ./app/public:/var/www/html
+      #- ./config:/var/www/config
     restart: unless-stopped
     ports:
       - "9000:9000"
+
+  mongodb:
+    image: mongo:latest
+    container_name: camagru_mongodb
+    networks:
+      - camagru_network
+    volumes:
+      - ./data/mongodb:/data/db
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: camagru_mongo_express
+    networks:
+      - camagru_network
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "false"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: ""
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   camagru_network:
