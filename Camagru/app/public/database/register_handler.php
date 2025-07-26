@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-require_once '/database/User.php';
+require_once 'User.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -74,7 +74,7 @@ try {
             'first_name' => $firstName,
             'last_name' => $lastName
         ];
-        header('Location: main.php?page=register');
+        header('Location: main.php?page=gallery');
         exit();
     }
 } catch (Exception $e) {

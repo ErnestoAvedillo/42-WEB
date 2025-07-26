@@ -30,7 +30,7 @@ unset($_SESSION['success_message']);
         </div>
     <?php endif; ?>
 
-    <form action="register_handler.php" method="post" id="registerForm">
+    <form action="../database/register_handler.php" method="post" id="registerForm">
         <div class="form-row">
             <div class="form-group">
                 <label for="first_name">First Name:</label>
