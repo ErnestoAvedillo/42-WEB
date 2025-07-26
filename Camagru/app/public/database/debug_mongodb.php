@@ -1,10 +1,32 @@
 <?php
+require_once '../EnvLoader.php';
+// Use Docker service name (from docker-compose.yml)
+$dsn = EnvLoader::get('MONGO_URL', 'mongodb://mongodb:27017');
+$username = EnvLoader::get('MONGO_INITDB_ROOT_USERNAME', 'admin');
+$password = EnvLoader::get('MONGO_INITDB_ROOT_PASSWORD', 'rooadmin123t');
+$database = EnvLoader::get('MONGO_INITDB_DATABASE', 'camagru');
+try {
+    $manager = new MongoDB\Driver\Manager($dsn, [
+        'username' => $username,
+        'password' => $password,
+        'connectTimeoutMS' => 10000,
+    ]);
+
+    echo "<h2>MongoDB Connection Test</h2>";
+    echo "✅ Connected to MongoDB at: {$dsn}<br>";
+
+} catch (MongoDB\Driver\Exception\Exception $e) {
+    echo "<h2>Error Connecting to MongoDB</h2>";
+    echo "❌ " . htmlspecialchars($e->getMessage()) . "<br>";
+    exit;
+}
+
 echo "<h1>MongoDB Driver Diagnosis</h1>";
 
 echo "<h2>1. Basic Extension Check</h2>";
-if (extension_loaded('mongodb')) {
+if (extension_loaded($database)) {
   echo "✅ MongoDB extension is loaded<br>";
-  echo "📦 Version: " . phpversion('mongodb') . "<br>";
+  echo "📦 Version: " . phpversion($database) . "<br>";
 } else {
   echo "❌ MongoDB extension is NOT loaded<br>";
   echo "🔧 Fix: Add 'extension=mongodb.so' to your php.ini<br>";

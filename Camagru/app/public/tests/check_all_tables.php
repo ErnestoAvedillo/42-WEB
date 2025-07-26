@@ -1,5 +1,6 @@
 <?php
 try {
+    require_once '../EnvLoader.php';
     // Use Docker service name (from docker-compose.yml)
     $dsn = EnvLoader::get('PG_DSN', 'pgsql:host=postgre;port=5432;dbname=camagru_db');
     $username = EnvLoader::get('PG_USER', 'camagru');
