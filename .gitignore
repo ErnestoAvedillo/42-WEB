@@ -7,5 +7,5 @@
 *.key
 *.crt
 .env
-mongodb
+
 data/
