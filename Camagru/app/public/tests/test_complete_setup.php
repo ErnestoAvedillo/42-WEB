@@ -138,6 +138,7 @@
         <p>Now you can test your registration form:</p>
         <a href="main.php?page=register" style="background: #007cba; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Go to Registration Form</a>
     </div>
+    
 </body>
 
 </html>
