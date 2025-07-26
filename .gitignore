@@ -8,3 +8,4 @@
 *.crt
 .env
 mongodb
+data/
