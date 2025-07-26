@@ -1,134 +1,166 @@
 <?php
-require_once 'database.php';
+require_once '../EnvLoader.php';
 
 class User
 {
-  private $manager;
-  private $database;
-  private $collection;
-
+  private $pdo;
   public function __construct()
   {
-    $db = new Database();
-    $this->manager = $db->connect();
-    $this->database = $db->getDatabase();
-    $this->collection = 'users';
+    try {
+      // Get database configuration from environment variables
+      $host = EnvLoader::get('PG_HOST', 'postgre');
+      $port = EnvLoader::get('PG_PORT', '5432');
+      $database = EnvLoader::get('PG_DATABASE', 'camagru_db');
+      $username = EnvLoader::get('PG_USER', 'camagru');
+      $password = EnvLoader::get('PG_PASSWORD', 'camagru');
+      $dsn = EnvLoader::get('PG_DSN', 'pgsql:host=postgre;port=5432;dbname=camagru_db');
+      if (!$dsn || !$username || !$password) {
+        throw new Exception("Database connection parameters are not set correctly.");
+      }
+      $this->pdo = new PDO($dsn, $username, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+      ]);
+    } catch (PDOException $e) {
+      throw new Exception("Database connection failed: " . $e->getMessage());
+    }
   }
 
   /**
-   * Registrar un nuevo usuario
+   * Register a new user
    */
   public function register($username, $email, $password, $firstName = '', $lastName = '')
   {
     try {
-      // Validar datos
+      // Validate input
       if (!$this->validateInput($username, $email, $password)) {
-        return ['success' => false, 'message' => 'Datos de entrada inválidos'];
+        return ['success' => false, 'message' => 'Invalid input data'];
       }
 
-      // Verificar si el usuario ya existe
+      // Check if user already exists
       if ($this->userExists($username, $email)) {
-        return ['success' => false, 'message' => 'El usuario o email ya existe'];
+        return ['success' => false, 'message' => 'Username or email already exists'];
       }
 
-      // Preparar documento del usuario
-      $userDocument = [
-        'username' => $username,
-        'email' => $email,
-        'password' => password_hash($password, PASSWORD_DEFAULT),
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'is_active' => true,
-        'created_at' => new MongoDB\BSON\UTCDateTime(),
-        'updated_at' => new MongoDB\BSON\UTCDateTime(),
-        'profile_picture' => null,
-        'bio' => '',
-        'email_verified' => false,
-        'verification_token' => $this->generateVerificationToken()
-      ];
+      // Hash password
+      $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-      // Insertar usuario
-      $bulk = new MongoDB\Driver\BulkWrite;
-      $bulk->insert($userDocument);
+      // Generate verification token
+      $verificationToken = bin2hex(random_bytes(32));
 
-      // Try to create WriteConcern with fallback
-      try {
-        if (class_exists('MongoDB\Driver\WriteConcern')) {
-          if (defined('MongoDB\Driver\WriteConcern::MAJORITY')) {
-            // Use constant if available (newer versions)
-            $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
-          } else {
-            // Use string value (older versions)
-            $writeConcern = new MongoDB\Driver\WriteConcern("majority", 1000);
-          }
-          $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk, $writeConcern);
-        } else {
-          // Execute without WriteConcern if class doesn't exist
-          $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
-        }
-      } catch (Exception $e) {
-        // Fallback: execute without WriteConcern
-        $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
-      }
+      // Insert user into database
+      $stmt = $this->pdo->prepare("
+                INSERT INTO users (username, email, password, first_name, last_name, verification_token) 
+                VALUES (:username, :email, :password, :first_name, :last_name, :verification_token)
+            ");
 
-      if ($result->getInsertedCount() > 0) {
+      $result = $stmt->execute([
+        ':username' => $username,
+        ':email' => $email,
+        ':password' => $hashedPassword,
+        ':first_name' => $firstName,
+        ':last_name' => $lastName,
+        ':verification_token' => $verificationToken
+      ]);
+
+      if ($result) {
         return [
           'success' => true,
-          'message' => 'Usuario registrado exitosamente',
-          'user_id' => (string)$userDocument['_id'] ?? null
+          'message' => 'User registered successfully',
+          'verification_token' => $verificationToken
         ];
       } else {
-        return ['success' => false, 'message' => 'Error al registrar usuario'];
+        return ['success' => false, 'message' => 'Failed to register user'];
       }
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
     } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()];
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
     }
   }
 
   /**
-   * Verificar si un usuario ya existe
+   * Login user
+   */
+  public function login($username, $password)
+  {
+    try {
+      // Find user by username or email
+      $stmt = $this->pdo->prepare("
+                SELECT id, username, email, password, first_name, last_name, email_verified 
+                FROM users 
+                WHERE username = :login OR email = :login
+            ");
+
+      $stmt->execute([':login' => $username]);
+      $user = $stmt->fetch();
+
+      if (!$user) {
+        return ['success' => false, 'message' => 'Invalid username or password'];
+      }
+
+      // Verify password
+      if (!password_verify($password, $user['password'])) {
+        return ['success' => false, 'message' => 'Invalid username or password'];
+      }
+
+      // Remove password from returned data
+      unset($user['password']);
+
+      return [
+        'success' => true,
+        'message' => 'Login successful',
+        'user' => $user
+      ];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    }
+  }
+
+  /**
+   * Check if user exists
    */
   private function userExists($username, $email)
   {
-    try {
-      $filter = [
-        '$or' => [
-          ['username' => $username],
-          ['email' => $email]
-        ]
-      ];
+    $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) FROM users 
+            WHERE username = :username OR email = :email
+        ");
 
-      $query = new MongoDB\Driver\Query($filter, ['limit' => 1]);
-      $cursor = $this->manager->executeQuery($this->database . '.' . $this->collection, $query);
+    $stmt->execute([
+      ':username' => $username,
+      ':email' => $email
+    ]);
 
-      return count($cursor->toArray()) > 0;
-    } catch (Exception $e) {
-      return false;
-    }
+    return $stmt->fetchColumn() > 0;
   }
 
   /**
-   * Validar datos de entrada
+   * Validate input data
    */
   private function validateInput($username, $email, $password)
   {
-    // Validar username
+    // Username validation
     if (empty($username) || strlen($username) < 3 || strlen($username) > 50) {
       return false;
     }
 
-    // Validar email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
       return false;
     }
 
-    // Validar password
-    if (strlen($password) < 8) {
+    // Email validation
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
       return false;
     }
 
-    // Verificar que contenga al menos una mayúscula, minúscula y número
-    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $password)) {
+    // Password validation
+    if (empty($password) || strlen($password) < 8) {
+      return false;
+    }
+
+    // Check password strength
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', $password)) {
       return false;
     }
 
@@ -136,172 +168,71 @@ class User
   }
 
   /**
-   * Autenticar usuario
+   * Get user by ID
    */
-  public function login($username, $password)
+  public function getUserById($id)
   {
     try {
-      $filter = [
-        '$or' => [
-          ['username' => $username],
-          ['email' => $username]
-        ],
-        'is_active' => true
-      ];
+      $stmt = $this->pdo->prepare("
+                SELECT id, username, email, first_name, last_name, email_verified, created_at 
+                FROM users 
+                WHERE id = :id
+            ");
 
-      $query = new MongoDB\Driver\Query($filter, ['limit' => 1]);
-      $cursor = $this->manager->executeQuery($this->database . '.' . $this->collection, $query);
-      $users = $cursor->toArray();
-
-      if (count($users) === 0) {
-        return ['success' => false, 'message' => 'Usuario no encontrado'];
-      }
-
-      $user = $users[0];
-
-      if (password_verify($password, $user->password)) {
-        // Actualizar último login
-        $this->updateLastLogin($user->_id);
-
-        return [
-          'success' => true,
-          'message' => 'Login exitoso',
-          'user' => [
-            'id' => (string)$user->_id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'first_name' => $user->first_name ?? '',
-            'last_name' => $user->last_name ?? ''
-          ]
-        ];
-      } else {
-        return ['success' => false, 'message' => 'Contraseña incorrecta'];
-      }
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error del servidor: ' . $e->getMessage()];
+      $stmt->execute([':id' => $id]);
+      return $stmt->fetch();
+    } catch (PDOException $e) {
+      return false;
     }
   }
 
   /**
-   * Actualizar último login
+   * Verify email
    */
-  private function updateLastLogin($userId)
+  public function verifyEmail($token)
   {
     try {
-      $bulk = new MongoDB\Driver\BulkWrite;
-      $bulk->update(
-        ['_id' => $userId],
-        ['$set' => ['last_login' => new MongoDB\BSON\UTCDateTime()]],
-        ['multi' => false, 'upsert' => false]
-      );
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET email_verified = TRUE, verification_token = NULL 
+                WHERE verification_token = :token
+            ");
 
-      // Try to use WriteConcern with fallback
-      try {
-        if (class_exists('MongoDB\Driver\WriteConcern')) {
-          if (defined('MongoDB\Driver\WriteConcern::MAJORITY')) {
-            $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
-          } else {
-            $writeConcern = new MongoDB\Driver\WriteConcern("majority", 1000);
-          }
-          $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk, $writeConcern);
-        } else {
-          $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
+      $result = $stmt->execute([':token' => $token]);
+
+      return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
+
+  /**
+   * Update user information
+   */
+  public function updateUser($id, $data)
+  {
+    try {
+      $allowedFields = ['first_name', 'last_name', 'email'];
+      $updates = [];
+      $params = [':id' => $id];
+
+      foreach ($data as $field => $value) {
+        if (in_array($field, $allowedFields)) {
+          $updates[] = "$field = :$field";
+          $params[":$field"] = $value;
         }
-      } catch (Exception $e) {
-        $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
-      }
-    } catch (Exception $e) {
-      // Log error but don't fail login
-      error_log("Error updating last login: " . $e->getMessage());
-    }
-  }
-
-  /**
-   * Generar token de verificación
-   */
-  private function generateVerificationToken()
-  {
-    return bin2hex(random_bytes(32));
-  }
-
-  /**
-   * Obtener usuario por ID
-   */
-  public function getUserById($userId)
-  {
-    try {
-      $filter = ['_id' => new MongoDB\BSON\ObjectId($userId)];
-      $query = new MongoDB\Driver\Query($filter, ['limit' => 1]);
-      $cursor = $this->manager->executeQuery($this->database . '.' . $this->collection, $query);
-      $users = $cursor->toArray();
-
-      if (count($users) > 0) {
-        $user = $users[0];
-        return [
-          'success' => true,
-          'user' => [
-            'id' => (string)$user->_id,
-            'username' => $user->username,
-            'email' => $user->email,
-            'first_name' => $user->first_name ?? '',
-            'last_name' => $user->last_name ?? '',
-            'bio' => $user->bio ?? '',
-            'created_at' => $user->created_at,
-            'email_verified' => $user->email_verified ?? false
-          ]
-        ];
       }
 
-      return ['success' => false, 'message' => 'Usuario no encontrado'];
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
-    }
-  }
-
-  /**
-   * Actualizar perfil de usuario
-   */
-  public function updateProfile($userId, $data)
-  {
-    try {
-      $updateData = [];
-
-      if (isset($data['first_name'])) $updateData['first_name'] = $data['first_name'];
-      if (isset($data['last_name'])) $updateData['last_name'] = $data['last_name'];
-      if (isset($data['bio'])) $updateData['bio'] = $data['bio'];
-
-      $updateData['updated_at'] = new MongoDB\BSON\UTCDateTime();
-
-      $bulk = new MongoDB\Driver\BulkWrite;
-      $bulk->update(
-        ['_id' => new MongoDB\BSON\ObjectId($userId)],
-        ['$set' => $updateData],
-        ['multi' => false, 'upsert' => false]
-      );
-
-      // Try to use WriteConcern with fallback
-      try {
-        if (class_exists('MongoDB\Driver\WriteConcern')) {
-          if (defined('MongoDB\Driver\WriteConcern::MAJORITY')) {
-            $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 1000);
-          } else {
-            $writeConcern = new MongoDB\Driver\WriteConcern("majority", 1000);
-          }
-          $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk, $writeConcern);
-        } else {
-          $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
-        }
-      } catch (Exception $e) {
-        $result = $this->manager->executeBulkWrite($this->database . '.' . $this->collection, $bulk);
+      if (empty($updates)) {
+        return false;
       }
 
-      if ($result->getModifiedCount() > 0) {
-        return ['success' => true, 'message' => 'Perfil actualizado exitosamente'];
-      } else {
-        return ['success' => false, 'message' => 'No se realizaron cambios'];
-      }
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+      $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE id = :id";
+      $stmt = $this->pdo->prepare($sql);
+
+      return $stmt->execute($params);
+    } catch (PDOException $e) {
+      return false;
     }
   }
 }

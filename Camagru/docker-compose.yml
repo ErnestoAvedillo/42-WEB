@@ -6,6 +6,8 @@ services:
     container_name: camagru_nginx
     networks:
       - camagru_network
+    env_file:
+      - .env
     volumes:
       - ./app/public:/var/www/html
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -20,6 +22,8 @@ services:
       context: ./config/php
       dockerfile: Dockerfile
     container_name: camagru_php
+    env_file:
+      - .env
     networks:
       - camagru_network
     volumes:
@@ -32,6 +36,8 @@ services:
   mongodb:
     image: mongo:latest
     container_name: camagru_mongodb
+    env_file:
+      - .env
     networks:
       - camagru_network
     volumes:
@@ -48,6 +54,8 @@ services:
   mongo-express:
     image: mongo-express:latest
     container_name: camagru_mongo_express
+    env_file:
+      - .env
     networks:
       - camagru_network
     ports:
@@ -72,6 +80,8 @@ services:
       context: ./config/postgre
       dockerfile: Dockerfile
     container_name: camagru_postgres
+    env_file:
+      - .env
     networks:
       - camagru_network
     volumes:

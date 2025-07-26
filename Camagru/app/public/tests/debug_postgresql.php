@@ -1,4 +1,5 @@
 <?php
+require_once '../EnvLoader.php';
 echo "<h1>PHP PDO Drivers Test</h1>";
 
 echo "<h2>1. Available PDO Drivers:</h2>";
@@ -20,32 +21,35 @@ echo "</ul>";
 echo "<h2>2. PostgreSQL Driver Status:</h2>";
 if (in_array('pgsql', $drivers)) {
     echo "✅ <strong>PostgreSQL PDO driver is available!</strong><br>";
-    
+
     echo "<h3>2.1 Connection Test:</h3>";
     try {
         $dsn = "pgsql:host=postgre;port=5432;dbname=camagru_db";
-        $username = "camagru";
-        $password = "camagru";
-        
+        $username = EnvLoader::get('PG_USER', 'camagru');
+        $password = EnvLoader::get('PG_PASSWORD', 'camagru');
+        $dsn = EnvLoader::get('PG_DSN', 'pgsql:host=postgre;port=5432;dbname=camagru_db');
+        if (!$dsn || !$username || !$password) {
+            throw new Exception("Database connection parameters are not set correctly.");
+        }
         $pdo = new PDO($dsn, $username, $password, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
-        
+
         echo "✅ <strong>PostgreSQL connection successful!</strong><br>";
-        
+
         // Test query
         $stmt = $pdo->query("SELECT version()");
         $version = $stmt->fetchColumn();
         echo "📋 PostgreSQL Version: " . $version . "<br>";
-        
+
         // Check if users table exists
         $stmt = $pdo->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_name = 'users'");
         $tableExists = $stmt->fetchColumn() > 0;
-        
+
         if ($tableExists) {
             echo "✅ 'users' table exists<br>";
-            
+
             // Count users
             $stmt = $pdo->query("SELECT COUNT(*) FROM users");
             $userCount = $stmt->fetchColumn();
@@ -54,7 +58,6 @@ if (in_array('pgsql', $drivers)) {
             echo "❌ 'users' table does not exist<br>";
             echo "💡 This might be normal if the initialization script hasn't run yet.<br>";
         }
-        
     } catch (PDOException $e) {
         echo "❌ <strong>PostgreSQL connection failed:</strong><br>";
         echo "Error: " . $e->getMessage() . "<br>";
@@ -66,7 +69,6 @@ if (in_array('pgsql', $drivers)) {
         echo "<li>Ensure containers are on the same network</li>";
         echo "</ul>";
     }
-    
 } else {
     echo "❌ <strong>PostgreSQL PDO driver is NOT available!</strong><br>";
     echo "🔧 <strong>Solution:</strong> Rebuild your PHP container with PostgreSQL support.<br>";
@@ -85,4 +87,3 @@ if (extension_loaded('pdo')) {
 } else {
     echo "❌ PDO extension is NOT loaded<br>";
 }
-?>

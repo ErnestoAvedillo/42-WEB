@@ -1,27 +1,39 @@
 <?php
+require_once '../EnvLoader.php'; // Adjust path since we're in database/ folder
+
 class Database
 {
-    private $host = 'mongodb'; // MongoDB container name
-    private $port = '27017';
-    private $username = 'root';
-    private $password = 'root';
-    private $db_name = 'camagru';
+    private $host;
+    private $port;
+    private $username;
+    private $password;
+    private $db_name;
     private $conn;
+
+    public function __construct()
+    {
+        // Load environment variables in constructor
+        $this->host = EnvLoader::get('MONGODB_SERVER', 'mongodb');
+        $this->port = EnvLoader::get('MONGODB_PORT', '27017');
+        $this->username = EnvLoader::get('MONGODB_ADMIN_USERNAME', 'admin');
+        $this->password = EnvLoader::get('MONGODB_PASSWORD', 'admin123');
+        $this->db_name = EnvLoader::get('MONGODB_DATABASE', 'camagru');
+    }
 
     public function connect()
     {
         $this->conn = null;
 
         try {
-            // MongoDB connection without authentication (matches your docker-compose.yml)
-            $connection_string = "mongodb://{$this->host}:{$this->port}";
+            // MongoDB connection with authentication (matches your docker-compose.yml)
+            $connection_string = "mongodb://{$this->username}:{$this->password}@{$this->host}:{$this->port}/{$this->db_name}?authSource=admin";
 
-            echo "<!-- Attempting MongoDB connection: $connection_string -->";
+            echo "<!-- Attempting MongoDB connection: mongodb://{$this->username}:***@{$this->host}:{$this->port}/{$this->db_name} -->";
             $this->conn = new MongoDB\Driver\Manager($connection_string);
 
             // Test the connection with a simple operation
-            $command = ['ping' => 1];
-            $query = new MongoDB\Driver\Query([], ['limit' => 1]);
+            $command = new MongoDB\Driver\Command(['ping' => 1]);
+            $this->conn->executeCommand('admin', $command);
 
             echo "<!-- MongoDB connection successful -->";
             return $this->conn;

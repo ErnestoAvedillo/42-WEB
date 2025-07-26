@@ -24,7 +24,7 @@
         <h1>Upload File</h1>
 
         <?php
-        require_once 'User.php';
+        require_once '/database/User.php';
 
         $message = '';
         $error = '';

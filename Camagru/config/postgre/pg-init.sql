@@ -3,27 +3,23 @@ CREATE TABLE users (
     uuid UUID DEFAULT gen_random_uuid() NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    user_password TEXT NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    middle_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    dni VARCHAR(20) NOT NULL,
-    phone_number VARCHAR(20),
-    workplace_name VARCHAR(100),
-    workplace_address VARCHAR(255),
-    workplace_city VARCHAR(100),
-    workplace_state VARCHAR(100),
-    workplace_country VARCHAR(100),
-    workplace_zip VARCHAR(20),
-    workplace_email VARCHAR(100),
-    workplace_phone VARCHAR(20),
-    profile_picture VARCHAR(255),
+    password TEXT NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email_verified BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(100),
+    reset_token VARCHAR(100),
+    reset_token_expires TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE
 );
 
-CRETE TABLE documents (
+CREATE INDEX idx_users_uuid ON users(uuid);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_username ON users(username);
+
+CREATE TABLE documents (
     id SERIAL PRIMARY KEY,
     user_uuid UUID NOT NULL REFERENCES users(uuid),
     document_uuid UUID NOT NULL,
@@ -31,6 +27,8 @@ CRETE TABLE documents (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_documents_user_uuid ON documents(user_uuid);
+CREATE INDEX idx_documents_document_uuid ON documents(document_uuid);
 
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
@@ -40,3 +38,5 @@ CREATE TABLE posts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX idx_posts_user_uuid ON posts(user_uuid);
+CREATE INDEX idx_posts_document_uuid ON posts(document_uuid);

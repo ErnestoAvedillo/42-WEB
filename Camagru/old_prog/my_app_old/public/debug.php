@@ -65,7 +65,7 @@
 
         // Database connection example (for debugging database issues)
         try {
-            require_once 'User.php';
+            require_once '/database/User.php';
             $database = new Database();
             $manager = $database->connect();
 

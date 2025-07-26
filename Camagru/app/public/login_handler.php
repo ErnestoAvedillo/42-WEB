@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-require_once 'User.php';
+require_once '../database/UserPostgreSQL.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
