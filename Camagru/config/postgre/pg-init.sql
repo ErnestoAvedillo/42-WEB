@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    uuid UUID DEFAULT gen_random_uuid() NOT NULL,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password TEXT NOT NULL,
@@ -21,8 +21,8 @@ CREATE INDEX idx_users_username ON users(username);
 
 CREATE TABLE documents (
     id SERIAL PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users(uuid),
-    document_uuid UUID NOT NULL,
+    user_uuid UUID NOT NULL REFERENCES users(uuid) UNIQUE,
+    document_uuid UUID NOT NULL UNIQUE,
     document_type VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -32,8 +32,8 @@ CREATE INDEX idx_documents_document_uuid ON documents(document_uuid);
 
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users(uuid),
-    document_uuid UUID NOT NULL REFERENCES documents(document_uuid),
+    user_uuid UUID NOT NULL REFERENCES users(uuid) UNIQUE,
+    document_uuid UUID NOT NULL REFERENCES documents(document_uuid) UNIQUE,
     caption TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

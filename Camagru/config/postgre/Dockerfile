@@ -4,7 +4,7 @@ FROM postgres:latest
 COPY pg-init.sql /docker-entrypoint-initdb.d/
 
 # Expose the PostgreSQL port
-EXPOSE 5432
+EXPOSE $PG_PORT
 
 # Set the default command to run PostgreSQL
 CMD ["postgres"]
