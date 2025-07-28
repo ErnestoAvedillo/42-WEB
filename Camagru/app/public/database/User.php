@@ -1,5 +1,5 @@
 <?php
-require_once '../EnvLoader.php';
+require_once __DIR__ . '/../EnvLoader.php';
 
 class User
 {

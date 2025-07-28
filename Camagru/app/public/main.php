@@ -37,13 +37,16 @@ $pageTitle = $page_titles[$page];
       include 'pages/upload.php';
       break;
     case 'login':
-      include 'pages/login.php';
+      include 'pages/login/login.php';
       break;
     case 'register':
-      include 'pages/register.php';
+      include 'pages/register/register.php';
       break;
     case 'profile':
       include 'pages/profile.php';
+      break;
+    case 'error_register_handler':
+      include 'pages/register/error_register_handler.php';
       break;
     default:
       include 'pages/home.php';

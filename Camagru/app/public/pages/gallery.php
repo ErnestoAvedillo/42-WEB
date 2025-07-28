@@ -5,3 +5,4 @@
         <!-- Gallery content will go here -->
         <p>Gallery coming soon...</p>
     </div>
+</div>

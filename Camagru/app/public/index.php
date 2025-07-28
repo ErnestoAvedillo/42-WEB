@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <header>
-  session_start();
+  <?php if (!isset($_SESSION)) {
+    session_start();
+  } ?>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo isset($pageTitle) ? $pageTitle : 'Camagru'; ?></title>
