@@ -20,5 +20,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mysqli \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
