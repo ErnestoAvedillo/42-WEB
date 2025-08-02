@@ -19,6 +19,24 @@ CREATE INDEX idx_users_uuid ON users(uuid);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
 
+CREATE TABLE profiles (
+    id SERIAL PRIMARY KEY,
+    user_uuid UUID NOT NULL REFERENCES users(uuid) UNIQUE,
+    national_id_nr VARCHAR(20) NOT NULL UNIQUE,
+    nationality VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    street VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    zip_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20),
+    profile_picture TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_profiles_user_uuid ON profiles(user_uuid);
+
 CREATE TABLE documents (
     id SERIAL PRIMARY KEY,
     user_uuid UUID NOT NULL REFERENCES users(uuid) UNIQUE,

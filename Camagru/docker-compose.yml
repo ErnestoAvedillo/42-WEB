@@ -29,10 +29,17 @@ services:
     volumes:
       - ./app/public:/var/www/html
       #- ./config:/var/www/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped
     ports:
       - "9000:9000"
-
+      - "9006:9005"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
   mongodb:
     build:
       context: ./config/mongo

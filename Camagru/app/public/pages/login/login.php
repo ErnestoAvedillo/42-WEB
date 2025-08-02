@@ -17,6 +17,11 @@ unset($_SESSION['registered_user']);
 <link rel="stylesheet" href="css/login.css">
 <div class="login-container">
     <h1>Login to Camagru</h1>
+    <?php
+    //   echo "<pre>";
+    //   var_dump($_SESSION);
+    //   echo "</pre>"; 
+    ?>
 
     <?php if ($fromRegister): ?>
         <div class="alert alert-success">
@@ -40,7 +45,7 @@ unset($_SESSION['registered_user']);
         </div>
     <?php endif; ?>
 
-    <form action="login_handler.php" method="post" id="loginForm">
+    <form action="/pages/login/login_handler.php" method="post" id="loginForm">
         <div class="form-group">
             <label for="username">Username or Email: <span class="required">*</span></label>
             <input type="text" id="username" name="username" required
@@ -52,7 +57,7 @@ unset($_SESSION['registered_user']);
             <input type="password" id="password" name="password" required
                 placeholder="Enter your password">
             <div class="form-actions">
-                <a href="#" class="forgot-password">Forgot your password?</a>
+                <a href="#" class="forgot-password">Forgot your password???</a>
             </div>
         </div>
 
@@ -63,7 +68,8 @@ unset($_SESSION['registered_user']);
             </label>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="submitBtn" onclick="window.location.href='index.php?page=gallery'; return false;">
+        <!--<button type="submit" class="btn btn-primary" id="submitBtn" onclick="window.location.href='index.php?page=gallery'; return false;">-->
+        <button type="submit" class="btn btn-primary" id="submitBtn">
             <span class="btn-text">Login</span>
             <span class="btn-loading" style="display: none;">Logging in...</span>
         </button>

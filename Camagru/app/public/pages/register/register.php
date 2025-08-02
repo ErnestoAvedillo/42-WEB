@@ -13,7 +13,6 @@ unset($_SESSION['success_message']);
 
 <div class="register-container">
     <h1>Register for Camagru</h1>
-
     <?php if (!empty($errors)): ?>
         <div class="alert alert-error">
             <ul>

@@ -25,7 +25,6 @@ $pageTitle = $page_titles[$page];
 ?>
 <main id="mainContent">
   <?php
-  // Cargar el contenido de la página correspondiente
   switch ($page) {
     case 'home':
       include 'pages/home.php';
@@ -43,7 +42,7 @@ $pageTitle = $page_titles[$page];
       include 'pages/register/register.php';
       break;
     case 'profile':
-      include 'pages/profile.php';
+      include 'pages/profile/profile.php';
       break;
     case 'error_register_handler':
       include 'pages/register/error_register_handler.php';

@@ -7,7 +7,6 @@
             <a href="main.php?page=gallery" class="btn btn-secondary">View Gallery</a>
         </div>
     </div>
-
     <div class="features-section">
         <h3>Key Features</h3>
         <div class="features-grid">

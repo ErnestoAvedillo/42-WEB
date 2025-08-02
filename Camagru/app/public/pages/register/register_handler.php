@@ -6,6 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once '../../database/User.php';
+require_once '../../database/pg_database.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -51,6 +52,7 @@ if (!empty($errors)) {
         'last_name' => $lastName
     ];
     ob_end_clean();
+
     header('Location: main.php?page=register');
     exit();
 }
@@ -69,7 +71,7 @@ try {
         unset($_SESSION['register_data']);
 
         // Redirigir al login
-        header('Location: main.php?page=login&registered=1');
+        header('Location: ../../index.php?page=login&registered=1');
         exit();
     } else {
         $_SESSION['register_errors'] = [$result['message']];
@@ -79,7 +81,8 @@ try {
             'first_name' => $firstName,
             'last_name' => $lastName
         ];
-        header('Location: main.php?page=error_register_handler');
+
+        header('Location: ../../index.php?page=error_register_handler');
         exit();
     }
 } catch (Exception $e) {
@@ -90,6 +93,6 @@ try {
         'first_name' => $firstName,
         'last_name' => $lastName
     ];
-    header('Location: main.php?page=register');
+    header('Location: ../../index.php?page=register');
     exit();
 }

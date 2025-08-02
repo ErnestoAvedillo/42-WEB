@@ -1,12 +1,18 @@
 <?php
+// Iniciar output buffering para evitar problemas con headers
+ob_start();
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-require_once '../database/User.php';
+//echo __DIR__; // Mostrar el directorio actual para depuración
+
+require_once '../../database/User.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: main.php?page=login');
+    //echo "login_handler.php: Método no permitido";
     exit();
 }
 
@@ -30,6 +36,7 @@ if (!empty($errors)) {
     $_SESSION['login_errors'] = $errors;
     $_SESSION['login_data'] = ['username' => $username];
     header('Location: main.php?page=login');
+    //echo "login_handler.php: Errores de validación";
     exit();
 }
 
@@ -55,20 +62,23 @@ try {
         $_SESSION['success_message'] = 'Login successful! Welcome back.';
 
         // Redirigir al home o página solicitada
-        $redirect = $_SESSION['redirect_after_login'] ?? 'home';
+        $redirect = $_SESSION['redirect_after_login'] ?? 'gallery';
         unset($_SESSION['redirect_after_login']);
 
-        header('Location: main.php?page=' . $redirect);
+        header('Location: ../../index.php?page=' . $redirect);
+        //echo "login_handler.php: Login exitoso, redirigiendo a $redirect";
         exit();
     } else {
         $_SESSION['login_errors'] = [$result['message']];
         $_SESSION['login_data'] = ['username' => $username];
         header('Location: main.php?page=login');
+        //echo "login_handler.php: Errores de autenticación";
         exit();
     }
 } catch (Exception $e) {
     $_SESSION['login_errors'] = ['Error del servidor: ' . $e->getMessage()];
     $_SESSION['login_data'] = ['username' => $username];
     header('Location: main.php?page=login');
+    //echo "login_handler.php: Error del servidor";
     exit();
 }

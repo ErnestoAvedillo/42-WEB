@@ -1,5 +1,6 @@
 <?php
 try {
+    echo __DIR__; // Mostrar el directorio actual para depuración
     require_once '../EnvLoader.php';
     // Use Docker service name (from docker-compose.yml)
     $username = EnvLoader::get('PG_USER', 'camagru');
