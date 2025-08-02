@@ -46,7 +46,6 @@ class EnvLoader
 
     public static function get($key, $default = null)
     {
-        echo "<!-- Accessing environment variable: $key -->";
         return $_ENV[$key] ?? getenv($key) ?: $default;
     }
 }

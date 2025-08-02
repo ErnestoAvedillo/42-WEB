@@ -22,11 +22,9 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable mongodb \
     && pecl install redis \
     && docker-php-ext-enable redis \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && pecl install xampp \
-    && docker-php-ext-enable xampp \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+#    && pecl install xdebug \
+#    && docker-php-ext-enable xdebug \
+#COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+CMD ["php-fpm"]

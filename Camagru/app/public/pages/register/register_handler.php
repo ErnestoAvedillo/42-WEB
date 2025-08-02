@@ -1,12 +1,7 @@
 <?php
-// Start output buffering to prevent header issues
-ob_start();
-
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+include_once '../../class_session/session.php';
 require_once '../../database/User.php';
-require_once '../../database/pg_database.php';
+require_once '../../database/Profiles.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -62,7 +57,22 @@ try {
     $user = new User();
     $result = $user->register($username, $email, $password, $firstName, $lastName);
 
-    if ($result['success']) {
+    $profile = new Profiles();
+    $profileData = [
+        'user_uuid' => $result['uuid'],
+        'national_id_nr' => '',
+        'nationality' => '',
+        'date_of_birth' => '',
+        'street' => '',
+        'city' => '',
+        'state' => '',
+        'zip_code' => '',
+        'country' => '',
+        'phone_number' => '',
+        'profile_picture' => ''
+    ];
+    $profileResult = $profile->registerUserProfile($profileData);
+    if ($result['success'] && $profileResult) {
         $_SESSION['success_message'] = $result['message'];
         $_SESSION['registered_user'] = $username;
 

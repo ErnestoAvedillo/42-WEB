@@ -9,12 +9,21 @@ class PGDatabase
     public function __construct()
     {
         try {
-            $pgdatabase = new PGDatabase();
-            $this->pdo = $pgdatabase->getConnection();
-            if (!$this->pdo) {
-                throw new Exception("Failed to connect to database");
-            }
-        } catch (PDOException $e) {
+                  // Get database configuration from environment variables
+      $host = EnvLoader::get('PG_HOST', 'postgre');
+      $port = EnvLoader::get('PG_PORT', '5432');
+      $database = EnvLoader::get('PG_DATABASE', 'camagru_db');
+      $username = EnvLoader::get('PG_USER', 'camagru');
+      $password = EnvLoader::get('PG_PASSWORD', 'camagru');
+      $dsn = EnvLoader::get('PG_DSN', 'pgsql:host=postgre;port=5432;dbname=camagru_db');
+      if (!$dsn || !$username || !$password) {
+        throw new Exception("Database connection parameters are not set correctly.");
+      }
+      $this->pdo = new PDO($dsn, $username, $password);
+      if (!$this->pdo) {
+          throw new Exception("Failed to connect to database");
+      }
+  } catch (PDOException $e) {
             throw new Exception("Database connection failed: " . $e->getMessage());
         }
     }
@@ -23,34 +32,5 @@ class PGDatabase
     {
         return $this->pdo;
     }
-    public function register($uuid, $national_id_nr = "", $nationality = "", $date_of_birth = "", $street = "", $city = "", $state = "", $zip_code = "", $country = "", $phone_number = "", $profile_picture = "")
-    {
-        $stmt = $this->pdo->prepare("
-        insert into profiles (uuid,national_id_nr,nationality,date_of_birth,street,city,state,zip_code,country,phone_number,profile_picture)
-        values (:uuid,:national_id_nr,:nationality,:date_of_birth,:street,:city,:state,:zip_code,:country,:phone_number,:profile_picture)");
 
-        $stmt->bindParam(':uuid', $uuid);
-        $stmt->bindParam(':national_id_nr', $national_id_nr);
-        $stmt->bindParam(':nationality', $nationality);
-        $stmt->bindParam(':date_of_birth', $date_of_birth);
-        $stmt->bindParam(':street', $street);
-        $stmt->bindParam(':city', $city);
-        $stmt->bindParam(':state', $state);
-        $stmt->bindParam(':zip_code', $zip_code);
-        $stmt->bindParam(':country', $country);
-        $stmt->bindParam(':phone_number', $phone_number);
-        $stmt->bindParam(':profile_picture', $profile_picture);
-
-        $result = $stmt->execute();
-
-        if ($result) {
-            return [
-                'success' => true,
-                'message' => 'User registered successfully',
-                'verification_token' => $verificationToken
-            ];
-        } else {
-            return ['success' => false, 'message' => 'Failed to register user'];
-        }
-    }
 }

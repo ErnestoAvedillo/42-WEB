@@ -70,6 +70,9 @@ class Profiles
             return false;
         }
     }
+    /**
+     * Get profile data by user UUID
+     */
     public function getProfileData($id)
     {
         try {
@@ -83,6 +86,54 @@ class Profiles
             return $stmt->fetch();
         } catch (PDOException $e) {
             return false;
+        }
+    }
+    /**
+     * Register a new user profile
+     */
+    public function registerUserProfile($data)
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO profiles (user_uuid, national_id_nr, nationality, date_of_birth, street, city, state, zip_code, country, phone_number, profile_picture)
+                VALUES (:user_uuid, :national_id_nr, :nationality, :date_of_birth, :street, :city, :state, :zip_code, :country, :phone_number, :profile_picture)
+            ");
+
+            $stmt->execute($data);
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    public function register($uuid, $national_id_nr = "", $nationality = "", $date_of_birth = "", $street = "", $city = "", $state = "", $zip_code = "", $country = "", $phone_number = "", $profile_picture = "")
+    {
+        $stmt = $this->pdo->prepare("
+        insert into profiles (user_uuid,national_id_nr,nationality,date_of_birth,street,city,state,zip_code,country,phone_number,profile_picture)
+        values (:user_uuid,:national_id_nr,:nationality,:date_of_birth,:street,:city,:state,:zip_code,:country,:phone_number,:profile_picture)");
+
+        $stmt->bindParam(':user_uuid', $user_uuid);
+        $stmt->bindParam(':national_id_nr', $national_id_nr);
+        $stmt->bindParam(':nationality', $nationality);
+        $stmt->bindParam(':date_of_birth', $date_of_birth);
+        $stmt->bindParam(':street', $street);
+        $stmt->bindParam(':city', $city);
+        $stmt->bindParam(':state', $state);
+        $stmt->bindParam(':zip_code', $zip_code);
+        $stmt->bindParam(':country', $country);
+        $stmt->bindParam(':phone_number', $phone_number);
+        $stmt->bindParam(':profile_picture', $profile_picture);
+
+        $result = $stmt->execute();
+
+        if ($result) {
+            return [
+                'success' => true,
+                'message' => 'User registered successfully',
+                'verification_token' => $verificationToken
+            ];
+        } else {
+            return ['success' => false, 'message' => 'Failed to register user'];
         }
     }
 }

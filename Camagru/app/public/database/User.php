@@ -45,8 +45,8 @@ class User
 
       // Insert user into database
       $stmt = $this->pdo->prepare("
-                INSERT INTO users (username, email, password, first_name, last_name, verification_token) 
-                VALUES (:username, :email, :password, :first_name, :last_name, :verification_token)
+                INSERT INTO users (uuid, username, email, password, first_name, last_name, verification_token) 
+                VALUES (gen_random_uuid(), :username, :email, :password, :first_name, :last_name, :verification_token)
             ");
 
       $result = $stmt->execute([
@@ -59,13 +59,19 @@ class User
       ]);
 
       if ($result) {
+        // Return success with user UUID
+        $uuid = $this->pdo->lastInsertId();
+        if (!$uuid) {
+          return ['success' => false, 'message' => 'Failed to retrieve user UUID'];
+        }
         return [
+          'uuid' => $uuid,
           'success' => true,
           'message' => 'User registered successfully',
           'verification_token' => $verificationToken
         ];
       } else {
-        return ['success' => false, 'message' => 'Failed to register user'];
+        return ['success' => false, 'message' => 'Failed to register user', 'uuid' => $uuid];
       }
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];

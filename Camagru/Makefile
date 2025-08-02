@@ -66,6 +66,7 @@ clean: stop
 	-docker network rm -f $$(docker network ls -q)
 	-docker volume rm -f $$(docker volume ls -q)
 	-docker system prune -f
+	-rm -rfd ./data
 
 inspect:
 	@echo "Inspecting containers..."
