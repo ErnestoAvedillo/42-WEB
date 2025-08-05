@@ -105,7 +105,7 @@ try {
             'last_name' => $lastName
         ];
 
-        header('Location: ../../index.php?page=error_register_handler');
+        header('Location: /pages/register/error_register_handler.php');
         //echo "<p>✖ Registro fallido: " . htmlspecialchars($result['message']) . "</p>";
         exit();
     }

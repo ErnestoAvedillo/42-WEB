@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../database/Profiles.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: main.php?page=login');
+    header('Location: /pages/login/login.php');
     //echo "login_handler.php: Método no permitido";
     exit();
 }
@@ -47,10 +47,10 @@ $profileData = [
 try {
     $profile = new Profiles();
     $profile->updateUserProfile($_SESSION['user_id'], $profileData);
-    header('Location: main.php?page=gallery');
+    header('Location: /pages/gallery/gallery.php');
 } catch (Exception $e) {
     // Manejar errores
     $_SESSION['errors'] = 'Error al actualizar el perfil: ' . $e->getMessage();
-    header('Location: main.php?page=login');
+    header('Location: /pages/login/login.php');
     exit();
 }

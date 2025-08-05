@@ -3,6 +3,7 @@ require_once __DIR__ . '/../EnvLoader.php'; // Adjust path since we're in databa
 require_once __DIR__ . '/../vendor/autoload.php'; // Ensure MongoDB library is loaded
 
 use MongoDB\Driver\Exception\Exception;
+use MongoDB\Driver\Command;
 use MongoDB\Client;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
@@ -41,7 +42,7 @@ class PictureDB
 
             echo "<!-- MongoDB connection successful -->";
             return $this->conn;
-        } catch (Exception $e) {
+        } catch (\MongoDB\Driver\Exception\Exception $e) {
             echo "<!-- Connection error: " . $e->getMessage() . " -->";
             error_log("MongoDB Connection Error: " . $e->getMessage());
             return null;
@@ -53,21 +54,23 @@ class PictureDB
         return $this->db_name;
     }
 
-    public function uploadFile($file)
+    public function uploadFile($filename)
     {
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
 
-        $collection = (new MongoDB\Client($this->conn))->selectCollection($this->db_name, 'uploads');
-
-        if ($file['error'] === UPLOAD_ERR_OK) {
-            $filename = basename($file['name']);
-            $fileData = file_get_contents($file['tmp_name']);
-            $mimeType = mime_content_type($file['tmp_name']);
-
+        $collection = (new MongoDB\Client($this->conn_str))->selectCollection($this->db_name, 'uploads');
+        if (!$collection) {
+            throw new Exception("Failed to select collection 'uploads'.");
+        }
+        echo $filename;
+        try {
+            $fileData = file_get_contents($filename);
+            $mimeType = mime_content_type($filename);
             // Store file in MongoDB as a document
             $result = $collection->insertOne([
+                'user_uuid' => 'some-uuid', // Replace with actual user UUID if needed
                 'filename' => $filename,
                 'filedata' => new MongoDB\BSON\Binary($fileData, MongoDB\BSON\Binary::TYPE_GENERIC),
                 'mimetype' => $mimeType,
@@ -75,8 +78,30 @@ class PictureDB
             ]);
 
             return "File uploaded successfully. ID: " . $result->getInsertedId();
-        } else {
-            throw new Exception("File upload error: " . $file['error']);
+        } catch (Exception $e) {
+            throw new Exception("File upload error: " . $e->getMessage());
         }
+    }
+    public function getCollection()
+    {
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+
+        $client = new MongoDB\Client($this->conn_str);
+        return $client->selectCollection($this->db_name, 'uploads');
+    }
+    public function getFileById($id)
+    {
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+
+        $collection = $this->getCollection();
+        $file = $collection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        if (!$file) {
+            throw new Exception("File not found with ID: " . $id);
+        }
+        return $file;
     }
 }

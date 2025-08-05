@@ -11,3 +11,5 @@ data/
 vendor/
 composer.json
 composer.lock
+.devcontainer
+.vscode

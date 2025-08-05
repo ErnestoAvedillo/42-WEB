@@ -101,7 +101,7 @@
             </button>
         </form>
 
-        <p class="login-link">Already have an account? <a href="main.php?page=login">Login here</a></p>
+        <p class="login-link">Already have an account? <a href="/pages/login/login.php">Login here</a></p>
     </div>
     <?php
     include __DIR__ . '/../../views/footer.php';

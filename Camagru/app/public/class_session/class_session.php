@@ -32,7 +32,8 @@ class SessionManager
 
     public static function isSessionActive()
     {
-        return isset($_SESSION['session_started']) && $_SESSION['session_started'] === true;
+        return session_status() === PHP_SESSION_ACTIVE;
+        // return isset($_SESSION['session_started']) && $_SESSION['session_started'] === true;
     }
 
     public static function setSessionActive($active)

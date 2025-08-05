@@ -36,11 +36,15 @@ SessionManager::getInstance();
         <p>Share your creativity with the world by uploading your photos.</p>
         <form action="upload_handler.php" method="post" enctype="multipart/form-data">
             <input type="file" name="photo" accept="image/*" required>
+            <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars(SessionManager::getSessionKey('uuid')); ?>">
             <button type="submit" class="btn btn-primary">Upload Photo</button>
         </form>
         <p>Supported formats: JPG, PNG, GIF</p>
     </div>
     <?php
+    echo "<pre>";
+    var_dump($_SESSION);
+    echo "</pre>";
     include __DIR__ . '/../../views/footer.php';
     ?>
 </body>

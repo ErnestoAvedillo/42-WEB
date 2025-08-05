@@ -5,7 +5,7 @@ require_once '../../database/User.php';
 
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: main.php?page=login');
+    header('Location: /pages/login/login.php');
     //echo "login_handler.php: Método no permitido";
     exit();
 }
@@ -29,7 +29,7 @@ if (empty($password)) {
 if (!empty($errors)) {
     $_SESSION['login_errors'] = $errors;
     $_SESSION['login_data'] = ['username' => $username];
-    header('Location: main.php?page=login');
+    header('Location: /pages/login/login.php');
     //echo "login_handler.php: Errores de validación";
     exit();
 }
@@ -59,14 +59,14 @@ try {
     } else {
         $_SESSION['login_errors'] = [$result['message']];
         $_SESSION['login_data'] = ['username' => $username];
-        header('Location: main.php?page=login');
+        header('Location: /pages/login/login.php');
         //echo "login_handler.php: Errores de autenticación";
         exit();
     }
 } catch (Exception $e) {
     $_SESSION['login_errors'] = ['Error del servidor: ' . $e->getMessage()];
     $_SESSION['login_data'] = ['username' => $username];
-    header('Location: main.php?page=login');
+    header('Location: /pages/login/login.php');
     //echo "login_handler.php: Error del servidor";
     exit();
 }
