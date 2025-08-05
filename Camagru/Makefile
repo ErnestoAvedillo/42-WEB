@@ -35,6 +35,16 @@ rebuild: down build
 
 re: clean build
 
+status:
+	@echo "Checking status of containers..."
+	@$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) ps
+	@echo "Checking status of images..."
+	@$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) images
+	@echo "Checking status of volumes..."
+	@$(COMPOSE) -f  volume ls
+	@echo "Checking status of networks..."
+	@$(COMPOSE) -f  network ls
+
 help:
 	@echo "$(BLUE_COLOR)Available Makefile targets:$(RESET_COLOR)"
 	@echo "$(GREEN_COLOR)  all$(RESET_COLOR)           - Default target, builds the project."
