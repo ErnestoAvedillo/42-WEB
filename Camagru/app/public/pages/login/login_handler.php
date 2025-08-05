@@ -1,12 +1,6 @@
 <?php
-// Iniciar output buffering para evitar problemas con headers
-ob_start();
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-//echo __DIR__; // Mostrar el directorio actual para depuración
-
+require_once __DIR__ . '/../../class_session/session.php';
 require_once '../../database/User.php';
 
 // Verificar que la petición sea POST
@@ -46,13 +40,8 @@ try {
     $result = $user->login($username, $password);
 
     if ($result['success']) {
-        // Guardar información del usuario en la sesión
-        $_SESSION['user_id'] = $result['user']['id'];
-        $_SESSION['username'] = $result['user']['username'];
-        $_SESSION['email'] = $result['user']['email'];
-        $_SESSION['first_name'] = $result['user']['first_name'];
-        $_SESSION['last_name'] = $result['user']['last_name'];
-        $_SESSION['logged_in'] = true;
+        SessionManager::getInstance()->saveDataSession($result['user']);
+
 
         // Limpiar errores
         unset($_SESSION['login_errors']);
@@ -61,12 +50,11 @@ try {
         // Mensaje de éxito
         $_SESSION['success_message'] = 'Login successful! Welcome back.';
 
-        // Redirigir al home o página solicitada
-        $redirect = $_SESSION['redirect_after_login'] ?? 'gallery';
-        unset($_SESSION['redirect_after_login']);
-
-        header('Location: ../../index.php?page=' . $redirect);
+        header('Location: /pages/gallery/gallery.php');
         //echo "login_handler.php: Login exitoso, redirigiendo a $redirect";
+        //echo "<pre>";
+        //var_dump($_SESSION);
+        //echo "</pre>";
         exit();
     } else {
         $_SESSION['login_errors'] = [$result['message']];

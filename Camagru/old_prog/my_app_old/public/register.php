@@ -7,7 +7,7 @@
   <title><?php echo isset($pageTitle) ? $pageTitle : 'Camagru'; ?></title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/footer.css">
-  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
 </head>
 
 <body>

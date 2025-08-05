@@ -45,5 +45,5 @@ try {
 }
 
 echo "<hr>";
-echo "<p><a href='main.php?page=register'>Volver al formulario de registro</a></p>";
+echo "<p><a href='/pages/register/register.php'>Volver al formulario de registro</a></p>";
 echo "<p><a href='main.php?page=debug'>Ir a página de debug</a></p>";

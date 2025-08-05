@@ -35,7 +35,6 @@ class User
             'email' => $email,
             'created_at' => new UTCDateTime(),
             'is_active' => true,
-            'profile_picture' => null,
             'files' => [] // Array to store file references
         ]);
 

@@ -60,18 +60,21 @@ class User
 
       if ($result) {
         // Return success with user UUID
-        $uuid = $this->pdo->lastInsertId();
-        if (!$uuid) {
+        $id = $this->pdo->lastInsertId();
+        $data = $this->getUserById($id);
+        //echo "<p>✓ Registro de usuario exitoso. ID: " . $id . ", UUID: " . $data['uuid'] . "</p>";
+        if (!$data['uuid']) {
           return ['success' => false, 'message' => 'Failed to retrieve user UUID'];
         }
         return [
-          'uuid' => $uuid,
+          'id' => $id,
+          'uuid' => $data['uuid'],
           'success' => true,
           'message' => 'User registered successfully',
           'verification_token' => $verificationToken
         ];
       } else {
-        return ['success' => false, 'message' => 'Failed to register user', 'uuid' => $uuid];
+        return ['success' => false, 'message' => 'Failed to register user'];
       }
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
@@ -88,7 +91,7 @@ class User
     try {
       // Find user by username or email
       $stmt = $this->pdo->prepare("
-                SELECT id, username, email, password, first_name, last_name, email_verified 
+                SELECT id, uuid, username, email, password
                 FROM users 
                 WHERE username = :login OR email = :login
             ");
@@ -175,12 +178,28 @@ class User
   {
     try {
       $stmt = $this->pdo->prepare("
-                SELECT id, username, email, first_name, last_name, email_verified, created_at 
+                SELECT id, username, email, uuid
                 FROM users 
                 WHERE id = :id
             ");
 
       $stmt->execute([':id' => $id]);
+      return $stmt->fetch();
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
+
+  public function getUserByUUID($uuid)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT id, uuid, username, email 
+                FROM users 
+                WHERE uuid = :uuid
+            ");
+
+      $stmt->execute([':uuid' => $uuid]);
       return $stmt->fetch();
     } catch (PDOException $e) {
       return false;
@@ -210,12 +229,12 @@ class User
   /**
    * Update user information
    */
-  public function updateUser($id, $data)
+  public function updateUser($uuid, $data)
   {
     try {
-      $allowedFields = ['first_name', 'last_name', 'email'];
+      $allowedFields = ['username', 'first_name', 'last_name', 'email'];
       $updates = [];
-      $params = [':id' => $id];
+      $params = [':uuid' => $uuid];
 
       foreach ($data as $field => $value) {
         if (in_array($field, $allowedFields)) {
@@ -228,7 +247,7 @@ class User
         return false;
       }
 
-      $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE id = :id";
+      $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE uuid = :uuid";
       $stmt = $this->pdo->prepare($sql);
 
       return $stmt->execute($params);

@@ -1,15 +1,16 @@
 <?php
-include 'class_session/session.php';
+require_once 'class_session/session.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<header>
+
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo isset($pageTitle) ? $pageTitle : 'Camagru'; ?></title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-</header>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+</head>
 
 <body>
   <?php
@@ -18,31 +19,37 @@ include 'class_session/session.php';
 
   $pageTitle = "sidebar - Camagru";
   include 'views/side_bar.php';
+  ?>
 
-
-  include 'main.php';
-  // filepath: /home/eavedill/Desktop/WEB/Camagru/app/public/debug_extensions.php
-  echo "<h1>Loaded PHP Extensions</h1>";
-  $extensions = get_loaded_extensions();
-  sort($extensions);
-  foreach ($extensions as $extension) {
-      echo "$extension<br>";
-  }
-
-  echo "<h1>MongoDB Extension Status</h1>";
-  var_dump(extension_loaded('mongodb'));
-  echo "informacion del phpinfo.php";
-  phpinfo();
-  if ($session_active) {
-    // Check if the session is already started
-    var_dump($_SESSION);
-
-
-  } else {
-    // Start the session if it hasn't been started yet
-    echo "la variable is_session is false, session not started";
-  }
-
+  <div class="home-container">
+    <div class="hero-section">
+      <h2>Welcome to Camagru</h2>
+      <p>A modern photo sharing platform where you can upload, edit, and share your favorite images with the world.</p>
+      <div class="feature-buttons">
+        <a href="/pages/upload/upload.php" class="btn btn-primary">Upload Photos</a>
+        <a href="/pages/gallery/gallery.php" class="btn btn-secondary">View Gallery</a>
+      </div>
+    </div>
+    <div class="features-section">
+      <h3>Key Features</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h4>📸 Easy Upload</h4>
+          <p>Upload images, PDFs, Word documents and more with our simple drag-and-drop interface.</p>
+        </div>
+        <div class="feature-card">
+          <h4>🖼️ Gallery View</h4>
+          <p>Browse all uploaded files in a beautiful gallery layout with filtering options.</p>
+        </div>
+        <div class="feature-card">
+          <h4>👥 User Management</h4>
+          <p>Register an account to manage your uploads and personalize your experience.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <link rel="stylesheet" href="css/home.css">
+  <?php
   include 'views/footer.php';
   ?>
 </body>

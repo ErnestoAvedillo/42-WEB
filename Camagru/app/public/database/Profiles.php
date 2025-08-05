@@ -47,7 +47,17 @@ class Profiles
     public function updateUserProfile($user_uuid_Id, $data)
     {
         try {
-            $allowedFields = ['first_name', 'last_name', 'email'];
+            $allowedFields = [
+                'national_id_nr',
+                'nationality',
+                'date_of_birth',
+                'street',
+                'city',
+                'state',
+                'zip_code',
+                'country',
+                'phone_number',
+            ];
             $updates = [];
             $params = [':user_uuid' => $user_uuid_Id];
 
@@ -73,7 +83,7 @@ class Profiles
     /**
      * Get profile data by user UUID
      */
-    public function getProfileData($id)
+    public function getProfileData($uuid)
     {
         try {
             $stmt = $this->pdo->prepare("
@@ -82,7 +92,7 @@ class Profiles
                 WHERE user_uuid = :user_uuid
             ");
 
-            $stmt->execute([':user_uuid' => $id]);
+            $stmt->execute([':user_uuid' => $uuid]);
             return $stmt->fetch();
         } catch (PDOException $e) {
             return false;
@@ -95,34 +105,68 @@ class Profiles
     {
         try {
             $stmt = $this->pdo->prepare("
-                INSERT INTO profiles (user_uuid, national_id_nr, nationality, date_of_birth, street, city, state, zip_code, country, phone_number, profile_picture)
-                VALUES (:user_uuid, :national_id_nr, :nationality, :date_of_birth, :street, :city, :state, :zip_code, :country, :phone_number, :profile_picture)
-            ");
-
-            $stmt->execute($data);
-            return true;
+                INSERT INTO profiles (user_uuid,
+                national_id_nr,
+                nationality,
+                date_of_birth,
+                street,
+                city,
+                state,
+                zip_code,
+                country,
+                phone_number
+            ) VALUES (
+                :user_uuid,
+                :national_id_nr,
+                :nationality,
+                :date_of_birth,
+                :street,
+                :city,
+                :state,
+                :zip_code,
+                :country,
+                :phone_number
+            )
+        ");
+            // Prepare the SQL statement
+            // Bind parameters
+            $stmt->bindParam(':user_uuid', $data['user_uuid']);
+            $stmt->bindParam(':national_id_nr', $data['national_id_nr']);
+            $stmt->bindParam(':nationality', $data['nationality']);
+            $stmt->bindParam(':date_of_birth', $data['date_of_birth']);
+            $stmt->bindParam(':street', $data['street']);
+            $stmt->bindParam(':city', $data['city']);
+            $stmt->bindParam(':state', $data['state']);
+            $stmt->bindParam(':zip_code', $data['zip_code']);
+            $stmt->bindParam(':country', $data['country']);
+            $stmt->bindParam(':phone_number', $data['phone_number']);
+            // Execute the statement
+            $result = $stmt->execute();
+            if (!$result) {
+                return ['success' => false, 'message' => 'Failed to register user profile'];
+            }
+            return ['success' => true, 'message' => 'User profile registered successfully'];
         } catch (PDOException $e) {
-            return false;
+            return ['success' => false, 'message' => 'Failed to register user profile: ' . $e->getMessage()];
         }
     }
 
-    public function register($uuid, $national_id_nr = "", $nationality = "", $date_of_birth = "", $street = "", $city = "", $state = "", $zip_code = "", $country = "", $phone_number = "", $profile_picture = "")
+    public function register($uuid)
     {
         $stmt = $this->pdo->prepare("
-        insert into profiles (user_uuid,national_id_nr,nationality,date_of_birth,street,city,state,zip_code,country,phone_number,profile_picture)
-        values (:user_uuid,:national_id_nr,:nationality,:date_of_birth,:street,:city,:state,:zip_code,:country,:phone_number,:profile_picture)");
-
-        $stmt->bindParam(':user_uuid', $user_uuid);
-        $stmt->bindParam(':national_id_nr', $national_id_nr);
-        $stmt->bindParam(':nationality', $nationality);
-        $stmt->bindParam(':date_of_birth', $date_of_birth);
-        $stmt->bindParam(':street', $street);
-        $stmt->bindParam(':city', $city);
-        $stmt->bindParam(':state', $state);
-        $stmt->bindParam(':zip_code', $zip_code);
-        $stmt->bindParam(':country', $country);
-        $stmt->bindParam(':phone_number', $phone_number);
-        $stmt->bindParam(':profile_picture', $profile_picture);
+        insert into profiles (user_uuid,national_id_nr,nationality,date_of_birth,street,city,state,zip_code,country,phone_number)
+        values (:user_uuid,:national_id_nr,:nationality,:date_of_birth,:street,:city,:state,:zip_code,:country,:phone_number)");
+        // For the register operation, we use the same UUID as the user UUID and rest of the fields are set to empty strings or defaults.
+        $stmt->bindParam(':user_uuid', $uuid);
+        $stmt->bindParam(':national_id_nr', '');
+        $stmt->bindParam(':nationality', '');
+        $stmt->bindParam(':date_of_birth', '');
+        $stmt->bindParam(':street', '');
+        $stmt->bindParam(':city', '');
+        $stmt->bindParam(':state', '');
+        $stmt->bindParam(':zip_code', '');
+        $stmt->bindParam(':country', '');
+        $stmt->bindParam(':phone_number', '');
 
         $result = $stmt->execute();
 
@@ -130,7 +174,7 @@ class Profiles
             return [
                 'success' => true,
                 'message' => 'User registered successfully',
-                'verification_token' => $verificationToken
+                'verification_token' => $result['verification_token']
             ];
         } else {
             return ['success' => false, 'message' => 'Failed to register user'];

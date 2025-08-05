@@ -1,27 +1,56 @@
 <?php
 
-require_once __DIR__ . '/../../../config/config.php';
-require_once __DIR__ . '/../../../config/database.php';
-require_once __DIR__ . '/../../../models/User.php';
+include __DIR__ . '/../../class_session/session.php';
+require_once __DIR__ . '/../../database/User.php';
+require_once __DIR__ . '/../../database/Profiles.php';
 
-session_start();
+// Verificar que la petición sea POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: main.php?page=login');
+    //echo "login_handler.php: Método no permitido";
+    exit();
+}
 
-if (!isset($_SESSION['user_id'])) {
+// Obtener datos del formulario
+$data = $_POST;
+
+if (!isset($_SESSION['user_uuid']) || empty($_SESSION['user_uuid'])) {
     header('Location: /login');
     exit();
 }
 
-$user = User::find($_SESSION['user_id']);
+$username = trim($data['username'] ?? '');
+$email = $data['email'] ?? '';
 
-if (!$user) {
-    header('Location: /login');
-    exit();
+if (empty($username)) {
+    $errors[] = 'El nombre de usuario o email es requerido';
+}
+$userInstance = new User();
+$user = $userInstance->getUserByUUID($_SESSION['user_uuid']);
+$username = $user ? $user->username : '';
+$email = $user ? $user->email : '';
+if ($username !== $user->username || $email !== $user->email) {
+    $userInstance->updateUser($_SESSION['user_uuid'], $username, $email);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['update_profile'])) {
-        $user->update($_POST);
-    } elseif (isset($_POST['change_password'])) {
-        $user->changePassword($_POST);
-    }
+// Actualizar datos del perfil
+$profileData = [
+    'national_id_nr' => $data['national_id'] ?? '',
+    'nationality' => $data['nationality'] ?? '',
+    'date_of_birth' => $data['birth_date'] ?? '',
+    'street' => $data['street'] ?? '',
+    'city' => $data['city'] ?? '',
+    'state' => $data['state'] ?? '',
+    'zip_code' => $data['zip_code'] ?? '',
+    'privacy' => $data['privacy'] ?? 'public'
+];
+try {
+    $profile = new Profiles();
+    $profile->updateUserProfile($_SESSION['user_id'], $profileData);
+    header('Location: main.php?page=gallery');
+} catch (Exception $e) {
+    // Manejar errores
+    $_SESSION['errors'] = 'Error al actualizar el perfil: ' . $e->getMessage();
+    header('Location: main.php?page=login');
+    exit();
 }

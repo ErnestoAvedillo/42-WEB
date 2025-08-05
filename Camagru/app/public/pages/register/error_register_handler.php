@@ -1,6 +1,6 @@
 <h2>Error: Registration Failed</h2>
 <p>There was an error during registration. Please try again.</p>
-<p><a href="index.php?page=register">Go back to registration</a></p>
+<p><a href="/pages/register/register.php">Go back to registration</a></p>
 <?php
 echo "<p>Error details:</p>";
 if (isset($_SESSION['errors']) && is_array($_SESSION['errors'])) {
