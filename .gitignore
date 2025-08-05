@@ -9,3 +9,5 @@
 .env
 data/
 vendor/
+composer.json
+composer.lock

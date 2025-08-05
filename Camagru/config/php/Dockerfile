@@ -1,7 +1,6 @@
 FROM eavedillo/camagru_backend:latest
 
-# Set working directory
-WORKDIR /var/www/html
+RUN composer require mongodb/mongodb
 
 EXPOSE  9000
 
