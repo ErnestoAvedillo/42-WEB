@@ -104,4 +104,22 @@ class PictureDB
         }
         return $file;
     }
+    public function getUserPhotos($user_uuid)
+    {
+        if (!$this->conn) {
+            echo "<!-- Database connection not established. -->";
+            throw new Exception("Database connection not established.");
+        }
+
+        $collection = $this->getCollection();
+        $file = $collection->find(['user_uuid' => $user_uuid])->toArray();
+        echo "<!-- Retrieved photos for user UUID: " . htmlspecialchars($user_uuid) . " -->";
+        foreach ($file as $f) {
+            echo "<!-- Retrieved photo: " . htmlspecialchars($f['filename']) . " -->";
+        }
+        if (!$file) {
+            throw new Exception("File not found for user UUID: " . $user_uuid);
+        }
+        return $file;
+    }
 }

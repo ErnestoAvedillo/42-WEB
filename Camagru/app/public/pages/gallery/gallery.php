@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+require_once __DIR__ . '/../../database/mongo_db.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,10 +10,10 @@ SessionManager::getInstance();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Camagru</title>
+    <title>Gallery - Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/gallery.css">
 </head>
 
 <body>
@@ -29,8 +31,38 @@ SessionManager::getInstance();
             <!-- Gallery content will go here -->
             <p>Gallery coming soon...</p>
         </div>
+        <?php
+        $user_uuid = SessionManager::getSessionKey('uuid');
+        if ($user_uuid) {
+            $client = new PictureDB();
+            $client->connect();
+            $mongo = $client->getCollection();
+            $photos = $client->getUserPhotos($user_uuid);
+            if (!empty($photos)) {
+                echo '<div class="user-gallery">';
+                echo '<h2>Your Photos</h2>';
+                echo '<p>Here are the photos you have uploaded:</p>';
+                echo '<div class="photo-grid">';
+                foreach ($photos as $photo) {
+                    if (isset($photo['filedata'])) {
+                        $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
+                        $base64 = base64_encode($photo['filedata']->getData());
+                        echo '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
+                    } else {
+                        echo '<p>No image data found.</p>';
+                    }
+                }
+                echo '</div>';
+            } else {
+                echo '<p>No photos uploaded yet.</p>';
+            }
+        } else {
+            echo '<p>Please log in to view your photos.</p>';
+        }
+        ?>
     </div>
     <?php
+    $pageTitle = "footer - Camagru";
     include __DIR__ . '/../../views/footer.php';
     ?>
 </body>
