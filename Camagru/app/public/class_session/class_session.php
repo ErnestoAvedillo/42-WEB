@@ -1,17 +1,32 @@
 <?php
 class SessionManager
 {
-    public function __construct()
+    private static $instance = null;
+
+    // Constructor privado para patrón Singleton
+    private function __construct()
+    {
+        $this->initializeSession();
+    }
+
+    // Método para obtener la única instancia
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public static function initializeSession()
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
             $_SESSION['session_started'] = true; // Indicate that the session has started
-            // Check if there is an existing coockie
-            if (!isset($_COOKIE['session_started'])) {
-                setcookie('session_started', 'true', time() + 3600, '/');
-            }
+            $_SESSION['message'] = "New session started successfully.<br>";
+            //$_SESSION['logged_in'] = false; // Default to not logged in
         } else {
-            $_SESSION['session_started'] = false; // Indicate that the session has not started
+            $_SESSION['message'] = "Session is already started.";
         }
     }
 
@@ -36,9 +51,25 @@ class SessionManager
     {
         return $_SESSION[$key] ?? null;
     }
-    public static function setSessionData($key, $value)
+    public static function setSessionKey($key, $value)
     {
         $_SESSION[$key] = $value;
+    }
+    public static function getSessionKey($key)
+    {
+        return $_SESSION[$key] ?? null;
+    }
+    public static function saveDataSession($data)
+    {
+        foreach ($data as $key => $value) {
+            $_SESSION[$key] = $value;
+        }
+        //Deberia guardar la información del usuario en la sesión
+        //$_SESSION['id'] = $data['id'];
+        //$_SESSION['username'] = $data['username'];
+        //$_SESSION['email'] = $data['email'];
+        //$_SESSION['user_uuid'] = $data['uuid'];
+        $_SESSION['logged_in'] = true;
     }
     public static function clearSessionData()
     {
