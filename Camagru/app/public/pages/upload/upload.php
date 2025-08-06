@@ -17,20 +17,16 @@ SessionManager::getInstance();
 </head>
 
 <body>
-
     <?php
     $pageTitle = "Home - Camagru";
     include __DIR__ . '/../../views/header.php';
-
     $pageTitle = "sidebar - Camagru";
     include __DIR__ . '/../../views/side_bar.php';
-
     $user = new User();
     $profile = new Profiles();
     $user_data = $user->getUserData(SessionManager::getSessionKey('id') ?? null);
     $profile_data = $profile->getProfileData(SessionManager::getSessionKey('uuid') ?? null);
     ?>
-
     <div class="uopload-container">
         <h1>Upload Your Photos</h1>
         <p>Share your creativity with the world by uploading your photos.</p>
@@ -42,9 +38,9 @@ SessionManager::getInstance();
         <p>Supported formats: JPG, PNG, GIF</p>
     </div>
     <?php
-    echo "<pre>";
-    var_dump($_SESSION);
-    echo "</pre>";
+    //    echo "<pre>";
+    //    var_dump($_SESSION);
+    //    echo "</pre>";
     include __DIR__ . '/../../views/footer.php';
     ?>
 </body>
