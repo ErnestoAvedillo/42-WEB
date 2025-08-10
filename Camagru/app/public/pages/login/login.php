@@ -19,7 +19,7 @@
     include __DIR__ . '/../../views/side_bar.php';
 
     // Obtener errores y datos previos si existen
-    $errors = $_SESSION['login_errors'] ?? [];
+    $errors = $_SESSION['error_messages'] ?? [];
     $data = $_SESSION['login_data'] ?? [];
     $successMessage = $_SESSION['success_message'] ?? '';
 
@@ -28,22 +28,15 @@
     $registeredUser = $_SESSION['registered_user'] ?? '';
 
     // Limpiar mensajes después de mostrarlos
-    unset($_SESSION['login_errors']);
+    unset($_SESSION['error_messages']);
     unset($_SESSION['login_data']);
     unset($_SESSION['success_message']);
     unset($_SESSION['registered_user']);
     ?>
     <div class="login-container">
         <h1>Login to Camagru</h1>
-        <p>Please enter your credentials to access your account.</p>
-        <?php if ($fromRegister): ?>
-            <div class="alert alert-success">
-                Registration successful! <?php if ($registeredUser): ?>Welcome <?php echo htmlspecialchars($registeredUser); ?>!<?php endif; ?> Please login with your credentials.
-            </div>
-        <?php endif; ?>
-
         <?php if (!empty($errors)): ?>
-            <div class="alert alert-error">
+            <div class="alert-error">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?php echo htmlspecialchars($error); ?></li>
@@ -53,11 +46,11 @@
         <?php endif; ?>
 
         <?php if (!empty($successMessage)): ?>
-            <div class="alert alert-success">
+            <div class="alert-success">
                 <?php echo htmlspecialchars($successMessage); ?>
             </div>
         <?php endif; ?>
-
+        <p>Please enter your credentials to access your account.</p>
         <form action="/pages/login/login_handler.php" method="post" id="loginForm">
             <div class="form-group">
                 <label for="username">Username or Email: <span class="required">*</span></label>

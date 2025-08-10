@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../../class_session/session.php';
+SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php'; // Adjust path since we're in upload_handler.php
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
@@ -8,7 +10,7 @@ $client->connect();
 $collection = $client->getCollection();
 //echo "<pre>";
 //echo SessionManager::getSessionKey('uuid') . "<br>";
-//var_dump($_FILES);
+//var_dump($_SESSION);
 //echo "</pre>";
 // Check if a file was uploaded
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
@@ -17,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
         $filename = basename($file['name']);
         $fileData = file_get_contents($file['tmp_name']);
         $mimeType = mime_content_type($file['tmp_name']);
-        $user_uuid = $_POST['user_uuid'] ?? null; // Replace with actual user UUID if needed
+        $user_uuid = $_SESSION['uuid'] ?? null; // Replace with actual user UUID if needed
         if (!$user_uuid) {
-            //echo "<script>alert('User UUID not found in this session.');</script>";
+            $_SESSION['error_messages'] = ["User not logged in or not found in this session."];
             header('Location: /pages/login/login.php');
         }
         // Store file in MongoDB as a document
@@ -30,14 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
             'mimetype' => $mimeType,
             'uploaded_at' => new MongoDB\BSON\UTCDateTime()
         ]);
-        header('Location: /pages/gallery/gallery.php');
-        //echo "File uploaded successfully. ID: " . $result->getInsertedId();
+        $_SESSION['success_message'] = "File uploaded successfully. ID: " . $result->getInsertedId();
+        header('Location: /pages/upload/upload.php');
     } else {
-        //echo "<script>alert('File upload error: " . $file['error'] . "');</script>";
-        header('Location: /pages/gallery/gallery.php');
+        $_SESSION['error_messages'] = ["File upload error: " . $file['error']];
+        header('Location: /pages/upload/upload.php');
     }
 } else {
-    //echo "<script>alert('No file uploaded.');</script>";
+    $_SESSION['error_messages'] = ["No file uploaded. Please try again."];
     header('Location: /pages/upload/upload.php');
     //echo "No file uploaded.";
 }

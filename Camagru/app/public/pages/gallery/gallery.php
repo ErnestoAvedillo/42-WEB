@@ -2,7 +2,10 @@
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php';
-
+if (!SessionManager::getSessionKey('uuid')) {
+    header('Location: /pages/request_login/request_login.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,31 +36,34 @@ require_once __DIR__ . '/../../database/mongo_db.php';
         </div>
         <?php
         $user_uuid = SessionManager::getSessionKey('uuid');
-        if ($user_uuid) {
-            $client = new PictureDB();
-            $client->connect();
-            $mongo = $client->getCollection();
-            $photos = $client->getUserPhotos($user_uuid);
-            if (!empty($photos)) {
-                echo '<div class="user-gallery">';
-                echo '<h2>Your Photos</h2>';
-                echo '<p>Here are the photos you have uploaded:</p>';
-                echo '<div class="photo-grid">';
+        $client = new PictureDB();
+        $client->connect();
+        $mongo = $client->getCollection();
+        $photos = $client->getUserPhotos($user_uuid);
+        if (!empty($photos)) {
+            echo '<div class="user-gallery">';
+            echo '<h2>Your Photos</h2>';
+            echo '<p>Here are the photos you have uploaded:</p>';
+            echo '<div class="photo-grid">';
+            if (empty($photos)) {
+                echo '<p>No photos found.</p>';
+            } else {
                 foreach ($photos as $photo) {
                     if (isset($photo['filedata'])) {
                         $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
                         $base64 = base64_encode($photo['filedata']->getData());
-                        echo '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
+                        $imgTag = '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
+                        // Link to a photo details page, passing photo id as GET parameter
+                        $photoId = isset($photo['_id']) ? (string)$photo['_id'] : '';
+                        echo '<a href="/pages/picture/picture.php?picture_uuid=' . urlencode($photoId) . '">' . $imgTag . '</a>';
                     } else {
                         echo '<p>No image data found.</p>';
                     }
                 }
-                echo '</div>';
-            } else {
-                echo '<p>No photos uploaded yet.</p>';
             }
+            echo '</div>';
         } else {
-            echo '<p>Please log in to view your photos.</p>';
+            echo '<p>No photos uploaded yet.</p>';
         }
         ?>
     </div>

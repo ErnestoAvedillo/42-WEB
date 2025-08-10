@@ -1,5 +1,6 @@
 <?php
 require_once 'class_session/session.php';
+SessionManager::getInstance();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +21,6 @@ require_once 'class_session/session.php';
   $pageTitle = "sidebar - Camagru";
   include 'views/side_bar.php';
   ?>
-
   <div class="home-container">
     <div class="hero-section">
       <h2>Welcome to Camagru</h2>

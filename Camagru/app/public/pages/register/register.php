@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../../class_session/session.php';
+SessionManager::getInstance();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,6 +16,7 @@
 
 <body>
     <?php
+    //include __DIR__ . '/../../views/debugger.php';
     $pageTitle = "Home - Camagru";
     include __DIR__ . '/../../views/header.php';
 
@@ -19,35 +24,34 @@
     include __DIR__ . '/../../views/side_bar.php';
 
     // Obtener errores y datos previos si existen
-    $errors = $_SESSION['register_errors'] ?? [];
+    $errors = $_SESSION['error_messages'] ?? [];
     $data = $_SESSION['register_data'] ?? [];
     $successMessage = $_SESSION['success_message'] ?? '';
 
     // Limpiar mensajes después de mostrarlos
-    unset($_SESSION['register_errors']);
+    unset($_SESSION['error_messages']);
     unset($_SESSION['register_data']);
     unset($_SESSION['success_message']);
     ?>
 
     <div class="register-container">
         <h1>Register for Camagru</h1>
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-error">
+        <?php if (!empty($errors)) { ?>
+            <div class="alert-error">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?php echo htmlspecialchars($error); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
-        <?php endif; ?>
-
-        <?php if (!empty($successMessage)): ?>
-            <div class="alert alert-success">
+        <?php } ?>
+        <?php if (!empty($successMessage)) { ?>
+            <div class="alert-success">
                 <?php echo htmlspecialchars($successMessage); ?>
             </div>
-        <?php endif; ?>
+        <?php } ?>
 
-        <form action="/pages/register/register_handler.php" method="post" id="registerForm">
+        <form action="/pages/register/register_handler.php">
             <div class="form-row">
                 <div class="form-group">
                     <label for="first_name">First Name:</label>

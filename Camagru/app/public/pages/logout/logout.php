@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../../database/User.php';
-require_once __DIR__ . '/../../database/Profiles.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 ?>
@@ -17,15 +15,7 @@ SessionManager::getInstance();
 </head>
 
 <body>
-
     <?php
-    $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
-
-    $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../views/side_bar.php';
-
-    require_once __DIR__ . '/../../class_session/session.php';
     // Verificar si la sesión está activa antes de intentar destruirla
     if (SessionManager::isSessionActive()) {
 
@@ -34,6 +24,10 @@ SessionManager::getInstance();
         // Destruir la sesión completamente
         SessionManager::destroySession();
     }
+    $pageTitle = "Home - Camagru";
+    include __DIR__ . '/../../views/header.php';
+    $pageTitle = "sidebar - Camagru";
+    include __DIR__ . '/../../views/side_bar.php';
     ?>
     <div class="logout-container">
         <h1>You exited successfully from Camagru</h1>

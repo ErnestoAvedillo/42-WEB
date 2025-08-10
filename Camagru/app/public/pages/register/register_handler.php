@@ -1,25 +1,45 @@
 <?php
-include_once '../../class_session/session.php';
-require_once '../../database/User.php';
-require_once '../../database/Profiles.php';
+require_once __DIR__ . '/../../class_session/session.php';
+SessionManager::getInstance();
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../database/User.php';
+require_once __DIR__ . '/../../EnvLoader.php';
+require_once __DIR__ . '/../../utils/send_mail.php';
 // Verificar que la petición sea POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    ob_end_clean();
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    $_SESSION['error_messages'] = ['Método no permitido. Por favor, utiliza el formulario de registro.'];
+    $_SESSION['register_data'] = [
+        'username' => $_GET['username'] ?? '',
+        'email' => $_GET['email'] ?? '',
+        'first_name' => $_GET['first_name'] ?? '',
+        'last_name' => $_GET['last_name'] ?? ''
+    ];
     header('Location: /pages/register/register.php');
     exit();
 }
 
 // Obtener datos del formulario
-$username = trim($_POST['username'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
-$confirmPassword = $_POST['confirm_password'] ?? '';
-$firstName = trim($_POST['first_name'] ?? '');
-$lastName = trim($_POST['last_name'] ?? '');
+$username = trim($_GET['username'] ?? '');
+$email = trim($_GET['email'] ?? '');
+$password = $_GET['password'] ?? '';
+$firstName = trim($_GET['first_name'] ?? '');
+$lastName = trim($_GET['last_name'] ?? '');
+$confirmPassword = $_GET['confirm_password'] ?? '';
 
 // Validaciones básicas
 $errors = [];
+
+$Users = new User();
+if ($Users->isUsernameTaken($username)) {
+    $errors[] = 'El nombre de usuario ya está en uso';
+}
+if ($Users->isEmailTaken($email)) {
+    $errors[] = 'El email ya está en uso';
+}
 
 if (empty($username)) {
     $errors[] = 'El nombre de usuario es requerido';
@@ -37,80 +57,31 @@ if ($password !== $confirmPassword) {
     $errors[] = 'Las contraseñas no coinciden';
 }
 
+$email = filter_var($email, FILTER_SANITIZE_EMAIL);
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'El email proporcionado no es válido';
+}
+
 // Si hay errores, regresar al formulario
 if (!empty($errors)) {
-    $_SESSION['register_errors'] = $errors;
+    $_SESSION['error_messages'] = $errors;
     $_SESSION['register_data'] = [
         'username' => $username,
         'email' => $email,
         'first_name' => $firstName,
         'last_name' => $lastName
     ];
-    ob_end_clean();
-
     header('Location: /pages/register/register.php');
     exit();
 }
 
-// Intentar registrar al usuario
 try {
-    $user = new User();
-    $result = $user->register($username, $email, $password, $firstName, $lastName);
-    // ✅ DEBUG: Ver qué devuelve el registro
-    error_log("Register result: " . json_encode($result));
-
-    if ($result['success']) {
-        // ✅ VERIFICAR QUE EXISTE 'uuid' ANTES DE USARLO
-        $userUuid = $result['uuid'] ?? $result['user_uuid'] ?? $result['id'] ?? null;
-
-        if (!$userUuid) {
-            throw new Exception('No se pudo obtener el UUID del usuario registrado');
-        }
-
-        $profile = new Profiles();
-        $profileData = [
-            'user_uuid' => $userUuid,
-            'date_of_birth' => '1900-01-01',
-        ];
-        $profileResult = $profile->registerUserProfile($profileData);
-        //echo "<p>✓ Registro de perfil: " . $profileResult['message'] . "</p>";
-        if (!$profileResult['success']) {
-            throw new Exception('Error al registrar el perfil del usuario');
-        }
-        // ✅ DEBUG: Ver qué devuelve el perfil
-        //echo "<p>✓ Perfil registrado exitosamente.</p>";
-
-
-        if ($profileResult) {
-            $_SESSION['success_message'] = $result['message'];
-            $_SESSION['registered_user'] = $username;
-
-            // Limpiar datos del formulario
-            unset($_SESSION['register_errors']);
-            unset($_SESSION['register_data']);
-
-            // Redirigir al login
-            header('Location: /pages/login/login.php');
-            //echo "<p>✓ Registro exitoso. Redirigiendo al inicio de sesión...</p>";
-            exit();
-        } else {
-            throw new Exception('Error al registrar el perfil del usuario: ' . $profileResult);
-        }
-    } else {
-        $_SESSION['register_errors'] = [$result['message']];
-        $_SESSION['register_data'] = [
-            'username' => $username,
-            'email' => $email,
-            'first_name' => $firstName,
-            'last_name' => $lastName
-        ];
-
-        header('Location: /pages/register/error_register_handler.php');
-        //echo "<p>✖ Registro fallido: " . htmlspecialchars($result['message']) . "</p>";
-        exit();
+    $validationToken = send_validation_token($email, $username);
+    if ($validationToken === null) {
+        throw new Exception('Error al generar o enviar el correo electrónico de validación. Por favor, inténtalo de nuevo más tarde.');
     }
 } catch (Exception $e) {
-    $_SESSION['register_errors'] = ['Error del servidor: ' . $e->getMessage()];
+    $_SESSION['error_messages'] = ['Error al enviar el correo de confirmación: ' . $e->getMessage()];
     $_SESSION['register_data'] = [
         'username' => $username,
         'email' => $email,
@@ -118,6 +89,15 @@ try {
         'last_name' => $lastName
     ];
     header('Location: /pages/register/register.php');
-    //echo "<p>✖ Registro fallido: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit();
 }
+$_SESSION['register_data'] = [
+    'username' => $username,
+    'email' => $email,
+    'first_name' => $_GET['first_name'] ?? '',
+    'last_name' => $_GET['last_name'] ?? '',
+    'password' => $password
+];
+// Guardar el token de validación en la sesión en vez de enviarlo por GET
+$_SESSION['validation_token'] = $validationToken;
+header('Location: /pages/register/confirm.php');

@@ -27,7 +27,7 @@ if (empty($password)) {
 
 // Si hay errores, regresar al formulario
 if (!empty($errors)) {
-    $_SESSION['login_errors'] = $errors;
+    $_SESSION['error_messages'] = $errors;
     $_SESSION['login_data'] = ['username' => $username];
     header('Location: /pages/login/login.php');
     //echo "login_handler.php: Errores de validación";
@@ -44,7 +44,7 @@ try {
 
 
         // Limpiar errores
-        unset($_SESSION['login_errors']);
+        unset($_SESSION['error_messages']);
         unset($_SESSION['login_data']);
 
         // Mensaje de éxito
@@ -57,14 +57,14 @@ try {
         //echo "</pre>";
         exit();
     } else {
-        $_SESSION['login_errors'] = [$result['message']];
+        $_SESSION['error_messages'] = [$result['message']];
         $_SESSION['login_data'] = ['username' => $username];
         header('Location: /pages/login/login.php');
         //echo "login_handler.php: Errores de autenticación";
         exit();
     }
 } catch (Exception $e) {
-    $_SESSION['login_errors'] = ['Error del servidor: ' . $e->getMessage()];
+    $_SESSION['error_messages'] = ['Error del servidor: ' . $e->getMessage()];
     $_SESSION['login_data'] = ['username' => $username];
     header('Location: /pages/login/login.php');
     //echo "login_handler.php: Error del servidor";

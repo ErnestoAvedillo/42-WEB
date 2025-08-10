@@ -111,7 +111,7 @@ class PictureDB
             //echo "<!-- Retrieved photo: " . htmlspecialchars($f['filename']) . " -->";
         }
         if (!$file) {
-            throw new Exception("File not found for user UUID: " . $user_uuid);
+            return []; // Return an empty array if no photos found
         }
         return $file;
     }

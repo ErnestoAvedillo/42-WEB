@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libsasl2-dev \
     libpq-dev \
     zip \
+    vim \
     unzip \
     git \
     && docker-php-ext-configure gd \

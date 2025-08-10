@@ -269,4 +269,71 @@ class User
     $stmt->execute([':id' => $userId]);
     return $stmt->fetch();
   }
+  /**
+   * Check if username is already taken
+   */
+  public function isUsernameTaken($username)
+  {
+    $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE username = :username
+        ");
+    $stmt->execute([':username' => $username]);
+    return $stmt->fetchColumn() > 0;
+  }
+  /**
+   * Check if email is already taken
+   */
+  public function isEmailTaken($email)
+  {
+    $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE email = :email
+        ");
+    $stmt->execute([':email' => $email]);
+    return $stmt->fetchColumn() > 0;
+  }
+  /**
+   * Update user profile
+   */
+  public function updateUserProfile($user_uuid, $data)
+  {
+    try {
+      $allowedFields = [
+        'first_name',
+        'last_name',
+        'national_id_nr',
+        'nationality',
+        'date_of_birth',
+        'street',
+        'city',
+        'state',
+        'zip_code',
+        'country',
+        'phone_number',
+      ];
+      $updates = [];
+      $params = [':uuid' => $user_uuid];
+
+      foreach ($data as $field => $value) {
+        if (in_array($field, $allowedFields)) {
+          $updates[] = "$field = :$field";
+          $params[":$field"] = $value;
+        }
+      }
+
+      if (empty($updates)) {
+        return false;
+      }
+
+      $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE uuid = :uuid";
+      $stmt = $this->pdo->prepare($sql);
+
+      return $stmt->execute($params);
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
 }
