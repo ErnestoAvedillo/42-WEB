@@ -20,6 +20,7 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT TRUE,
     reset_token VARCHAR(100),
     reset_token_expires TIMESTAMP,
+    profile_uuid UUID REFERENCES documents(document_uuid),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
