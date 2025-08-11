@@ -29,7 +29,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     ?>
     <?php
     $picture_uuid = $_GET['picture_uuid'] ?? ($_POST['picture_uuid'] ?? null);
-    $client = new PictureDB();
+    $client = new DocumentDB();
     $client->connect();
     $mongo = $client->getCollection();
     $photo = $client->getFileById($picture_uuid);

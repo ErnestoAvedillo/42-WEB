@@ -8,7 +8,7 @@ use MongoDB\Client;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
 
-class PictureDB
+class DocumentDB
 {
     private $host;
     private $port;

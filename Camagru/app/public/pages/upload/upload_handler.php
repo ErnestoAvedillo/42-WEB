@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../database/mongo_db.php'; // Adjust path since we'r
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
 // MongoDB connection
-$client = new PictureDB();
+$client = new DocumentDB();
 $client->connect();
 $collection = $client->getCollection();
 //echo "<pre>";

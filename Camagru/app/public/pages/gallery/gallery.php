@@ -36,7 +36,7 @@ if (!SessionManager::getSessionKey('uuid')) {
         </div>
         <?php
         $user_uuid = SessionManager::getSessionKey('uuid');
-        $client = new PictureDB();
+        $client = new DocumentDB();
         $client->connect();
         $mongo = $client->getCollection();
         $photos = $client->getUserPhotos($user_uuid);
