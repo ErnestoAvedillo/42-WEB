@@ -13,3 +13,4 @@ composer.json
 composer.lock
 .devcontainer
 .vscode
+__pycache__/
