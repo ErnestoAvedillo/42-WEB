@@ -84,15 +84,19 @@ clean: stop
 	-docker network rm -f $$(docker network ls -q)
 	-docker volume rm -f $$(docker volume ls -q)
 	-docker system prune -f
-	-rm -rfd ./data
+
+# -rm -rfd ./data
 
 inspect:
 	@echo "Inspecting containers..."
 	-docker ps -a
+	@echo "--------------------------"
 	@echo "Inspecting images..."
 	-docker images
+	@echo "--------------------------"
 	@echo "Inspecting volumes..."
 	-docker volume ls
+	@echo "--------------------------"
 	@echo "Inspecting networks..."
 	-docker network ls
 

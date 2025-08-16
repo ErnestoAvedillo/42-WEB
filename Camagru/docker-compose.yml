@@ -95,6 +95,20 @@ services:
       POSTGRES_USER: camagru
       POSTGRES_PASSWORD: camagru
       POSTGRES_DB: camagru_db
+  python:
+    build:
+      context: ./config/python
+      dockerfile: Dockerfile
+    container_name: camagru_python
+    env_file:
+      - .env
+    networks:
+      - camagru_network
+    volumes:
+      - ./app/public:/var/www/html
+    ports:
+      - "6000:6000"
+    restart: unless-stopped
 
 networks:
   camagru_network:

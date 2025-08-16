@@ -1,4 +1,4 @@
-FROM eavedillo/camagru_backend:latest
+FROM eavedillo/php_backend:latest
 
 RUN composer require mongodb/mongodb
 RUN composer require phpmailer/phpmailer
