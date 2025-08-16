@@ -66,16 +66,12 @@ class Posts
             $stmt->bindParam(':userUuid', $userUuid);
             $stmt->bindParam(':docUuid', $docUuid);
             $stmt->bindParam(':caption', $caption);
-            echo "<script> alert('Insert try: '); </script>";
             $result = $stmt->execute();
 
-            echo "<script> alert('Insert succeeded: " . $result . "'); </script>";
             return true;
         } catch (PDOException $e) {
             $errorInfo = $stmt->errorInfo();
             error_log('Database error in addPost: ' . $e->getMessage());
-            echo "<script> alert('Insert failed: " . $e->getMessage() . "'); </script>";
-            echo "<script> alert('Insert failed: " . $errorInfo . "'); </script>";
             return false;
         }
     }
