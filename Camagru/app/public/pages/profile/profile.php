@@ -76,22 +76,6 @@ SessionManager::getInstance();
             </div>
             <div class="form-group">
                 <label for="profile_picture">Profile Picture:</label>
-                <?php
-                // --- INICIO DE DEBUG ---
-                // Esto mostrará el contenido exacto de la variable.
-                echo "<pre style='background-color: #eee; border: 1px solid #ccc; padding: 10px;'>";
-                echo "<strong>DEBUG: Verificando \$user_data['profile_picture']</strong><br>";
-                if (isset($user_data['profile_picture'])) {
-                    echo "La variable existe.<br>";
-                    echo "Está vacía? " . (empty($user_data['profile_picture']) ? 'Sí' : 'No') . "<br>";
-                    echo "Longitud del string: " . strlen($user_data['profile_picture']) . " caracteres.<br>";
-                    echo "Primeros 50 caracteres: " . htmlspecialchars(substr($user_data['profile_picture'], 0, 50)) . "...<br>";
-                } else {
-                    echo "La variable NO existe (es null).";
-                }
-                echo "</pre>";
-                // --- FIN DE DEBUG ---
-                ?>
                 <!-- ✅ Mostrar imagen actual si existe -->
                 <?php if (!empty($user_data['profile_picture'])): ?>
                     <?php $imageDataUrl = 'data:image/png;base64,' . $user_data['profile_picture']; ?>

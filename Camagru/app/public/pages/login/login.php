@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../../class_session/session.php';
+SessionManager::getInstance();
+?>
 <!DOCTYPE html>
 <html lang="en">
 

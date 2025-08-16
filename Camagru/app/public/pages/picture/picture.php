@@ -6,6 +6,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/request_login/request_login.php');
     exit();
 }
+require_once __DIR__ . '/../../database/posts.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,35 +27,56 @@ if (!SessionManager::getSessionKey('uuid')) {
 
     $pageTitle = "sidebar - Camagru";
     include __DIR__ . '/../../views/side_bar.php';
-    ?>
-    <?php
     $picture_uuid = $_GET['picture_uuid'] ?? ($_POST['picture_uuid'] ?? null);
     $client = new DocumentDB();
     $client->connect();
     $mongo = $client->getCollection();
     $photo = $client->getFileById($picture_uuid);
-    echo '<div class="picture-container">';
-    echo '<h2>Your Photo</h2>';
-    echo '<p>Here is the photo you have uploaded:</p>';
-    echo '<div class="picture-grid">';
-    if (empty($photo)) {
-        echo '<p>Photo not found.</p>';
-    } else {
-        if (isset($photo['filedata'])) {
-            $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
-            $base64 = base64_encode($photo['filedata']->getData());
-            echo '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
-        } else {
-            echo '<p>No image data found.</p>';
-        }
-    }
-    echo '</div>';
-    echo '</div>';
     ?>
-    <?php
-    $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../views/footer.php';
-    ?>
+    <div class="picture-container">
+        <h2>Your Photo</h2>
+        <p>Here is the photo you have uploaded:</p>
+        <div class="picture-grid">
+            <?php
+            if (empty($photo)) {
+                echo '<p>Photo not found.</p>';
+            } else {
+                if (isset($photo['filedata'])) {
+                    $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
+                    $base64 = base64_encode($photo['filedata']->getData());
+                    echo '<img id="picture" src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
+                } else {
+                    echo '<p>No image data found.</p>';
+                }
+            }
+            $post = new Posts();
+            $posts = $post->getPostsByDocUuid($picture_uuid);
+            if ($posts) {
+                foreach ($posts as $post) {
+                    echo '<div class="post">';
+                    echo '<p>' . htmlspecialchars($post['caption']) . '</p>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>Start posting!</p>';
+            }
+            echo '</div>';
+            echo '<div class="picture-actions">';
+            echo '<form action="/pages/picture/add_post.php" method="post">';
+            echo '<input type="hidden" name="picture_uuid" value="' . htmlspecialchars($picture_uuid) . '">';
+            echo '<input type="hidden" name="user_uuid" value="' . $_SESSION['uuid'] . '">';
+            echo '<textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>';
+            echo '<button type="submit">Post</button>';
+            echo '<button type="button" id="auto-fill">Auto Fill</button>';
+            echo '</form>';
+            echo '</div>';
+            echo '</div>';
+            ?>
+            <?php
+            $pageTitle = "footer - Camagru";
+            include __DIR__ . '/../../views/footer.php';
+            ?>
 </body>
+<script src="/pages/picture/auto_fill.js"></script>
 
 </html>

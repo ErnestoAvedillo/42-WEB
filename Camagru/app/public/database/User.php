@@ -313,6 +313,7 @@ class User
         'zip_code',
         'country',
         'phone_number',
+        'profile_uuid'
       ];
       $updates = [];
       $params = [':uuid' => $user_uuid];
@@ -334,6 +335,22 @@ class User
       return $stmt->execute($params);
     } catch (PDOException $e) {
       return false;
+    }
+  }
+  public function getUserProfile($user_uuid)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT profile_uuid FROM USERS WHERE uuid = :uuid
+            ");
+      $stmt->execute([':uuid' => $user_uuid]);
+      $profile = $stmt->fetch();
+      if (!$profile) {
+        return null; // User not found
+      }
+      return $profile['profile_uuid'];
+    } catch (PDOException $e) {
+      return null;
     }
   }
 }

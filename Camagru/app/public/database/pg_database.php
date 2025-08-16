@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . "/../EnvLoader.php";
-require_once __DIR__ . '/pg_database.php';
 
 class PGDatabase
 {

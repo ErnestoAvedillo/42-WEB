@@ -7,6 +7,7 @@ use MongoDB\Driver\Command;
 use MongoDB\Client;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
+use \Ramsey\Uuid\Uuid;
 
 class DocumentDB
 {
@@ -52,8 +53,9 @@ class DocumentDB
         return $this->db_name;
     }
 
-    public function uploadFile($filename)
+    public function uploadFile($file, $user_uuid = null)
     {
+        $this->connect();
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
@@ -63,23 +65,29 @@ class DocumentDB
         }
         //echo $filename;
         try {
-            $fileData = file_get_contents($filename);
-            $mimeType = mime_content_type($filename);
+            $myOwnUUID = \Ramsey\Uuid\Uuid::uuid4()->toString();
+            $filename = basename($file['name']);
+            $fileData = file_get_contents($file['tmp_name']);
+            $mimeType = mime_content_type($file['tmp_name']);
             // Store file in MongoDB as a document
             $result = $collection->insertOne([
-                'user_uuid' => 'some-uuid', // Replace with actual user UUID if needed
+                '_id' => $myOwnUUID, // Use a custom UUID or MongoDB ObjectId
+                'user_uuid' => $user_uuid, // Replace with actual user UUID if needed
                 'filename' => $filename,
                 'filedata' => new MongoDB\BSON\Binary($fileData, MongoDB\BSON\Binary::TYPE_GENERIC),
                 'mimetype' => $mimeType,
                 'uploaded_at' => new MongoDB\BSON\UTCDateTime()
             ]);
-            return "File uploaded successfully. ID: " . $result->getInsertedId();
+            $idvalue = $result->getInsertedId();
+            return $idvalue; // Return the ID of the inserted document
         } catch (Exception $e) {
             throw new Exception("File upload error: " . $e->getMessage());
         }
     }
     public function getCollection()
     {
+        $this->connect();
+        //echo "<!-- Getting collection from MongoDB -->";
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
@@ -88,18 +96,24 @@ class DocumentDB
     }
     public function getFileById($id)
     {
+        $this->connect();
+        //echo "<!-- Getting file by ID: " . htmlspecialchars($id) . " -->
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
         $collection = $this->getCollection();
-        $file = $collection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        //$file = $collection->findOne(['_id' => new MongoDB\BSON\ObjectId($id)]);
+        $file = $collection->findOne(['_id' => $id]);
         if (!$file) {
-            throw new Exception("File not found with ID: " . $id);
+            return null; // Return null if no file found
+            //throw new Exception("File not found with ID: " . $id);
         }
         return $file;
     }
     public function getUserPhotos($user_uuid)
     {
+        $this->connect();
+        //echo "<!-- Getting user photos for UUID: " . htmlspecialchars($user_uuid) .
         if (!$this->conn) {
             //echo "<!-- Database connection not established. -->";
             throw new Exception("Database connection not established.");

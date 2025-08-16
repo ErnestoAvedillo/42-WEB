@@ -1,6 +1,8 @@
 <?php
 
 include __DIR__ . '/../../class_session/session.php';
+SessionManager::getInstance();
+require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
 
 // Verificar que la petición sea POST
@@ -13,9 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Obtener datos del formulario
 $data = $_POST;
 
-
 if (!isset($_SESSION['uuid']) || empty($_SESSION['uuid'])) {
-    header('Location: /login');
+    header('Location: /pages/login/login.php');
     exit();
 }
 
@@ -29,6 +30,24 @@ if (empty($username) || empty($email)) {
 $userInstance = new User();
 $user = $userInstance->getUserByUUID($_SESSION['uuid']);
 // Actualizar datos del perfil
+
+$file = $_FILES['profile_picture'] ?? null;
+if ($file != null && $file['error'] === UPLOAD_ERR_OK) {
+    $documentDB = new DocumentDB();
+    try {
+        $result = $documentDB->uploadFile($file, $_SESSION['uuid']);
+    } catch (Exception $e) {
+        $_SESSION['errors'] = 'Error uploading photo: ' . $e->getMessage();
+        header('Location: /pages/profile/profile.php');
+        exit();
+    }
+} elseif ($file === null) {
+    $result = null; // No file uploaded, proceed without updating photo
+} elseif ($file['error'] !== UPLOAD_ERR_NO_FILE) {
+    $_SESSION['errors'] = 'Error uploading photo: ' . $file['error'];
+    header('Location: /pages/profile/profile.php');
+    exit();
+}
 $profileData = [
     'first_name' => $data['first_name'] ?? '',
     'last_name' => $data['last_name'] ?? '',
@@ -40,7 +59,8 @@ $profileData = [
     'state' => $data['state'] ?? '',
     'zip_code' => $data['zip_code'] ?? '',
     'country' => $data['country'] ?? '',
-    'phone_number' => $data['phone_number'] ?? ''
+    'phone_number' => $data['phone_number'] ?? '',
+    'profile_uuid' => $result ?? ''
 ];
 try {
     $userInstance->updateUserProfile($_SESSION['uuid'], $profileData);
