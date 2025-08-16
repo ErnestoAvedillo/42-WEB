@@ -2,6 +2,7 @@ FROM eavedillo/camagru_backend:latest
 
 RUN composer require mongodb/mongodb
 RUN composer require phpmailer/phpmailer
+RUN composer require ramsey/uuid
 
 COPY php.ini /usr/local/etc/php/conf.d/
 

@@ -20,7 +20,7 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT TRUE,
     reset_token VARCHAR(100),
     reset_token_expires TIMESTAMP,
-    profile_uuid UUID REFERENCES documents(document_uuid),
+    profile_uuid UUID ,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -41,8 +41,8 @@ CREATE INDEX idx_documents_document_uuid ON documents(document_uuid);
 
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users(uuid) UNIQUE,
-    document_uuid UUID NOT NULL REFERENCES documents(document_uuid) UNIQUE,
+    user_uuid UUID NOT NULL REFERENCES users(uuid),
+    document_uuid UUID NOT NULL,
     caption TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
