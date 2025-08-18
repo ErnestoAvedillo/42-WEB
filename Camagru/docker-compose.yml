@@ -95,6 +95,19 @@ services:
       POSTGRES_USER: camagru
       POSTGRES_PASSWORD: camagru
       POSTGRES_DB: camagru_db
+  node:
+    build:
+      context: ./config/node_js
+      dockerfile: Dockerfile
+    container_name: camagru_node_app
+    working_dir: /usr/src/app
+    volumes:
+      - ./app/node:/usr/src/app
+    ports:
+      - "3000:3000" # si necesitas acceder desde fuera
+    networks:
+      - app-network
+
   python:
     build:
       context: ./config/python
