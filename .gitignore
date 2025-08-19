@@ -9,8 +9,11 @@
 .env
 data/
 vendor/
+vendor2/
 composer.json
 composer.lock
 .devcontainer
 .vscode
 __pycache__/
+node/
+node_modules/
