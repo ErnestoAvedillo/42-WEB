@@ -1,21 +1,16 @@
 services:
-  nginx:
+  node:
     build:
-      context: ./config/nginx
+      context: ./config/node_js
       dockerfile: Dockerfile
-    container_name: camagru_nginx
+    container_name: camagru_node_app
+    volumes:
+      - ./app/node:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000" # si necesitas acceder desde fuera
     networks:
       - camagru_network
-    env_file:
-      - .env
-    volumes:
-      - ./app/public:/var/www/html
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "8080:80"
-    restart: unless-stopped
-    depends_on:
-      - php
 
   php:
     build:
@@ -28,7 +23,6 @@ services:
       - camagru_network
     volumes:
       - ./app/public:/var/www/html
-      #- ./config:/var/www/config
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
@@ -95,18 +89,6 @@ services:
       POSTGRES_USER: camagru
       POSTGRES_PASSWORD: camagru
       POSTGRES_DB: camagru_db
-  node:
-    build:
-      context: ./config/node_js
-      dockerfile: Dockerfile
-    container_name: camagru_node_app
-    working_dir: /usr/src/app
-    volumes:
-      - ./app/node:/usr/src/app
-    ports:
-      - "3000:3000" # si necesitas acceder desde fuera
-    networks:
-      - app-network
 
   python:
     build:
@@ -122,6 +104,26 @@ services:
     ports:
       - "6000:6000"
     restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./config/nginx
+      dockerfile: Dockerfile
+    container_name: camagru_nginx
+    networks:
+      - camagru_network
+    env_file:
+      - .env
+    volumes:
+      - ./app/public:/var/www/html
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    depends_on:
+      - php
+      - node
+      - python
 
 networks:
   camagru_network:
