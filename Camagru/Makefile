@@ -1,6 +1,6 @@
 COMPOSE = docker compose
 LIST_CURRENT_VOLUMES=$(shell docker volume ls -q)
-IMAGES = $(shell docker images | grep none | awk '{print $3}')
+LIST_DANGLING_IMAGES=$(shell docker image ls -q -f "dangling=true")
 
 DOCKER_COMPOSE_FILE = ./docker-compose.yml
 CERTS=selfsigned.crt selfsigned.key
@@ -73,8 +73,8 @@ help:
 rm_none:
 	@echo "Remove all images not used."
 
-	@echo "Removing images: $(IMAGES)"
-	-docker image rm $$(shell docker images | grep none | awk '{print $3}')
+	@echo "Removing images: $(LIST_DANGLING_IMAGES)"
+	-docker image rm $(LIST_DANGLING_IMAGES)
 
 
 clean: stop

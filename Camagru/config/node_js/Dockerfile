@@ -1,7 +1,9 @@
-FROM node:20
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install --save-dev nodemon
-COPY . .
+FROM node:current-alpine3.22
+WORKDIR /tmp/
+COPY package.json ./
+COPY start.sh ./
+RUN chmod +x start.sh
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+#CMD ["npm", "run", "dev"]
+#ENTRYPOINT [ "sh", "-c", "while true; do sleep 3306; done"]
+ENTRYPOINT [ "/tmp/start.sh" ]
