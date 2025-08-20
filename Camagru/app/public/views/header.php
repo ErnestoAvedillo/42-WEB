@@ -24,30 +24,30 @@ $picture_uuid =
     </ul>
   </nav>
   <?php if ($isLoggedIn) { ?>
-    <div class="user-area">
-      <div class="user-info">
-        <div class="avatar">
-          <?php
-          $userData = $user->getUserProfile($_SESSION['uuid']);
-          // Check if user has a photo UUID and fetch the photo
-          $photo = $client->getFileById($userData);
-          if ($userData && isset($userData)) {
-            if ($photo && isset($photo['filedata'])) {
-              $base64 = base64_encode($photo['filedata']->getData());
-              echo '<img src="data:' . $photo['mimetype'] . ';base64,' . $base64 . '" alt="User Photo" class="user-photo">';
-            } else {
-              echo '<img src="/img/avatar.jpg" alt="Default Avatar" class="user-photo">';
-            }
+    <div class="user-area" if="userArea>
+      <div class=" user-info">
+      <div class="avatar">
+        <?php
+        $userData = $user->getUserProfile($_SESSION['uuid']);
+        // Check if user has a photo UUID and fetch the photo
+        $photo = $client->getFileById($userData);
+        if ($userData && isset($userData)) {
+          if ($photo && isset($photo['filedata'])) {
+            $base64 = base64_encode($photo['filedata']->getData());
+            echo '<img src="data:' . $photo['mimetype'] . ';base64,' . $base64 . '" alt="User Photo" class="user-photo">';
           } else {
             echo '<img src="/img/avatar.jpg" alt="Default Avatar" class="user-photo">';
           }
-          ?>
-        </div>
-        <div class="user-details">
-          <span class="username">Guest User</span>
-          <span class="status">Online</span>
-        </div>
+        } else {
+          echo '<img src="/img/avatar.jpg" alt="Default Avatar" class="user-photo">';
+        }
+        ?>
       </div>
+      <div class="user-details">
+        <span class="username">Guest User</span>
+        <span class="status">Online</span>
+      </div>
+    </div>
     </div>
     </div>
   <?php } ?>

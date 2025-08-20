@@ -23,10 +23,10 @@ require_once __DIR__ . '/../../database/posts.php';
 <body>
     <?php
     $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
+    include __DIR__ . '/../../pages/header/header.php';
 
     $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../views/side_bar.php';
+    include __DIR__ . '/../../pages/left_bar/left_bar.php';
     $picture_uuid = $_GET['picture_uuid'] ?? ($_POST['picture_uuid'] ?? null);
     $client = new DocumentDB();
     $client->connect();
@@ -73,6 +73,9 @@ require_once __DIR__ . '/../../database/posts.php';
             echo '</div>';
             ?>
             <?php
+            $pageTitle = "right side bar - Camagru";
+            include __DIR__ . '/../../pages/right_bar/right_bar.php';
+
             $pageTitle = "footer - Camagru";
             include __DIR__ . '/../../views/footer.php';
             ?>

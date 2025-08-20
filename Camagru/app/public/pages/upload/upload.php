@@ -24,7 +24,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     <?php
     //    include __DIR__ . '/../../views/debugger.php';
     $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
+    include __DIR__ . '/../header/header.php';
     $pageTitle = "sidebar - Camagru";
     include __DIR__ . '/../../views/side_bar.php';
     $user = new User();

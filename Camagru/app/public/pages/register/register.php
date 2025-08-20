@@ -18,10 +18,10 @@ SessionManager::getInstance();
     <?php
     //include __DIR__ . '/../../views/debugger.php';
     $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
+    include __DIR__ . '/../../pages/header/header.php';
 
     $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../views/side_bar.php';
+    include __DIR__ . '/../../pages/left_bar/left_bar.php';
 
     // Obtener errores y datos previos si existen
     $errors = $_SESSION['error_messages'] ?? [];
@@ -108,7 +108,11 @@ SessionManager::getInstance();
         <p class="login-link">Already have an account? <a href="/pages/login/login.php">Login here</a></p>
     </div>
     <?php
-    include __DIR__ . '/../../views/footer.php';
+    $pageTitle = "right side bar - Camagru";
+    include __DIR__ . '/../../pages/right_bar/right_bar.php';
+
+    $pageTitle = "footer - Camagru";
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 

@@ -16,10 +16,10 @@ SessionManager::getInstance();
 <body>
   <?php
   $pageTitle = "Home - Camagru";
-  include 'views/header.php';
+  include 'pages/header/header.php';
 
-  $pageTitle = "sidebar - Camagru";
-  include 'views/side_bar.php';
+  $pageTitle = "left_bar - Camagru";
+  include 'pages/left_bar/left_bar.php';
   ?>
   <div class="home-container">
     <div class="hero-section">
@@ -50,6 +50,9 @@ SessionManager::getInstance();
   </div>
   <link rel="stylesheet" href="css/home.css">
   <?php
+  $pageTitle = "right sidebar - Camagru";
+  include 'pages/right_bar/right_bar.php';
+
   include 'views/footer.php';
   ?>
 </body>

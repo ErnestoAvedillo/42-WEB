@@ -22,10 +22,10 @@ if (!SessionManager::getSessionKey('uuid')) {
 <body>
     <?php
     $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
+    include __DIR__ . '/../../pages/header/header.php';
 
-    $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../views/side_bar.php';
+    $pageTitle = "left side bar - Camagru";
+    include __DIR__ . '/../../pages/left_bar/left_bar.php';
     ?>
     <div class="gallery-container">
         <h1>Photo Gallery</h1>
@@ -68,6 +68,9 @@ if (!SessionManager::getSessionKey('uuid')) {
         ?>
     </div>
     <?php
+    $pageTitle = "left side bar - Camagru";
+    include __DIR__ . '/../../pages/right_bar/right_bar.php';
+
     $pageTitle = "footer - Camagru";
     include __DIR__ . '/../../views/footer.php';
     ?>
