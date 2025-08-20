@@ -1,6 +1,6 @@
 <aside id="left">
   <link rel="stylesheet" href="/pages/left_bar/left_bar.css">
-  <div class="left_bar-header">
+  <div class="left-bar-header">
     <h2>Menu</h2>
   </div>
   <nav class="left-bar-nav">
