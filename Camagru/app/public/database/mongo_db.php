@@ -84,6 +84,18 @@ class DocumentDB
             throw new Exception("File upload error: " . $e->getMessage());
         }
     }
+
+    public function delete($id)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $result = $collection->deleteOne(['_id' => $id]);
+        return $result->getDeletedCount() > 0;
+    }
+
     public function getCollection()
     {
         $this->connect();

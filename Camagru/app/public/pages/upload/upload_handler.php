@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+if (!SessionManager::getSessionKey('uuid')) {
+    echo "<script>alert('You must be logged in to access this page.');</script>";
+    header('Location: /pages/request_login/request_login.php');
+    exit();
+}
 require_once __DIR__ . '/../../database/mongo_db.php'; // Adjust path since we're in upload_handler.php
 //$client = new DocumentDB();
 //$client->connect();

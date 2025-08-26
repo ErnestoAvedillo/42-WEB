@@ -10,7 +10,7 @@ $picture_uuid =
 <header>
   <link rel="stylesheet" href="/pages/header/header.css">
   <button id="toggleSidebarBtn">☰</button>
-  <h1>Camagru</h1>
+  <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
   <nav>
     <ul>
       <?php if ($isLoggedIn = isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>

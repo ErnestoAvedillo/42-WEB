@@ -60,25 +60,25 @@ require_once __DIR__ . '/../../database/posts.php';
             } else {
                 echo '<p>Start posting!</p>';
             }
-            echo '</div>';
-            echo '<div class="picture-actions">';
-            echo '<form action="/pages/picture/add_post.php" method="post">';
-            echo '<input type="hidden" name="picture_uuid" value="' . htmlspecialchars($picture_uuid) . '">';
-            echo '<input type="hidden" name="user_uuid" value="' . $_SESSION['uuid'] . '">';
-            echo '<textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>';
-            echo '<button type="submit">Post</button>';
-            echo '<button type="button" id="auto-fill">Auto Fill</button>';
-            echo '</form>';
-            echo '</div>';
-            echo '</div>';
             ?>
-            <?php
-            $pageTitle = "right side bar - Camagru";
-            include __DIR__ . '/../../pages/right_bar/right_bar.php';
+        </div>
+        <div class="picture-actions">
+            <form action="/pages/picture/add_post.php" method="post">
+                <input type="hidden" name="picture_uuid" value="<?php echo htmlspecialchars($picture_uuid); ?>">
+                <input type="hidden" name="user_uuid" value="<?php echo $_SESSION['uuid']; ?>">
+                <textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>
+                <button type="submit">Post</button>
+                <button type="button" id="auto-fill">Auto Fill</button>
+            </form>
+        </div>
+    </div>
+    <?php
+    $pageTitle = "right side bar - Camagru";
+    include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
-            $pageTitle = "footer - Camagru";
-            include __DIR__ . '/../../views/footer.php';
-            ?>
+    $pageTitle = "footer - Camagru";
+    include __DIR__ . '/../../views/footer.php';
+    ?>
 </body>
 <script src="/pages/picture/auto_fill.js"></script>
 
