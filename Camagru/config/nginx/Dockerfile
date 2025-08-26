@@ -2,10 +2,16 @@ FROM nginx:alpine
 
 RUN apk update && apk add --no-cache vim 
 # Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /etc/nginx
+COPY nginx.conf.template nginx.conf.template
+COPY start.sh start.sh
+RUN chmod +x start.sh
+
 #COPY nginx.conf /etc/nginx/conf.d
 
-EXPOSE 8080 
-
+#this is the normal start
 #CMD ["nginx", "-g", "daemon off;"]
-#ENTRYPOINT [ "bash", "-c", "while true; do sleep 3306; done"]
+#this is the debug mode start
+#ENTRYPOINT [ "sh", "-c", "while true; do sleep 3306; done"]
+#this is the specific start 
+CMD ["/etc/nginx/start.sh"]

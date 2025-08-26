@@ -4,11 +4,13 @@ services:
       context: ./config/node_js
       dockerfile: Dockerfile
     container_name: camagru_node_app
+    env_file:
+      - .env
     volumes:
       - ./app/node:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "3000:3000" # si necesitas acceder desde fuera
+      - "${NODE_PORT}:${NODE_PORT}" # si necesitas acceder desde fuera
     networks:
       - camagru_network
 
@@ -27,8 +29,7 @@ services:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     ports:
-      - "9000:9000"
-      - "9006:9005"
+      - "${PHP_PORT}:${PHP_PORT}"
     logging:
       driver: "json-file"
       options:
@@ -46,7 +47,7 @@ services:
     volumes:
       - ./data/mongodb:/data/db
     ports:
-      - "27017:27017"
+      - "${MONGODB_PORT}:${MONGODB_PORT}"
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -62,7 +63,7 @@ services:
     networks:
       - camagru_network
     ports:
-      - "8081:8081"
+      - "${ME_EXPRESS_PORT}:${ME_EXPRESS_PORT}"
     depends_on:
       - mongodb
     restart: unless-stopped
@@ -83,7 +84,7 @@ services:
     volumes:
       - ./data/postgre:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "${PG_PORT}:${PG_PORT}"
     restart: unless-stopped
     environment:
       POSTGRES_USER: camagru
@@ -102,7 +103,7 @@ services:
     volumes:
       - ./app/public:/var/www/html
     ports:
-      - "6000:6000"
+      - "${PYTHON_PORT}:${PYTHON_PORT}"
     restart: unless-stopped
 
   nginx:
@@ -116,9 +117,8 @@ services:
       - .env
     volumes:
       - ./app/public:/var/www/html
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "8080:80"
+      - "${APP_PORT}:80"
     restart: unless-stopped
     depends_on:
       - php
