@@ -3,14 +3,15 @@ require_once __DIR__ . '/../../database/facturas.php';
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../class_session/class_session.php';
 SessionManager::getInstance();
+$autofilling = '/tmp/debug_factura_handler.log';
+if (file_exists($autofilling)) {
+    unlink($autofilling);
+}
 if (!SessionManager::getSessionKey('uuid')) {
-    echo "<script>alert('You must be logged in to access this page.');</script>";
-    header('Location: /pages/request_login/request_login.php');
+    file_put_contents($autofilling, "User not logged in\n", FILE_APPEND);
+    echo json_encode(['success' => false, 'error' => 'Not logged in', 'redirect' => '/pages/request_login/request_login.php']);
     exit();
 }
-
-$autofilling = '/tmp/debug_demand_handler.log';
-
 function convertDateFormat($dateString)
 {
     $date = DateTime::createFromFormat('d-m-Y', $dateString);
@@ -31,18 +32,16 @@ header('Content-Type: application/json');
 //echo '<script> alert("Paso por aqui");</script>';
 $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 $maxBytes = 10 * 1024 * 1024; // 10 MB
-if (file_exists($autofilling)) {
-    unlink($autofilling);
-}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     file_put_contents($autofilling, "Invalid request method\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'Invalid request method']);
+    echo json_encode(['success' => false, 'error' => 'Invalid request method', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
 if (!isset($_FILES['factura'])) {
     file_put_contents($autofilling, "No file uploaded\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'No file uploaded']);
+    echo json_encode(['success' => false, 'error' => 'No file uploaded', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
@@ -52,13 +51,13 @@ $file = $_FILES['factura'];
 // }
 if ($file['error'] !== UPLOAD_ERR_OK) {
     file_put_contents($autofilling, "File upload error: " . $file['error'] . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'File upload error: ' . $file['error']]);
+    echo json_encode(['success' => false, 'error' => 'File upload error: ' . $file['error'], 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
 if ($file['size'] > $maxBytes) {
     file_put_contents($autofilling, "File size exceeds limit: " . $file['size'] . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'File size exceeds limit of 10MB.']);
+    echo json_encode(['success' => false, 'error' => 'File size exceeds limit of 10MB.', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
@@ -67,7 +66,7 @@ $fileData = file_get_contents($tmpFilePath);
 $mimetype = mime_content_type($tmpFilePath);
 if (!in_array($mimetype, $allowedTypes)) {
     file_put_contents($autofilling, "Invalid file type: " . $mimetype . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'Invalid file type.']);
+    echo json_encode(['success' => false, 'error' => 'Invalid file type.', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
@@ -87,8 +86,8 @@ $response = curl_exec($ch);
 if (curl_errno($ch)) {
     $err = curl_error($ch);
     file_put_contents($autofilling, "cURL error: " . $err . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => $err]);
     curl_close($ch);
+    echo json_encode(['success' => false, 'error' => $err, 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
@@ -98,7 +97,7 @@ curl_close($ch);
 $responseData = json_decode($response, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     file_put_contents($autofilling, "Invalid JSON from Python: " . json_last_error_msg() . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'Invalid JSON from Python: ' . json_last_error_msg()]);
+    echo json_encode(['success' => false, 'error' => 'Invalid JSON from Python: ' . json_last_error_msg(), 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 
@@ -107,7 +106,7 @@ try {
     $document_uuid = $fileInstance->uploadFile($file, $_SESSION['uuid']);
 } catch (Exception $e) {
     file_put_contents($autofilling, "Failed to upload file to MongoDB: " . $e->getMessage() . " with user " . $_SESSION['uuid'] . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'Failed to upload file to database']);
+    echo json_encode(['success' => false, 'error' => 'Failed to upload file to database', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
 try {
@@ -127,7 +126,10 @@ try {
     file_put_contents($autofilling, "finish adding factura information: " . json_encode($responseData['caption']) . "\n", FILE_APPEND);
 } catch (Exception $e) {
     file_put_contents($autofilling, "Failed to add factura: " . $e->getMessage() . "\n", FILE_APPEND);
-    echo json_encode(['success' => false, 'caption' => '', 'error' => 'Failed to add factura']);
+    echo json_encode(['success' => false, 'error' => 'Failed to add factura', 'redirect' => '/pages/facturas/factura.php']);
     exit();
 }
-header('Location: /pages/demand/demand.php');
+$response = json_encode(['success' => true, 'redirect' => '/pages/facturas/factura.php']);
+file_put_contents($autofilling, "Process completed successfully: " . $response . "\n", FILE_APPEND);
+echo $response;
+exit;

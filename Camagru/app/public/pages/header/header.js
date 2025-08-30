@@ -1,4 +1,4 @@
-userArea = document.getElementById('userArea');
+userArea = document.getElementById('toggleSidebarBtn');
 userInfo = document.getElementById('userInfo');
 let userNavVisible = false;
 userArea.classList.remove('show');

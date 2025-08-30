@@ -15,25 +15,25 @@
 }
 
 /* Form Styles */
-.demandForm-row {
+.facturaForm-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
     margin-bottom: 20px;
 }
 
-.demandForm-group {
+.facturaForm-group {
     margin-bottom: 20px;
 }
 
-.demandForm-group label {
+.facturaForm-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
     color: #333;
 }
 
-.demandForm-group input {
+.facturaForm-group input {
     width: 100%;
     padding: 10px 15px;
     border: 1px solid #ccc;
@@ -42,7 +42,7 @@
     transition: all 0.3s ease;
 }
 
-.demandForm-group input:focus {
+.facturaForm-group input:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -56,7 +56,7 @@
 }
 
 /* Button Styles */
-.button_demand {
+.button_factura {
     width: 100%;
     padding: 12px 20px;
     background: #667eea;
@@ -74,18 +74,18 @@
     gap: 8px;
 }
 
-.button_demand:hover:not(:disabled) {
+.button_factura:hover:not(:disabled) {
     background: #5a6fd8;
     transform: translateY(-1px);
 }
 
-.button_demand:disabled {
-    background: #ccc;
+.button_factura:disabled {
+    background: #828181;
     cursor: not-allowed;
     transform: none;
 }
 
-.button_demand-loading {
+.button_factura-loading {
     display: none;
 }
 
@@ -96,7 +96,7 @@
         padding: 30px 20px;
     }
 
-    .demandForm-row {
+    .facturaForm-row {
         grid-template-columns: 1fr;
         gap: 0;
     }
@@ -126,7 +126,7 @@
 /* Focus states for accessibility */
 .form-group input:focus,
 .checkbox-group input:focus,
-.button_demand:focus {
+.button_factura:focus {
     outline: 2px solid #667eea;
     outline-offset: 2px;
 }
@@ -154,4 +154,79 @@
 #file_field:focus {
     outline: 2px solid #667eea;
     outline-offset: 2px;
+}
+
+#facturasTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#facturasTable th,
+#facturasTable td {
+    padding: 12px 15px;
+    border: 1px solid #090909;
+    text-align: center;
+}
+
+#facturasTable th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+#facturasTable tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+#facturasTable tr:hover {
+    background: #f1f1f1;
+}
+
+/* Modal styles ventana emergente edit*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#crea_demanda {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5em;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 2.5em;
+    width: fit-content;
+    margin-bottom: 20px;
 }

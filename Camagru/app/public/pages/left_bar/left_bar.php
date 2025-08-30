@@ -11,7 +11,7 @@
         <li><a href="/pages/upload/upload.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'upload.php') ? 'class="active"' : ''; ?>><span class="icon">📤</span>Upload</a></li>
         <li><a href="/pages/logout/logout.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'logout.php') ? 'class="active"' : ''; ?>><span class="icon">🚪</span>Logout</a></li>
         <li><a href="/pages/gallery/gallery.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'gallery.php') ? 'class="active"' : ''; ?>><span class="icon">🖼️</span>Gallery</a></li>
-        <li><a href="/pages/demand/demand.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'demand.php') ? 'class="active"' : ''; ?>><span class="icon">🧾</span>Start a Demand</a></li>
+        <li><a href="/pages/facturas/factura.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'factura.php') ? 'class="active"' : ''; ?>><span class="icon">🧾</span>Start a factura</a></li>
       <?php } else { ?>
         <li><a href="/pages/login/login.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'login.php') ? 'class="active"' : ''; ?>><span class="icon">🔑</span>Login</a></li>
         <li><a href="/pages/register/register.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'register.php') ? 'class="active"' : ''; ?>><span class="icon">📝</span>Register</a></li>

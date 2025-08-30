@@ -44,16 +44,16 @@ class Facturas
             document_uuid,
             status,
             acreedor_nombre,
-            acreedor_CIF,
+            acreedor_cif,
             acreedor_domicilio,
             acreedor_telefono,
-            acreedor_FAX,
+            acreedor_fax,
             acreedor_email,
             deudor_nombre,
-            deudor_CIF,
+            deudor_cif,
             deudor_domicilio,
             deudor_telefono,
-            deudor_FAX,
+            deudor_fax,
             deudor_email,
             factura_numero,
             factura_fecha,
@@ -68,16 +68,16 @@ class Facturas
             :document_uuid,
             :status,
             :acreedor_nombre,
-            :acreedor_CIF,
+            :acreedor_cif,
             :acreedor_domicilio,
             :acreedor_telefono,
-            :acreedor_FAX,
+            :acreedor_fax,
             :acreedor_email,
             :deudor_nombre,
-            :deudor_CIF,
+            :deudor_cif,
             :deudor_domicilio,
             :deudor_telefono,
-            :deudor_FAX,
+            :deudor_fax,
             :deudor_email,
             :factura_numero,
             :factura_fecha,
@@ -91,16 +91,16 @@ class Facturas
       $stmt->bindParam(':document_uuid', $data['document_uuid']);
       $stmt->bindParam(':status', $data['status']);
       $stmt->bindParam(':acreedor_nombre', $data['acreedor']['nombre']);
-      $stmt->bindParam(':acreedor_CIF', $data['acreedor']['CIF']);
+      $stmt->bindParam(':acreedor_cif', $data['acreedor']['CIF']);
       $stmt->bindParam(':acreedor_domicilio', $data['acreedor']['domicilio']);
       $stmt->bindParam(':acreedor_telefono', $data['acreedor']['telefono']);
-      $stmt->bindParam(':acreedor_FAX', $data['acreedor']['FAX']);
+      $stmt->bindParam(':acreedor_fax', $data['acreedor']['FAX']);
       $stmt->bindParam(':acreedor_email', $data['acreedor']['email']);
       $stmt->bindParam(':deudor_nombre', $data['deudor']['nombre']);
-      $stmt->bindParam(':deudor_CIF', $data['deudor']['CIF']);
+      $stmt->bindParam(':deudor_cif', $data['deudor']['CIF']);
       $stmt->bindParam(':deudor_domicilio', $data['deudor']['domicilio']);
       $stmt->bindParam(':deudor_telefono', $data['deudor']['telefono']);
-      $stmt->bindParam(':deudor_FAX', $data['deudor']['FAX']);
+      $stmt->bindParam(':deudor_fax', $data['deudor']['FAX']);
       $stmt->bindParam(':deudor_email', $data['deudor']['email']);
       $stmt->bindParam(':factura_numero', $data['factura']['numero']);
       $stmt->bindParam(':factura_fecha', $data['factura']['fecha']);
@@ -113,8 +113,8 @@ class Facturas
       $stmt->execute();
     } catch (Exception $e) {
       file_put_contents($this->autofilling, "Failed to add factura: " . $e->getMessage() . " Datos: " . json_encode($data) . "\n", FILE_APPEND);
-      error_log("Failed to add demand: " . $e->getMessage());
-      throw new Exception("Failed to add demand");
+      error_log("Failed to add factura: " . $e->getMessage());
+      throw new Exception("Failed to add factura");
     }
   }
   public function delete($id)
@@ -124,8 +124,8 @@ class Facturas
       $stmt->bindParam(':id', $id);
       $stmt->execute();
     } catch (Exception $e) {
-      error_log("Failed to delete demand: " . $e->getMessage());
-      throw new Exception("Failed to delete demand");
+      error_log("Failed to delete factura: " . $e->getMessage());
+      throw new Exception("Failed to delete factura");
     }
   }
   public function getDocumentoByFacturaId($facturaId)
@@ -148,8 +148,8 @@ class Facturas
       $stmt->execute();
       return $stmt->fetchAll();
     } catch (Exception $e) {
-      error_log("Failed to get demand: " . $e->getMessage());
-      throw new Exception("Failed to get demand");
+      error_log("Failed to get factura: " . $e->getMessage());
+      throw new Exception("Failed to get factura");
     }
   }
 
@@ -161,17 +161,17 @@ class Facturas
       $stmt->execute();
       return $stmt->fetch();
     } catch (Exception $e) {
-      error_log("Failed to get demand: " . $e->getMessage());
-      throw new Exception("Failed to get demand");
+      error_log("Failed to get factura: " . $e->getMessage());
+      throw new Exception("Failed to get factura");
     }
   }
 
-  public function changeStatus($uuid_document, $newStatus)
+  public function updateStatus($id, $newStatus)
   {
     try {
-      $stmt = $this->pdo->prepare("UPDATE facturas SET status = :status WHERE document_uuid = :document_uuid");
+      $stmt = $this->pdo->prepare("UPDATE facturas SET status = :status WHERE id = :id");
       $stmt->bindParam(':status', $newStatus);
-      $stmt->bindParam(':document_uuid', $uuid_document);
+      $stmt->bindParam(':id', $id);
       $stmt->execute();
     } catch (Exception $e) {
       error_log("Failed to change status: " . $e->getMessage());
@@ -191,10 +191,15 @@ class Facturas
       throw new Exception("Failed to get status");
     }
   }
-  public function getAll($user_uuid = null)
+  public function getAll($user_uuid = null, $status = null)
   {
     try {
-      $stmt = $this->pdo->prepare("SELECT * FROM facturas WHERE user_uuid = :user_uuid");
+      if ($status) {
+        $stmt = $this->pdo->prepare("SELECT * FROM facturas WHERE user_uuid = :user_uuid AND status = :status");
+        $stmt->bindParam(':status', $status);
+      } else {
+        $stmt = $this->pdo->prepare("SELECT * FROM facturas WHERE user_uuid = :user_uuid");
+      }
       if ($user_uuid) {
         $stmt->bindParam(':user_uuid', $user_uuid);
       } else {

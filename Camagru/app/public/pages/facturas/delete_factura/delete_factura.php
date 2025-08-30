@@ -8,7 +8,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/request_login/request_login.php');
     exit();
 }
-$autofilling = '/tmp/debug_delete_demandas.log';
+$autofilling = '/tmp/debug_delete_facturaas.log';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Check the cookie value in PHP
@@ -24,14 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             } else {
                 echo "<script>alert('Failed to delete document from MongoDB.');</script>";
             }
-            header('Location: /pages/demand/demand.php');
+            header('Location: /pages/facturas/factura.php');
             exit();
         }
     } else {
-        header('Location: /pages/demand/demand.php');
+        header('Location: /pages/facturas/factura.php');
         exit();
     }
 } else {
-    header('Location: /pages/demand/demand.php');
+    header('Location: /pages/facturas/factura.php');
     exit();
 }

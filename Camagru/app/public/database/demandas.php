@@ -7,11 +7,17 @@ class Demandas
 {
 
   private $pdo;
+  private $autofilling;
   public function __construct()
   {
     try {
       $pgDatabase = new PGDatabase();
       $this->pdo = $pgDatabase->getConnection();
+      $this->autofilling = '/tmp/debug_demandas_db.log';
+      if (file_exists($this->autofilling)) {
+        unlink($this->autofilling);
+      }
+      file_put_contents($this->autofilling, "Entro en Demandas: \n", FILE_APPEND);
       if (!$this->pdo) {
         throw new Exception("Failed to connect to the database.");
       }
@@ -29,62 +35,66 @@ class Demandas
             document_uuid,
             status,
             acreedor_nombre,
-            acreedor_CIF,
+            acreedor_cif,
             acreedor_domicilio,
             acreedor_telefono,
-            acreedor_FAX,
+            acreedor_fax,
             acreedor_email,
             deudor_nombre,
-            deudor_CIF,
+            deudor_cif,
             deudor_domicilio,
             deudor_telefono,
-            deudor_FAX,
+            deudor_fax,
             deudor_email,
-            cuantia,
+            importe_total_deuda,
+            lista_facturas,
             concepto,
-            documentos,
             created_at) 
             VALUES (
             :user_uuid,
             :document_uuid,
             :status,
             :acreedor_nombre,
-            :acreedor_CIF,
+            :acreedor_cif,
             :acreedor_domicilio,
             :acreedor_telefono,
-            :acreedor_FAX,
+            :acreedor_fax,
             :acreedor_email,
             :deudor_nombre,
-            :deudor_CIF,
+            :deudor_cif,
             :deudor_domicilio,
             :deudor_telefono,
-            :deudor_FAX,
+            :deudor_fax,
             :deudor_email,
-            :cuantia,
+            :importe_total_deuda,
+            :lista_facturas,
             :concepto,
-            :documentos,
             :created_at)");
       $stmt->bindParam(':user_uuid', $demandData['user_uuid']);
       $stmt->bindParam(':document_uuid', $demandData['document_uuid']);
       $stmt->bindParam(':status', $demandData['status']);
       $stmt->bindParam(':acreedor_nombre', $demandData['acreedor_nombre']);
-      $stmt->bindParam(':acreedor_CIF', $demandData['acreedor_CIF']);
+      $stmt->bindParam(':acreedor_cif', $demandData['acreedor_cif']);
       $stmt->bindParam(':acreedor_domicilio', $demandData['acreedor_domicilio']);
       $stmt->bindParam(':acreedor_telefono', $demandData['acreedor_telefono']);
-      $stmt->bindParam(':acreedor_FAX', $demandData['acreedor_FAX']);
+      $stmt->bindParam(':acreedor_fax', $demandData['acreedor_fax']);
       $stmt->bindParam(':acreedor_email', $demandData['acreedor_email']);
       $stmt->bindParam(':deudor_nombre', $demandData['deudor_nombre']);
-      $stmt->bindParam(':deudor_CIF', $demandData['deudor_CIF']);
+      $stmt->bindParam(':deudor_cif', $demandData['deudor_cif']);
       $stmt->bindParam(':deudor_domicilio', $demandData['deudor_domicilio']);
       $stmt->bindParam(':deudor_telefono', $demandData['deudor_telefono']);
-      $stmt->bindParam(':deudor_FAX', $demandData['deudor_FAX']);
+      $stmt->bindParam(':deudor_fax', $demandData['deudor_fax']);
       $stmt->bindParam(':deudor_email', $demandData['deudor_email']);
-      $stmt->bindParam(':cuantia', $demandData['cuantia']);
+      $stmt->bindParam(':importe_total_deuda', $demandData['importe_total_deuda']);
+      $stmt->bindParam(':lista_facturas', $demandData['lista_facturas']);
       $stmt->bindParam(':concepto', $demandData['concepto']);
-      $stmt->bindParam(':documentos', $demandData['documentos']);
       $stmt->bindParam(':created_at', $demandData['created_at']);
+      file_put_contents($this->autofilling, "inicio exec\n", FILE_APPEND);
+      file_put_contents($this->autofilling, "Demanda añadida a la base de datos: " . json_encode($demandData) . "\n", FILE_APPEND);
       $stmt->execute();
+      file_put_contents($this->autofilling, "fin exec\n", FILE_APPEND);
     } catch (Exception $e) {
+      file_put_contents($this->autofilling, "Error al añadir demanda: " . json_encode($e->getMessage()) . "\n", FILE_APPEND);
       error_log("Failed to add demand: " . $e->getMessage());
       throw new Exception("Failed to add demand");
     }

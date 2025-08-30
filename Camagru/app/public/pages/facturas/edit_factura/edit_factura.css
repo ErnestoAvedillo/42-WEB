@@ -6,6 +6,14 @@
   background-color: #f9f9f9;
 }
 
+#factura.hide {
+  display: none;
+}
+
+#factura.show {
+  display: block;
+}
+
 #Acreedor,
 #Deudor,
 #Factura {
@@ -13,11 +21,16 @@
 }
 
 h2 {
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.5em;
   margin-bottom: 10px;
 }
 
+
+
 label {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.5em;
   display: block;
   margin-bottom: 5px;
 }
@@ -25,6 +38,8 @@ label {
 input[type="text"],
 input[type="email"],
 textarea {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: large;
   width: 100%;
   padding: 8px;
   margin-bottom: 10px;
@@ -37,14 +52,18 @@ textarea {
 }
 
 button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2em;
   padding: 10px 15px;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  height: 3em;
+  width: 10em;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #1e2329;
 }
