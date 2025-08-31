@@ -65,6 +65,7 @@ if (facturaForm) {
             })
             .finally(() => {
                 // Hide wait overlay via shared utils if available
+                console.log("Finally reached");
                 if (typeof stopWait === 'function') stopWait();
                 else document.getElementById("waitOverlay").style.display = "none";
             });

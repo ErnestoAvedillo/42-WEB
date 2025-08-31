@@ -26,8 +26,6 @@ h2 {
   margin-bottom: 10px;
 }
 
-
-
 label {
   font-family: 'Times New Roman', Times, serif;
   font-size: 1.5em;
@@ -37,6 +35,8 @@ label {
 
 input[type="text"],
 input[type="email"],
+input[type="number"],
+input[type="date"],
 textarea {
   font-family: Arial, Helvetica, sans-serif;
   font-size: large;
@@ -65,5 +65,5 @@ button {
 }
 
 button:hover {
-  background-color: #1e2329;
+  background-color: #132b47;
 }

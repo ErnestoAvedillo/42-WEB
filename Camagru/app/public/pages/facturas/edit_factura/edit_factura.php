@@ -1,12 +1,9 @@
 <link href="/pages/facturas/edit_factura/edit_factura.css" rel="stylesheet">
 <?php
 require_once __DIR__ . '/../../../database/facturas.php';
-$autofilling = '/tmp/debug_edit_factura.log';
-if (file_exists($autofilling)) {
-  unlink($autofilling);
-}
-file_put_contents($autofilling, "success receiving factura data" . time() . "\n", FILE_APPEND);
-file_put_contents($autofilling, "Enter in edit_factura" . time() . "\n", FILE_APPEND);
+$autofilling = '/tmp/facturas.log';
+
+file_put_contents($autofilling, "Editfactura: " . date('Y-m-d H:i:s') . " Enter in edit_factura" . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
 $facturaId = $_GET['id'] ?? null;
 if (!$facturaId) {
   echo json_encode(["error" => "Invalid factura ID.", "redirect" => "/pages/facturas/factura.php"]);
@@ -21,15 +18,18 @@ if (!$factura) {
 
 // Ensure all keys in $factura are strings and not null
 foreach ($factura as $key => $value) {
+  file_put_contents($autofilling, "Editfactura: " . date('Y-m-d H:i:s') . " Factura field: " . $key . " => " . $value . "\n", FILE_APPEND);
   $factura[$key] = is_string($value) ? $value : '';
 }
 
-file_put_contents($autofilling, "success receiving factura data" . json_encode($factura) . "\n", FILE_APPEND);
+file_put_contents($autofilling, "Editfactura: " . date('Y-m-d H:i:s') . " success receiving factura data" . json_encode($factura) . "\n", FILE_APPEND);
 ?>
 <div id="factura">
   <form id="formularioFactura" action="/pages/facturas/edit_factura/edit_factura_handler.php" method="POST">
     <div id="Acreedor">
       <h2>Acreedor</h2>
+      <input type="hidden" id="user_uuid" name="user_uuid" value="<?php echo htmlspecialchars($factura['user_uuid']); ?>">
+      <input type="hidden" id="id" name="id" value="<?php echo htmlspecialchars($facturaId); ?>">
       <label for="acreedor_nombre">Nombre:</label>
       <input type="text" id="acreedor_nombre" name="acreedor_nombre" value="<?php echo htmlspecialchars($factura['acreedor_nombre']); ?>"><br>
 
@@ -94,9 +94,10 @@ file_put_contents($autofilling, "success receiving factura data" . json_encode($
       <textarea id="concepto" name="concepto" rows="4"><?php echo htmlspecialchars($factura['concepto']); ?></textarea><br>
     </div>
     <input type="hidden" name="factura_id" value="<?php echo htmlspecialchars($facturaId); ?>">
-    <button type="submit" id="saveFacturaButton" data-id="<?php echo htmlspecialchars($facturaId); ?>">Save Changes</button>
+    <button type="button" id="saveFacturaButton" data-id="<?php echo htmlspecialchars($facturaId); ?>">Save Changes</button>
     <button type="button" id="cancelEditButton">Cancel</button>
   </form>
 </div>
 </div>
+<script src="/pages/facturas/edit_factura/edit_factura.js"></script>
 <script src="/pages/facturas/edit_factura/handle_buttons_form.js"></script>

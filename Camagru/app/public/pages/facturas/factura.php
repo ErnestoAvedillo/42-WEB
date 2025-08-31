@@ -34,7 +34,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
     <form id="facturaForm" action="/pages/facturas/factura_handler.php" method="post" enctype="multipart/form-data">
       <input id="file_field" type="file" name="factura" accept=".jpg,.jpeg,.png,.gif,.pdf,.mp4,.zip,.docx" required>
       <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars(SessionManager::getSessionKey('uuid')); ?>">
-      <button id="fill_factura" class="button_factura" type="submit">Rellenar facturaa</button>
+      <button id="fill_factura" class="button_factura" type="submit">Rellenar factura</button>
     </form>
     <p> Ficheros admitidos: JPG, PDF, DOCX</p>
   </div>
@@ -82,20 +82,20 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
       require_once __DIR__ . '/../../database/facturas.php';
       $facturasInstance = new Facturas();
       $facturas = $facturasInstance->getAll($_user_uuid, "pending");
-      file_put_contents($autofilling, "Factura: " . json_encode($facturas) . "\n");
+      file_put_contents($autofilling, "Facturas: " . date('Y-m-d H:i:s') . " - " . json_encode($facturas) . "\n");
 
       foreach ($facturas as $factura) {
-        file_put_contents($autofilling, "Factura: " . json_encode($factura['id']) . "\n");
+        file_put_contents($autofilling, "Facturas: " . date('Y-m-d H:i:s') . " - " . json_encode($factura['id']) . "\n");
         foreach ($factura as $key => $value) {
 
-          file_put_contents($autofilling, "Factura " . $key . ": " . json_encode($value) . "\n");
+          file_put_contents($autofilling, "Facturas: " . date('Y-m-d H:i:s') . " - " . json_encode($value) . "\n");
         }
       }
       foreach ($facturas as $factura) {
         //$factura = json_encode($factura);
         echo "<tr>";
         $link_edit = '/pages/facturas/edit_factura/edit_factura.php?id=' . $factura['id'];
-        file_put_contents($autofilling, "Edit link: " . $link_edit . "\n", FILE_APPEND);
+        file_put_contents($autofilling, "Facturas: " . date('Y-m-d H:i:s') . "Edit link: " . $link_edit . "\n", FILE_APPEND);
         echo "<td class=delete_factura data-id=" . $factura['id'] . "><img src='/img/icon_delete.png' alt='Delete' width='20' height='20'></td>";
         echo "<td class=edit_factura data-id='" . $factura['id'] . "'><img src='/img/icon_edit.png' alt='Edit' width='20' height='20'></td>";
         echo "<td>" . htmlspecialchars($factura['id']) . "</td>";

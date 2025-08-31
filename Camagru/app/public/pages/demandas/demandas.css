@@ -1,0 +1,194 @@
+.demandasDiv {
+    margin: 20px;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80%;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.demandasDiv h2 {
+    font-size: 2cm;
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    align-self: center;
+    text-align: center;
+    background: #888;
+}
+
+/* Form Styles */
+.demandaForm-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.demandaForm-group {
+    margin-bottom: 20px;
+}
+
+button_factura .demandaForm-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.demandaForm-group input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.demandaForm-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.help-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .Facturas {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+
+    .demandaForm-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .Facturas h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Animation for form appearance */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Error state for inputs */
+.form-group.error input {
+    border-color: #e74c3c;
+}
+
+.form-group.error .help-text {
+    color: #e74c3c;
+}
+
+#file_field {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+#file_field:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+#demandasTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#demandasTable th,
+#demandasTable td {
+    padding: 12px 15px;
+    border: 1px solid #090909;
+    text-align: center;
+}
+
+#demandasTable th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+#demandasTable tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+#demandasTable tr:hover {
+    background: #f1f1f1;
+}
+
+/* Modal styles ventana emergente edit*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#crea_demanda {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5em;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: 2.5em;
+    width: fit-content;
+    margin-bottom: 20px;
+}

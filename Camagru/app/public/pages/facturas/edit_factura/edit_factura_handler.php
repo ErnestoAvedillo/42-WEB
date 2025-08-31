@@ -1,16 +1,32 @@
 <?php
 require_once __DIR__ . '/../../../database/facturas.php';
-require_once __DIR__ . '/../../../class_session/class_session.php';
-SessionManager::getInstance();
-$autofilling = '/tmp/debug_edit_factura.log';
-if (file_exists($autofilling)) {
-    unlink($autofilling);
-}
-header('Content-Type: application/json; charset=utf-8');
+
+$autofilling = '/tmp/facturas.log';
+
 $data = $_POST;
-file_put_contents($autofilling, "success receiving factura data" . time() . "\n", FILE_APPEND);
-file_put_contents($autofilling, "data: " . json_encode($data) . "\n", FILE_APPEND);
-$respond = json_encode(["success" => true, "redirect" => "/pages/facturas/factura.php"]);
-file_put_contents($autofilling, "respond: " . $respond . "\n", FILE_APPEND);
-echo $respond;
+$user_uuid = $data['user_uuid'] ?? null;
+$id = $data['id'] ?? null;
+
+$facturas = new Facturas();
+file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " success receiving factura data\n", FILE_APPEND);
+file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " data received : " . json_encode($data) . "\n", FILE_APPEND);
+try {
+    $result = $facturas->updateFactura($id, $user_uuid, $data);
+    file_put_contents($autofilling, "result of updateFactura: " . $result . "\n", FILE_APPEND);
+    if ($result) {
+        file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " success receiving factura data\n", FILE_APPEND);
+        file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " data received : " . json_encode($data) . "\n", FILE_APPEND);
+
+        $respond = ["success" => true, "redirect" => "/pages/facturas/factura.php"];
+    } else {
+        file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " error receiving factura data\n", FILE_APPEND);
+        $respond = ["success" => false, "error" => "Failed to update factura"];
+    }
+} catch (Exception $e) {
+    file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " error receiving factura data: " . $e->getMessage() . "\n", FILE_APPEND);
+    $respond = ["success" => false, "error" => "Failed to update factura"];
+}
+file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " respond: " . json_encode($respond) . "\n", FILE_APPEND);
+header('Content-Type: application/json; charset=utf-8');
+echo json_encode($respond);
 exit();

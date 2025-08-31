@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 
 class Facturas
 {
-  private $autofilling = '/tmp/debug_facturas.log';
+  private $autofilling = '/tmp/facturas.log';
   private $pdo;
   public function __construct()
   {
@@ -24,21 +24,10 @@ class Facturas
       throw new Exception("Database connection error");
     }
   }
-  public function reset_log()
-  {
-    if (file_exists($this->autofilling)) {
-      unlink($this->autofilling);
-    }
-    file_put_contents($this->autofilling, "Log reset" . time() . "\n");
-  }
 
   public function addFactura($data)
   {
     try {
-      file_put_contents($this->autofilling, "Adding factura: " . json_encode($data) . "\n", FILE_APPEND);
-      foreach ($data as $key => $value) {
-        file_put_contents($this->autofilling, "Adding factura field: " . $key . " => " . $value . "\n", FILE_APPEND);
-      }
       $stmt = $this->pdo->prepare("
             INSERT INTO facturas (user_uuid,
             document_uuid,
@@ -89,7 +78,8 @@ class Facturas
             :created_at)");
       $stmt->bindParam(':user_uuid', $data['user_uuid']);
       $stmt->bindParam(':document_uuid', $data['document_uuid']);
-      $stmt->bindParam(':status', $data['status']);
+      $status = $data['status'] ?? 'pending';
+      $stmt->bindParam(':status', $status);
       $stmt->bindParam(':acreedor_nombre', $data['acreedor']['nombre']);
       $stmt->bindParam(':acreedor_cif', $data['acreedor']['CIF']);
       $stmt->bindParam(':acreedor_domicilio', $data['acreedor']['domicilio']);
@@ -103,8 +93,10 @@ class Facturas
       $stmt->bindParam(':deudor_fax', $data['deudor']['FAX']);
       $stmt->bindParam(':deudor_email', $data['deudor']['email']);
       $stmt->bindParam(':factura_numero', $data['factura']['numero']);
-      $stmt->bindParam(':factura_fecha', $data['factura']['fecha']);
-      $stmt->bindParam(':factura_vencimiento', $data['factura']['vencimiento']);
+      $facturaFecha = convertstring2date($data['factura']['fecha'], 'Y/m/d', 'Y/m/d');
+      $stmt->bindParam(':factura_fecha', $facturaFecha);
+      $facturaVencimiento = convertstring2date($data['factura']['vencimiento'], 'Y/m/d', 'Y/m/d');
+      $stmt->bindParam(':factura_vencimiento', $facturaVencimiento);
       $stmt->bindParam(':factura_importe_total', $data['factura']['importe_total']);
       $stmt->bindParam(':factura_importe_iva', $data['factura']['importe_iva']);
       $stmt->bindParam(':factura_importe_base', $data['factura']['importe_base']);
@@ -112,9 +104,68 @@ class Facturas
       $stmt->bindParam(':created_at', date('Y-m-d H:i:s'));
       $stmt->execute();
     } catch (Exception $e) {
-      file_put_contents($this->autofilling, "Failed to add factura: " . $e->getMessage() . " Datos: " . json_encode($data) . "\n", FILE_APPEND);
+      file_put_contents($this->autofilling, "Facturas DB -" . date('Y-m-d H:i:s') . "-Failed to add factura: " . $e->getMessage() . " Datos: " . json_encode($data) . "\n", FILE_APPEND);
       error_log("Failed to add factura: " . $e->getMessage());
       throw new Exception("Failed to add factura");
+    }
+  }
+  public function updateFactura($facturaId, $user_uuid, $data)
+  {
+    file_put_contents($this->autofilling, "Facturas DB -" . date('Y-m-d H:i:s') . "-SQL in function updateFactura\n", FILE_APPEND);
+    try {
+      file_put_contents($this->autofilling, "Facturas DB -" . date('Y-m-d H:i:s') . "-dentro del try\n", FILE_APPEND);
+      $stmt = $this->pdo->prepare("UPDATE facturas SET
+        acreedor_nombre = :acreedor_nombre,
+        acreedor_cif = :acreedor_cif,
+        acreedor_domicilio = :acreedor_domicilio,
+        acreedor_telefono = :acreedor_telefono,
+        acreedor_fax = :acreedor_fax,
+        acreedor_email = :acreedor_email,
+        deudor_nombre = :deudor_nombre,
+        deudor_cif = :deudor_cif,
+        deudor_domicilio = :deudor_domicilio,
+        deudor_telefono = :deudor_telefono,
+        deudor_fax = :deudor_fax,
+        deudor_email = :deudor_email,
+        factura_numero = :factura_numero,
+        factura_fecha = :factura_fecha,
+        factura_vencimiento = :factura_vencimiento,
+        factura_importe_total = :factura_importe_total,
+        factura_importe_iva = :factura_importe_iva,
+        factura_importe_base = :factura_importe_base,
+        concepto = :concepto,
+        updated_at = :updated_at
+        WHERE id = :id AND user_uuid = :user_uuid");
+
+      $updatedAt = date('Y-m-d H:i:s');
+      $stmt->bindParam(':id', $facturaId);
+      $stmt->bindParam(':user_uuid', $user_uuid);
+      $stmt->bindParam(':acreedor_nombre', $data['acreedor_nombre']);
+      $stmt->bindParam(':acreedor_cif', $data['acreedor_cif']);
+      $stmt->bindParam(':acreedor_domicilio', $data['acreedor_domicilio']);
+      $stmt->bindParam(':acreedor_telefono', $data['acreedor_telefono']);
+      $stmt->bindParam(':acreedor_fax', $data['acreedor_fax']);
+      $stmt->bindParam(':acreedor_email', $data['acreedor_email']);
+      $stmt->bindParam(':deudor_nombre', $data['deudor_nombre']);
+      $stmt->bindParam(':deudor_cif', $data['deudor_cif']);
+      $stmt->bindParam(':deudor_domicilio', $data['deudor_domicilio']);
+      $stmt->bindParam(':deudor_telefono', $data['deudor_telefono']);
+      $stmt->bindParam(':deudor_fax', $data['deudor_fax']);
+      $stmt->bindParam(':deudor_email', $data['deudor_email']);
+      $stmt->bindParam(':factura_numero', $data['factura_numero']);
+      $stmt->bindParam(':factura_fecha', $data['factura_fecha']);
+      $stmt->bindParam(':factura_vencimiento', $data['factura_vencimiento']);
+      $stmt->bindParam(':factura_importe_total', $data['factura_importe_total']);
+      $stmt->bindParam(':factura_importe_iva', $data['factura_importe_iva']);
+      $stmt->bindParam(':factura_importe_base', $data['factura_importe_base']);
+      $stmt->bindParam(':concepto', $data['concepto']);
+      $stmt->bindParam(':updated_at', $updatedAt);
+      $stmt->execute();
+      return true;
+    } catch (Exception $e) {
+      file_put_contents($this->autofilling, "Facturas DB -" . date('Y-m-d H:i:s') . "-Failed to update factura: " . $e->getMessage() . " Datos: " . json_encode($data) . "\n", FILE_APPEND);
+      error_log("Failed to update factura: " . $e->getMessage());
+      throw new Exception("Failed to update factura");
     }
   }
   public function delete($id)

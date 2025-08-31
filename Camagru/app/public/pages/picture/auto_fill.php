@@ -1,5 +1,5 @@
 <?php
-$autofilllog = '/tmp/debug_auto_fill.log';
+$autofilllog = '/tmp/facturas.log';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contents = file_get_contents('php://input');
     $data = json_decode($contents, true);
@@ -17,14 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $comment = curl_exec($ch);
         curl_close($ch);
-        file_put_contents($autofilllog, "Received data: " . print_r($comment, true) . "\n", FILE_APPEND);
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Received data: " . print_r($comment, true) . "\n", FILE_APPEND);
         $commentData = json_decode($comment, true);
         $caption =  $commentData['caption'] ?? '';
         echo json_encode(['success' => true, 'caption' => $caption]);
     } else {
-        file_put_contents($autofilllog, "Raw output shell_exec: " . print_r($comment, true) . "\n", FILE_APPEND);
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Raw output shell_exec: " . print_r($comment, true) . "\n", FILE_APPEND);
         echo json_encode(['success' => false, 'caption' => 'picture data not detected', 'error' => 'No picture provided']);
     }
 } else {
+    file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Invalid request method\n", FILE_APPEND);
     echo json_encode(['success' => false, 'caption' => 'Invalid request method', 'error' => 'Invalid request method']);
 }

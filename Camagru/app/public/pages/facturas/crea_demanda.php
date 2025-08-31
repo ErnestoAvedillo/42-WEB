@@ -12,17 +12,14 @@ require_once __DIR__ . '/../../database/demandas.php';
 //tendremos que añadirlo cuando tengamos incluida la parte javascript
 header('Content-Type: text/html; charset=utf-8');
 
-$autofilling = '/tmp/debug_crea_demanda.log';
-if (file_exists($autofilling)) {
-    unlink($autofilling);
-}
-file_put_contents($autofilling, "Entro en crea demanda: \n", FILE_APPEND);
+$autofilling = '/tmp/facturas.log';
+file_put_contents($autofilling, "Crea Demanda: " . date('Y-m-d H:i:s') . " - Entro en crea demanda: \n", FILE_APPEND);
 $facturasDb = new Facturas();
 $demandasDb = new Demandas();
 $_user_uuid = SessionManager::getSessionKey('uuid');
 //añadir otros filtros en el futuro
 $registros = $facturasDb->getAll($_user_uuid, "pending");
-file_put_contents($autofilling, "Facturas pendientes: " . json_encode($registros) . "\n", FILE_APPEND);
+file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Facturas pendientes: " . json_encode($registros) . "\n", FILE_APPEND);
 if (count($registros) == 0) {
     echo json_encode(['success' => false, 'error' => 'No hay facturas pendientes para crear una demanda.']);
     exit();
@@ -41,7 +38,7 @@ foreach ($registros as $factura) {
     if (!$campos_demandas) {
         foreach ($factura as $key => $value) {
             if (strpos($key, 'acreedor') !== false || strpos($key, 'deudor') !== false) {
-                file_put_contents($autofilling, "Factura campo: " . $key . " => " . $value . "\n", FILE_APPEND);
+                file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Factura campo: " . $key . " => " . $value . "\n", FILE_APPEND);
                 $campos_demandas[$key] = $value;
             }
         }
@@ -56,18 +53,19 @@ foreach ($registros as $factura) {
     $importe_total += $factura['factura_importe_total'];
 }    //marcar la factura como en demanda
 $campos_demandas['user_uuid'] = $_user_uuid;
+$campos_demandas['status'] = 'pending';
 $campos_demandas['importe_total_deuda'] = $importe_total;
 $campos_demandas['lista_facturas'] = json_encode($lista_facturas);
 $campos_demandas['created_at'] = date('Y-m-d H:i:s');
-file_put_contents($autofilling, "Campos demandas 4 " . json_encode($campos_demandas) . " como 'in_demand'\n", FILE_APPEND);
-file_put_contents($autofilling, "Factura añadida a la demanda: " . json_encode($lista_facturas) . "\n", FILE_APPEND);
-file_put_contents($autofilling, "Inicio crear Demanda. \n", FILE_APPEND);
+file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Campos demandas 4 " . json_encode($campos_demandas) . " como 'in_demand'\n", FILE_APPEND);
+file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Factura añadida a la demanda: " . json_encode($lista_facturas) . "\n", FILE_APPEND);
+file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Inicio crear Demanda. \n", FILE_APPEND);
 $demandasDb->addDemand($campos_demandas);
-file_put_contents($autofilling, "Demanda creada. \n", FILE_APPEND);
+file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Demanda creada. \n", FILE_APPEND);
 foreach ($registros as $factura) {
-    file_put_contents($autofilling, "Factura " . $factura['id'] . " marcandose en demanda \n", FILE_APPEND);
+    file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Factura " . $factura['id'] . " marcandose en demanda \n", FILE_APPEND);
     $success = $facturasDb->updateStatus($factura['id'], 'in_demand');
-    file_put_contents($autofilling, "Factura " . $factura['id'] . " marcada como en demanda:" . $success . " \n", FILE_APPEND);
+    file_put_contents($autofilling,  "Crea Demanda: " . date('Y-m-d H:i:s') . "Factura " . $factura['id'] . " marcada como en demanda:" . $success . " \n", FILE_APPEND);
 }
 echo json_encode(['success' => true]);
 exit();
