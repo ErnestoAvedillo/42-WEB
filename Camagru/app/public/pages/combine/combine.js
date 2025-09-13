@@ -47,29 +47,37 @@ saveButton.addEventListener('click', async (event) => {
   const imagesData = [];
   const images = combinedImages.querySelectorAll('img');
   images.forEach(img => {
-    const top = img.style.top.includes('%')
-      ? (parseFloat(img.style.top) / 100) * referenceHeight
-      : parseFloat(img.style.top);
-    const left = img.style.left.includes('%')
-      ? (parseFloat(img.style.left) / 100) * referenceWidth
-      : parseFloat(img.style.left);
-    const width = img.style.width.includes('auto')
+    console.log('Processing top, left, width, height for image:');
+    const parentDiv = img.parentElement;
+    console.log('Top:', parentDiv.style.top);
+    console.log('Left:', parentDiv.style.left);
+    console.log('Width:', parentDiv.style.width);
+    console.log('Height:', parentDiv.style.height);
+
+    // Convert percentage values to pixels based on reference dimensions
+    const top = parentDiv.style.top.includes('%')
+      ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
+      : parseFloat(parentDiv.style.top);
+    const left = parentDiv.style.left.includes('%')
+      ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
+      : parseFloat(parentDiv.style.left);
+    const width = parentDiv.style.width.includes('auto')
       ? referenceWidth
-      : img.style.width.includes('%')
-        ? (parseFloat(img.style.width) / 100) * referenceWidth
-        : parseFloat(img.style.width);
-    const height = img.style.height.includes('auto')
+      : parentDiv.style.width.includes('%')
+        ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
+        : parseFloat(parentDiv.style.width);
+    const height = parentDiv.style.height.includes('auto')
       ? referenceHeight
-      : img.style.height.includes('%')
-        ? (parseFloat(img.style.height) / 100) * referenceHeight
-        : parseFloat(img.style.height);
+      : parentDiv.style.height.includes('%')
+        ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
+        : parseFloat(parentDiv.style.height);
 
     imagesData.push({
       top: Math.trunc(top),
       left: Math.trunc(left),
       width: Math.trunc(width),
       height: Math.trunc(height),
-      img: img.src
+      img: img.src,
     });
   });
 
@@ -147,11 +155,20 @@ combinedImages.addEventListener('drop', (event) => {
       img.style.position = 'absolute'; // Ensure it's positioned correctly
       img.style.top = '0';
       img.style.left = '0';
+      img.style.width = '100%';
+      img.style.height = '100%';
       img.draggable = false; // Prevent default drag behavior
       img.style.userSelect = 'none'; // Prevent image selection
       combinedImages.style.width = `${img.width}px`;
       combinedImages.style.height = `${img.height}px`;
-      combinedImages.appendChild(img);
+      const imageContainer = document.createElement('div');
+      imageContainer.style.position = 'absolute';
+      imageContainer.style.top = '0';
+      imageContainer.style.left = '0';
+      imageContainer.style.width = '100%';
+      imageContainer.style.height = '100%';
+      imageContainer.appendChild(img);
+      combinedImages.appendChild(imageContainer);
       allowDragFromMyPictures = false;
     };
   } else {

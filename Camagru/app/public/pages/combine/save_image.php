@@ -22,8 +22,6 @@ if (empty($data)) {
 //I use the first image to get the dimensions of the canvas
 $width = $data[0]['width'];
 $height = $data[0]['height'];
-$top = $data[0]['top'];
-$left = $data[0]['left'];
 
 //I create the canvas and fill it with a white background
 $canvas = imagecreatetruecolor($width, $height);
@@ -41,15 +39,27 @@ foreach ($data as $image) {
   $decodedData = base64_decode($base64Data);
   $img = imagecreatefromstring($decodedData);
   if ($img !== false) {
-    // Copy the resized image onto the canvas at the specified position
-    $Top2Save = max(0, -$image['top']);
-    $Left2Save = max(0, -$image['left']);
-    $Wide2Save = min($width, imagesx($img) - $Left2Save);
-    $Height2Save = min($height, imagesy($img) - $Top2Save);
-    imagecopy($canvas, $img, $Top2Save, $Left2Save, 0, 0, $Wide2Save, $Height2Save);
+    // Use the provided dimensions and positions
+    $Top2Save = $image['top'];
+    $Left2Save = $image['left'];
+    $Wide2Save = $image['width'];
+    $Height2Save = $image['height'];
+
+    // Resize and copy the image onto the canvas
+    imagecopyresampled(
+      $canvas,
+      $img,
+      $Left2Save,
+      $Top2Save, // Destination position
+      0,
+      0, // Source position
+      $Wide2Save,
+      $Height2Save, // Destination dimensions
+      imagesx($img),
+      imagesy($img) // Source dimensions
+    );
     imagedestroy($img);
   }
-  imagedestroy($img);
 }
 $documentDB = new DocumentDB('combines');
 $documentDB->connect();
