@@ -1,0 +1,122 @@
+/* Professional centering and styling for gallery.php content */
+.gallery-container {
+    width: 90%;
+    margin: 30px auto;
+    padding: 40px 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.gallery-container h1,
+.gallery-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.gallery-container p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.user-gallery {
+    margin-top: 32px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.photo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.photo-grid img {
+    width: 200px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.10);
+}
+
+.user-gallery h2 {
+    margin-bottom: 16px;
+}
+
+.user-gallery p {
+    margin-bottom: 24px;
+    color: #666;
+}
+
+.photo-item {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.photo-item h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.photo-item p {
+    font-size: 14px;
+    color: #666;
+}
+
+
+.photo {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.photo img {
+    width: 100%;
+    border-radius: 6px;
+    display: block;
+}
+
+.photo-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    gap: 8px;
+    /* espacio entre iconos */
+    background: rgba(0, 0, 0, 0.4);
+    /* fondo semitransparente */
+    padding: 4px 6px;
+    border-radius: 6px;
+    opacity: 0;
+    /* 👈 oculto por defecto */
+    pointer-events: none;
+    /* 👈 no molesta mientras está oculto */
+    transition: opacity 0.3s;
+    /* 👈 transición suave */
+}
+
+.photo:hover .photo-actions {
+    opacity: 1;
+    /* 👈 se muestra al pasar el ratón */
+    pointer-events: auto;
+    /* 👈 ahora puede interactuar */
+}
+
+.photo-actions a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.photo-actions a:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}

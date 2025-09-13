@@ -1,6 +1,7 @@
 header {
 	position: fixed;
 	top: 0;
+	left: 0;
 	width: 100%;
 	background-color: var(--header_color);
 	color: var(--text-color);
@@ -30,6 +31,14 @@ header {
 
 /* Sidebar Footer */
 
+nav.nav-links {
+	list-style: none;
+	display: flex;
+	gap: 15px;
+	margin: 0;
+	padding: 0;
+	margin: 0 30px;
+}
 
 .user-info {
 	display: flex;

@@ -4,8 +4,7 @@ SessionManager::getInstance();
 require_once __DIR__ . '/../database/mongo_db.php';
 require_once __DIR__ . '/../database/User.php';
 $user = new User();
-$picture_uuid =
-  $client = new DocumentDB();
+$client = new DocumentDB('uploads');
 ?>
 <header>
   <link rel="stylesheet" href="/css/header.css">

@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $facturaId = $_GET['id'] ?? null;
         if ($facturaId) {
             $facturasInstance = new Facturas();
-            $documentosInstance = new DocumentDB();
+            $documentosInstance = new DocumentDB('demandas');
             $documento_uuid = $facturasInstance->getDocumentoByFacturaId($facturaId);
             $result = $documentosInstance->delete($documento_uuid);
             if ($result) {

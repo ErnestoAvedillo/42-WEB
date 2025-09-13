@@ -10,11 +10,11 @@
   --transition-speed: 0.3s;
 }
 
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+} */
 
 body {
   font-family: Arial, sans-serif;
@@ -26,6 +26,7 @@ body {
   flex-direction: column;
 }
 
+/* 
 header {
   position: fixed;
   top: 0;
@@ -37,7 +38,7 @@ header {
   justify-content: space-between;
   align-items: center;
   z-index: 1000;
-}
+} */
 
 
 /* Navigation menu styles */

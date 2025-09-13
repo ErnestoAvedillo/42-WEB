@@ -28,7 +28,7 @@ require_once __DIR__ . '/../../database/posts.php';
     $pageTitle = "sidebar - Camagru";
     include __DIR__ . '/../../pages/left_bar/left_bar.php';
     $picture_uuid = $_GET['picture_uuid'] ?? ($_POST['picture_uuid'] ?? null);
-    $client = new DocumentDB();
+    $client = new DocumentDB('combines');
     $client->connect();
     $mongo = $client->getCollection();
     $photo = $client->getFileById($picture_uuid);

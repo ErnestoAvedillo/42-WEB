@@ -103,7 +103,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 }
 
 try {
-    $fileInstance = new DocumentDB();
+    $fileInstance = new DocumentDB('demandas');
     $document_uuid = $fileInstance->uploadFile($file, $_SESSION['uuid']);
 } catch (Exception $e) {
     file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . "Failed to upload file to MongoDB: " . $e->getMessage() . " with user " . $_SESSION['uuid'] . "\n", FILE_APPEND);

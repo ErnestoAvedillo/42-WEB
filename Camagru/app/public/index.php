@@ -25,26 +25,39 @@ SessionManager::getInstance();
     <div class="hero-section">
       <h2>Welcome to Camagru</h2>
       <p>A modern photo sharing platform where you can upload, edit, and share your favorite images with the world.</p>
-      <div class="feature-buttons">
-        <a href="/pages/upload/upload.php" class="btn btn-primary">Upload Photos</a>
-        <a href="/pages/gallery/gallery.php" class="btn btn-secondary">View Gallery</a>
-      </div>
+      <!-- <div class="feature-buttons">
+        <a href="/pages/upload/upload.php?type=photo" class="btn btn-primary">Upload Photos</a>
+        <a href="/pages/upload/upload.php?type=master" class="btn btn-secondary">Upload Masters</a>
+        <a href="/pages/gallery/gallery.php" class="btn btn-tertiary">View Gallery</a>
+      </div> -->
     </div>
     <div class="features-section">
       <h3>Key Features</h3>
       <div class="features-grid">
-        <div class="feature-card">
-          <h4>📸 Easy Upload</h4>
-          <p>Upload images, PDFs, Word documents and more with our simple drag-and-drop interface.</p>
-        </div>
-        <div class="feature-card">
-          <h4>🖼️ Gallery View</h4>
-          <p>Browse all uploaded files in a beautiful gallery layout with filtering options.</p>
-        </div>
-        <div class="feature-card">
-          <h4>👥 User Management</h4>
-          <p>Register an account to manage your uploads and personalize your experience.</p>
-        </div>
+        <a href="/pages/upload/upload.php?type=photo" class="feature-card-link">
+          <div class="feature-card">
+            <h4>📸 Easy Upload</h4>
+            <p>Upload your images to be and more with our simple drag-and-drop interface.</p>
+          </div>
+        </a>
+        <a href="/pages/upload/upload.php?type=master" class="feature-card-link">
+          <div class="feature-card">
+            <h4>🪟 Upload Masters</h4>
+            <p>Upload your masters to decorate your photos with our simple drag-and-drop interface.</p>
+          </div>
+        </a>
+        <a href="/pages/combine/combine.php" class="feature-card-link">
+          <div class="feature-card">
+            <h4>🌁 Combine Photos</h4>
+            <p>Create stunning collages by combining your photos with uploaded masters using our intuitive editor.</p>
+          </div>
+        </a>
+        <a href="/pages/gallery/gallery.php" class="feature-card-link">
+          <div class="feature-card">
+            <h4>🖼️ Gallery View</h4>
+            <p>Browse all uploaded files in a beautiful gallery layout with filtering options.</p>
+          </div>
+        </a>
       </div>
     </div>
   </div>

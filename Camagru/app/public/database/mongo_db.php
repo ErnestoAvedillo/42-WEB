@@ -18,8 +18,9 @@ class DocumentDB
     private $db_name;
     private $conn_str;
     private $conn;
+    private $collection_name;
 
-    public function __construct()
+    public function __construct($collection_name = null)
     {
         // Load environment variables in constructor
         $this->host = EnvLoader::get('MONGODB_SERVER', 'mongodb');
@@ -28,11 +29,15 @@ class DocumentDB
         $this->password = EnvLoader::get('MONGODB_PASSWORD', 'admin123');
         $this->db_name = EnvLoader::get('MONGODB_DATABASE', 'camagru');
         $this->conn_str = EnvLoader::get('MONGODB_URL', "mongodb://{$this->username}:{$this->password}@{$this->host}:{$this->port}/{$this->db_name}?authSource=admin");
+        $this->collection_name = $collection_name ?: EnvLoader::get('MONGODB_COLLECTION', 'uploads');
     }
 
-    public function connect()
+    public function connect($collection = null)
     {
         $this->conn = null;
+        if ($collection) {
+            $this->collection_name = $collection;
+        }
         try {
             $this->conn = new MongoDB\Driver\Manager($this->conn_str);
 
@@ -59,9 +64,9 @@ class DocumentDB
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
-        $collection = (new MongoDB\Client($this->conn_str))->selectCollection($this->db_name, 'uploads');
+        $collection = (new MongoDB\Client($this->conn_str))->selectCollection($this->db_name, $this->collection_name);
         if (!$collection) {
-            throw new Exception("Failed to select collection 'uploads'.");
+            throw new Exception("Failed to select collection '{$this->collection_name}'.");
         }
         //echo $filename;
         try {
@@ -85,6 +90,37 @@ class DocumentDB
         }
     }
 
+    public function insertCombine($imageData, $user_uuid = null)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = (new MongoDB\Client($this->conn_str))->selectCollection($this->db_name, $this->collection_name);
+        if (!$collection) {
+            throw new Exception("Failed to select collection '{$this->collection_name}'.");
+        }
+        try {
+            $myOwnUUID = \Ramsey\Uuid\Uuid::uuid4()->toString();
+            $filename = $myOwnUUID . '.jpg';
+            $mimeType = 'image/jpeg';
+            // Store file in MongoDB as a document
+            $result = $collection->insertOne([
+                '_id' => $myOwnUUID, // Use a custom UUID or MongoDB ObjectId
+                'user_uuid' => $user_uuid, // Replace with actual user UUID if needed
+                'filename' => $filename,
+                'filedata' => new MongoDB\BSON\Binary($imageData, MongoDB\BSON\Binary::TYPE_GENERIC),
+                'mimetype' => $mimeType,
+                'uploaded_at' => new MongoDB\BSON\UTCDateTime()
+            ]);
+            $idvalue = $result->getInsertedId();
+            return $idvalue; // Return the ID of the inserted document
+        } catch (Exception $e) {
+            throw new Exception("Combine insert error: " . $e->getMessage());
+        }
+    }
+
+
     public function delete($id)
     {
         $this->connect();
@@ -104,8 +140,14 @@ class DocumentDB
             throw new Exception("Database connection not established.");
         }
         $client = new MongoDB\Client($this->conn_str);
-        return $client->selectCollection($this->db_name, 'uploads');
+        return $client->selectCollection($this->db_name, $this->collection_name);
     }
+
+    public function setCollection($collection_name)
+    {
+        $this->collection_name = $collection_name;
+    }
+
     public function getFileById($id)
     {
         $this->connect();

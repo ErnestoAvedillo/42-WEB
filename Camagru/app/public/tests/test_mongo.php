@@ -4,6 +4,6 @@ use MongoDB\Client;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\UTCDateTime;
 
-$db = new DocumentDB();
+$db = new DocumentDB('uploads');
 $db->connect();
 $db->uploadFile("/home/ernesto/Downloads/Ernesto.png");

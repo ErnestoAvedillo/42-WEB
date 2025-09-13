@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         if ($demandaId) {
             $demandasInstance = new Demandas();
             $facturasInstance = new Facturas();
-            $documentosInstance = new DocumentDB();
+            $documentosInstance = new DocumentDB('demandas');
             //**** Seleccionar facturas para borrar****
             $listaFacturas = $demandasInstance->getFacturasByDemandaId($demandaId);
             foreach ($listaFacturas as $facturaId) {

@@ -4,14 +4,13 @@ SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
 $user = new User();
-$picture_uuid =
-  $client = new DocumentDB();
+$client = new DocumentDB('uploads');
 ?>
 <header>
   <link rel="stylesheet" href="/pages/header/header.css">
   <button id="toggleSidebarBtn">☰</button>
   <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
-  <nav>
+  <nav class="nav-links">
     <ul>
       <?php if ($isLoggedIn = isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>
         <div class="user-info" id="userInfo">

@@ -33,7 +33,7 @@ $user = $userInstance->getUserByUUID($_SESSION['uuid']);
 
 $file = $_FILES['profile_picture'] ?? null;
 if ($file != null && $file['error'] === UPLOAD_ERR_OK) {
-    $documentDB = new DocumentDB();
+    $documentDB = new DocumentDB('uploads');
     try {
         $result = $documentDB->uploadFile($file, $_SESSION['uuid']);
     } catch (Exception $e) {

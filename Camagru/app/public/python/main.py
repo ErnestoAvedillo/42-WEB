@@ -158,6 +158,7 @@ async def factura(factura: UploadFile = File(...)):
         prompt += 'Las fechas las debes devolver en formato d/m/Y'
         prompt += '{"acreedor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
         prompt += '{"deudor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
+        prompt += '{"numero_contrato":""}'
         prompt += '{"factura":{"numero":"","fecha":"","vencimiento":"","importe_total":"","importe_iva":"","importe_base":""}}'
         prompt += '{"concepto":""}'
 

@@ -57,8 +57,8 @@
 }
 
 .btn-primary:hover {
-    background: #ff5252;
-    transform: translateY(-2px);
+    background: white;
+    color: #667eea;
 }
 
 .btn-secondary {
@@ -72,6 +72,18 @@
     color: #667eea;
 }
 
+
+.btn-tertiary {
+    background: rgba(83, 101, 151, 0.2);
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-tertiary:hover {
+    background: white;
+    color: #667eea;
+}
+
 .features-section h3 {
     text-align: center;
     font-size: 2.5rem;
@@ -80,6 +92,8 @@
 }
 
 .features-grid {
+    width: 60%;
+    margin: auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
