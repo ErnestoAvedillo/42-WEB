@@ -165,8 +165,8 @@ combinedImages.addEventListener('drop', (event) => {
       imageContainer.style.position = 'absolute';
       imageContainer.style.top = '0';
       imageContainer.style.left = '0';
-      imageContainer.style.width = '100%';
-      imageContainer.style.height = '100%';
+      imageContainer.style.width = `${img.width}px`;
+      imageContainer.style.height = `${img.height}px`;
       imageContainer.appendChild(img);
       combinedImages.appendChild(imageContainer);
       allowDragFromMyPictures = false;

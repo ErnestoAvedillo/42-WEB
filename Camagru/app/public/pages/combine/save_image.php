@@ -8,6 +8,7 @@ if (!SessionManager::getSessionKey('uuid')) {
   exit();
 }
 header('Content-Type: application/json');
+$autofilling = '/tmp/combine.log';
 // save_image.php
 
 // Get the JSON data from the request
@@ -18,6 +19,7 @@ if (empty($data)) {
   echo json_encode(['success' => false, 'message' => 'No data received']);
   exit;
 }
+
 
 //I use the first image to get the dimensions of the canvas
 $width = $data[0]['width'];
@@ -38,6 +40,14 @@ foreach ($data as $image) {
   // Decode the base64 data and create an image resource
   $decodedData = base64_decode($base64Data);
   $img = imagecreatefromstring($decodedData);
+  file_put_contents(
+    $autofilling,
+    "Comnime ==> save_image- imagecopyresampled(canvas dimensions: " . imagesx($canvas) . "x" . imagesy($canvas) .
+      ", img dimensions: " . imagesx($img) . "x" . imagesy($img) .
+      ", left: " . $image['left'] . ", top: " . $image['top'] .
+      ", width: " . $image['width'] . ", height: " . $image['height'] . ")\n",
+    FILE_APPEND
+  );
   if ($img !== false) {
     // Use the provided dimensions and positions
     $Top2Save = $image['top'];
