@@ -39,11 +39,21 @@ const facturaForm = document.getElementById('facturaForm');
 if (facturaForm) {
     facturaForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        // Show wait overlay using shared wait utils if available
-        if (typeof startWait === 'function') startWait('Guardando factura... Rellenando campos...');
-        else document.getElementById("waitOverlay").style.display = "flex";
+        console.log("Submitting form data...");
 
+        // Show wait overlay using shared wait utils if available
+        // if (typeof startWait === 'function') startWait('Guardando factura... Rellenando campos...');
+        // else document.getElementById("waitOverlay").style.display = "flex";
+        if (typeof startWait === 'function') {
+            startWait('Generando comentario...');
+            console.log("startWait function called.");
+        }
+        else {
+            document.getElementById("waitOverlay").style.display = "flex";
+            console.log("waitOverlay displayed.");
+        }
         const formData = new FormData(facturaForm);
+        console.log("Submitting form data:", formData);
 
         fetch('/pages/facturas/factura_handler.php', {
             method: 'POST',
@@ -51,6 +61,7 @@ if (facturaForm) {
         })
             .then(response => response.json())
             .then(data => {
+                console.log("Response data:", decodejson(data));
                 if (data.success && data.redirect) {
                     console.log('Redirecting to:', data.redirect);
                     window.location.href = data.redirect;

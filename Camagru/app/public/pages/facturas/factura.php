@@ -32,7 +32,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
   <div class="Facturas" id="Facturas">
     <h1>Carge el documento con la factura escaneada o en PDF</h1>
     <form id="facturaForm" action="/pages/facturas/factura_handler.php" method="post" enctype="multipart/form-data">
-      <input id="file_field" type="file" name="factura" accept=".jpg,.jpeg,.png,.gif,.pdf,.mp4,.zip,.docx" required>
+      <input id="file_field" type="file" multiple name="factura[]" accept=".jpg,.jpeg,.png,.gif,.pdf,.mp4,.zip,.docx" required>
       <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars(SessionManager::getSessionKey('uuid')); ?>">
       <button id="fill_factura" class="button_factura" type="submit">Rellenar factura</button>
     </form>
