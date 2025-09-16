@@ -20,6 +20,7 @@ function startWait(message) {
     }, 250);
     // optionally disable form buttons:
     document.querySelectorAll('button, input[type="submit"]').forEach(el => el.disabled = true);
+    console.log("startWait called with message:", message);
 }
 
 function stopWait() {

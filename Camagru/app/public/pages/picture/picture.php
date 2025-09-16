@@ -62,6 +62,7 @@ require_once __DIR__ . '/../../database/posts.php';
             }
             ?>
         </div>
+        <?php include __DIR__ . '/../../utils/wait/wait.php'; ?>
         <div class="picture-actions">
             <form action="/pages/picture/add_post.php" method="post">
                 <input type="hidden" name="picture_uuid" value="<?php echo htmlspecialchars($picture_uuid); ?>">

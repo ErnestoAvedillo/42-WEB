@@ -3,3 +3,6 @@ uvicorn
 pydantic
 pillow
 google-generativeai
+pdfminer.six
+teseractact
+pdf2image

@@ -49,14 +49,14 @@ if (!SessionManager::getSessionKey('uuid')) {
     <?php } ?>
     <form class="upload-form" action="upload_handler.php?type=<?php echo htmlspecialchars($type); ?>" method="post" enctype="multipart/form-data">
       <?php if ($type === 'master') { ?>
-        <input class="upload-input" type="file" name="file" accept=".png" required>
+        <input class="upload-input" type="file" multiple name="file[]" accept=".png" required>
       <?php } elseif ($type === 'photo') { ?>
-        <input class="upload-input" type="file" name="file" accept=".jpg,.jpeg,.png,.gif" required>
+        <input class="upload-input" type="file" multiple name="file[]" accept=".jpg,.jpeg,.png,.gif" required>
       <?php } ?>
       <!-- <input type="file" name="photo" accept=".jpg,.jpeg,.png,.gif,.pdf,.mp4,.zip,.docx" required> -->
       <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars(SessionManager::getSessionKey('uuid')); ?>">
       <input type="hidden" name="type" value="<?php echo htmlspecialchars($type); ?>">
-      <button type="submit" class="btn btn-primary">Upload Photo</button>
+      <button type="submit" class="btn btn-primary">Upload Photos</button>
       <button href="/pages/gallery/gallery.php" class="btn btn-secondary">View Gallery</button>
     </form>
     <?php if ($type === 'master') { ?>
@@ -84,51 +84,52 @@ if (!SessionManager::getSessionKey('uuid')) {
     // $mongo = $client->getCollection();
     $photos = $client->getUserPhotos($user_uuid);
     if (!empty($photos)) {
-      ?>
-      <div class="galeria"><
-      <?php
-      foreach ($photos as $photo) {
-        if (isset($photo['filedata'])) {
-          $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
-          $base64 = base64_encode($photo['filedata']->getData());
-          $postData = 'data-container=' . urlencode($collection) . ' data-image-id=' . urlencode($photo['_id']); 
+    ?>
+      <div class="galeria">
+        <
+          <?php
+          foreach ($photos as $photo) {
+            if (isset($photo['filedata'])) {
+              $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
+              $base64 = base64_encode($photo['filedata']->getData());
+              $postData = 'data-container=' . urlencode($collection) . ' data-image-id=' . urlencode($photo['_id']);
           ?>
           <div class="photo">
-            <div class="photo-actions">
-              <a href="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" download="<?php echo htmlspecialchars($photo['filename']); ?>" class="download-icon">📥</a>
-              <a class="delete-image" href="#" <?php echo htmlspecialchars($postData); ?> class="delete-icon">🗑️</a>
-            </div>
-            <img src="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" alt="<?php echo htmlspecialchars($photo['filename']); ?>" width="200">
+          <div class="photo-actions">
+            <a href="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" download="<?php echo htmlspecialchars($photo['filename']); ?>" class="download-icon">📥</a>
+            <a class="delete-image" href="#" <?php echo htmlspecialchars($postData); ?> class="delete-icon">🗑️</a>
           </div>
-        <?php
-        } else {
-        ?>
-          echo '<p>No image data found.</p>';
-        <?php
-        }
-      }
-    } else {
-      if ($type === 'master') {
-      ?>
-        <p>You have not uploaded any masters yet. Start by uploading your first master!</p>
-      <?php
-      } else {
-      ?>
-        <p>You have not uploaded any photos yet. Start by uploading your first photo!</p>
-      <?php
-      }
-    }
-    ?>
-    </div>
-  </div>
+          <img src="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" alt="<?php echo htmlspecialchars($photo['filename']); ?>" width="200">
+      </div>
     <?php
-    //    echo "<pre>";
-    //    var_dump($_SESSION);
-    //    echo "</pre>";
-    include __DIR__ . '/../right_bar/right_bar.php';
-    include __DIR__ . '/../../views/footer.php';
+            } else {
     ?>
-    <script src="/pages/upload/upload.js"></script>
+      echo '<p>No image data found.</p>';
+    <?php
+            }
+          }
+        } else {
+          if ($type === 'master') {
+    ?>
+    <p>You have not uploaded any masters yet. Start by uploading your first master!</p>
+  <?php
+          } else {
+  ?>
+    <p>You have not uploaded any photos yet. Start by uploading your first photo!</p>
+<?php
+          }
+        }
+?>
+  </div>
+  </div>
+  <?php
+  //    echo "<pre>";
+  //    var_dump($_SESSION);
+  //    echo "</pre>";
+  include __DIR__ . '/../right_bar/right_bar.php';
+  include __DIR__ . '/../../views/footer.php';
+  ?>
+  <script src="/pages/upload/upload.js"></script>
 </body>
 
 </html>

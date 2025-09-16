@@ -1,10 +1,11 @@
 #! /usr/bin/env python
-
+from data_classes import InputData, ConceptoData, Factura, Contacto
 from urllib import response
 from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import List,Optional
+from auto_fill import autoFill
+from auto_factura import autoFactura
+
 from PIL import Image
 import base64
 import os
@@ -17,11 +18,6 @@ import re
 
 Log_file = "/var/log/app.log"
 
-def fix_base64_padding(encoded_string):
-    missing_padding = len(encoded_string) % 4
-    if missing_padding:
-        encoded_string += '=' * (4 - missing_padding)
-    return encoded_string
 
 app = FastAPI()
 
@@ -47,134 +43,18 @@ async def validation_exception_handler(request, exc: RequestValidationError):
     safe = sanitize(exc.errors())
     return JSONResponse(status_code=422, content=jsonable_encoder({"detail": safe}))
 
-class InputData(BaseModel):
-    picture: Optional[str] = None
-    factura: Optional[str] = None
-
-class Factura(BaseModel):
-    fecha: Optional[str] = None
-    importe: str
-    concepto: str
-    vencimiento: Optional[str] = None
-    document_uuid: str
-
-class Contacto(BaseModel):
-    nombre: str
-    cif: str
-    domicilio: str
-    telefono: str
-    fax: str
-    email: str
-
-class ConceptoData(BaseModel):
-    acreedor: Contacto
-    deudor: Contacto
-    lista_facturas: dict[str, Factura]
-
 @app.post("/autofill")
 async def autofill(data: InputData):
-    import google.generativeai as genai
-    if Log_file and os.path.exists(Log_file):
-        os.remove(Log_file)
-    
-    # models = genai.list_models()
-    # with open(Log_file, "a") as f:
-    #     for model in models:
-    #         f.write(f"Model: {model.name}, Supported Methods: {model.supported_generation_methods}\n")
-
-    try:
-        if not data.picture:
-            return {"success": False, "error": "No picture provided"}
-
-        if ',' in data.picture:
-            header, encoded_data = data.picture.split(',', 1)
-        else:
-            raise ValueError("Invalid picture format: Missing header")
-        
-        # Decode the header to get the MIME type
-        mime_type = header.split(';')[0].split(':')[1] if ':' in header else None
-
-        # Fix Base64 padding
-        fixed_picture = fix_base64_padding(encoded_data)
-
-        image_data = base64.b64decode(fixed_picture)
-
-        image_json = {"mime_type": mime_type, "data": image_data}
-
-        # Validate the image data
-        image = Image.open(io.BytesIO(image_data))
-        image.verify()  # Verify that it is a valid image
-    except Exception as e:
-        with open(Log_file, "a") as f:
-            f.write(f"Error processing images: {str(e)}\n")
-        return {"success": False, "error": f"Invalid image format or data: {str(e)}"}
-
-    try:
-        GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-        genai.configure(api_key=GOOGLE_API_KEY)
-
-        prompt = "Return only one funny caption for this picture"
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
-
-        response = model.generate_content([prompt, image_json])
-        with open(Log_file, "a") as f:
-            f.write(f"Prompt sent to Gemini API: {prompt}\n")
-        text = response.text.replace("\"", "")
-        with open(Log_file, "a") as f:
-            f.write(f"Response from Gemini API: {response}\n")
-        return {"success": True, "caption": text}
-    except Exception as e:
-        with open(Log_file, "a") as f:
-            f.write(f"Error from Gemini API: {str(e)}\n")
-        return {"success": False, "error": f"Error from Gemini API: {str(e)}"}
+    response = await autoFill(data)
+    return response
 
 
 @app.post("/factura")
 async def factura(factura: UploadFile = File(...)):
-    import google.generativeai as genai
-    if Log_file and os.path.exists(Log_file):
-        os.remove(Log_file)
+    response = await autoFactura(factura)
     with open( Log_file,"a") as f:
-        f.write(f"Function called {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-    # Leer el contenido una sola vez
-    file_bytes = await factura.read()
-    # with open( Log_file,"a") as f:
-    #         f.write(f"filename: {factura.filename}: {file_bytes[0:50]}  \n data--end\n")
-    #         f.write(f"file size: {factura.size} bytes\n")
-    #         f.write(f"file mime type: {factura.content_type}\n")
-    try:
-        image_json = {"mime_type": factura.content_type, "data": file_bytes}
-    except Exception as e:
-        with open("/var/log/app.log", "a") as f:
-            f.write(f"Error procesando fichero factura: {str(e)}\n")
-        return JSONResponse(status_code=400, content={"success": False, "error": f"Invalid file format or data: {str(e)}"})
-
-    try:
-        GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-        genai.configure(api_key=GOOGLE_API_KEY)
-
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
-        prompt = 'Devuelve la siguiente información de este documento en un archivo JSON'
-        prompt += 'Las fechas las debes devolver en formato d/m/Y'
-        prompt += '{"acreedor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
-        prompt += '{"deudor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
-        prompt += '{"numero_contrato":""}'
-        prompt += '{"factura":{"numero":"","fecha":"","vencimiento":"","importe_total":"","importe_iva":"","importe_base":""}}'
-        prompt += '{"concepto":""}'
-
-        response = model.generate_content([prompt, image_json])
-        with open("/var/log/app.log", "a") as f:
-            f.write(f"Prompt sent to Gemini API: {prompt}\n")
-        text = response.text.replace("\"", "")
-        with open("/var/log/app.log", "a") as f:
-            f.write(f"Response from Gemini API: {response}\n")
-        clean_str = re.sub(r"^```json\s*|\s*```$", "", response.text, flags=re.DOTALL)
-        json_data = json.loads(clean_str)
-    except Exception as e:
-        with open("/var/log/app.log", "a") as f:
-            f.write(f"Error from Gemini API: {str(e)}\n")
-        return JSONResponse(status_code=400, content={"success": False, "error": f"Error from Gemini API: {str(e)}"})
-    return JSONResponse(status_code=200, content={"success": True, "caption": json_data})
+        f.write(f"Response recived {time.strftime('%Y-%m-%d %H:%M:%S')}- {response}\n")
+    return response
 
 @app.get("/factura")
 async def factura_info():
