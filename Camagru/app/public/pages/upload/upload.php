@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 if (!SessionManager::getSessionKey('uuid')) {
-  echo "<script>alert('You must be logged in to access this page.');</script>";
+  // echo "<script>alert('You must be logged in to access this page.');</script>";
   header('Location: /pages/request_login/request_login.php');
   exit();
 }

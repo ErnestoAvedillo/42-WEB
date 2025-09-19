@@ -3,8 +3,8 @@ require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 if (!SessionManager::getSessionKey('uuid')) {
-  echo "<script>alert('You must be logged in to access this page.');</script>";
-  header('Location: /Camagru/app/public/pages/login/login.php');
+  // echo "<script>alert('You must be logged in to access this page.');</script>";
+  header('Location: /pages/login/login.php');
   exit();
 }
 header('Content-Type: application/json');
