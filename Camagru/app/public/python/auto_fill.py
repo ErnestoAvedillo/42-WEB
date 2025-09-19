@@ -17,7 +17,7 @@ def fix_base64_padding(encoded_string):
     return encoded_string
 
 
-def autoFill(data: InputData):
+async def autoFill(data: InputData):
     if Log_file and os.path.exists(Log_file):
         os.remove(Log_file)
     
@@ -61,13 +61,47 @@ def autoFill(data: InputData):
         model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
 
         response = model.generate_content([prompt, image_json])
+        # response = "GenerateContentResponse(\n"
+        # response += "done=True,\n"
+        # response += "iterator=None,\n"
+        # response += "result=protos.GenerateContentResponse({\n"
+        # response += "  \"candidates\": [\n"
+        # response += "    {\n"
+        # response += "      \"content\": {\n"
+        # response += "        \"parts\": [\n"
+        # response += "          {\n"
+        # response += "            \"text\": \"Me and my co-pilot, Spongebob, ready for a cross-country road trip.  He's in charge of the Krabby Patties.\"\n"
+        # response += "          }\n"
+        # response += "        ]\n"
+        # response += "      }\n"
+        # response += "      \"role\": \"model\"\n"
+        # response += "    },\n"
+        # response += "    \"finish_reason\": \"STOP\",\n"
+        # response += "    \"avg_logprobs\": -0.4304741450718471\n"
+        # response += "  }\n"
+        # response += "],\n"
+        # response += "  \"usage_metadata\": {\n"
+        # response += "    \"prompt_token_count\": 266,\n"
+        # response += "    \"candidates_token_count\": 35,\n"
+        # response += "    \"total_token_count\": 301\n"
+        # response += "  },\n"
+        # response += "  \"model_version\": \"gemini-1.5-flash-latest\"\n"
+        # response += "})"
         with open(Log_file, "a") as f:
             f.write(f"Prompt sent to Gemini API: {prompt}\n")
-        text = response.text.replace("\"", "")
+            f.write(f"Response type {type(response)} from Gemini API: {response.text}\n")
+        text = response.text.strip('"')  # Remove any surrounding quotes if present
         with open(Log_file, "a") as f:
-            f.write(f"Response from Gemini API: {response}\n")
+            f.write(f"Response type {type(response)} from Gemini API: {text}\n")
         return {"success": True, "caption": text}
     except Exception as e:
         with open(Log_file, "a") as f:
             f.write(f"Error from Gemini API: {str(e)}\n")
         return {"success": False, "error": f"Error from Gemini API: {str(e)}"}
+"""
+if __name__ == "__main__":
+    # Example usage
+    with open(Log_file, "a") as f:
+        f.write(f"Function called {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+    with open(file)
+    sample_data = InputData(picture="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAYAAAA+5n4HAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjguNCwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy8fJSN1AAAACXBIWXMAAA9hAAAPYQGoP6dpAAEAAElEQVR4nOzde5xU1f3/8df+9mZ2Z3Zmd2Z2Z2ZmdmZ2Z"""
