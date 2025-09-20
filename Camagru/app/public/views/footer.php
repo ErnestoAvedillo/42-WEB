@@ -2,9 +2,9 @@
     <div class="footer-content">
         <p>&copy; 2023 Camagru - Todos los derechos reservados</p>
         <div class="footer-links">
-            <a href="#privacy">Privacidad</a>
-            <a href="#terms">Términos</a>
-            <a href="#contact">Contacto</a>
+            <a href="/pages/privacidad/privacidad.php">Privacidad</a>
+            <a href="/pages/terminos/terminos.php">Términos</a>
+            <a href="/pages/contacto/contacto.php">Contacto</a>
         </div>
     </div>
 </footer>

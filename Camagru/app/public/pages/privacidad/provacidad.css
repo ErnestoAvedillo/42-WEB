@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 2rem;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 0.5em;
+}
+
+h2 {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1em;
+}
+
+ul ol {
+  margin-left: 2em;
+  list-style-type: decimal;
+  text-align: left;
+  padding-left: 0;
+}
+
+footer {
+  text-align: center;
+  padding: 1em 0;
+  background-color: #f8f8f8;
+  border-top: 1px solid #eee;
+}

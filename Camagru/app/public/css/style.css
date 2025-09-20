@@ -26,21 +26,6 @@ body {
   flex-direction: column;
 }
 
-/* 
-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: var(--header_color);
-  color: var(--text-color);
-  padding: var(--header-padding);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 1000;
-} */
-
-
 /* Navigation menu styles */
 nav ul {
   list-style: none;
@@ -95,27 +80,6 @@ nav a.active {
   /* header + footer height */
 }
 
-/* aside {
-  position: fixed;
-  top: 80px; */
-/* Match the body padding-top */
-/* left: 0;
-  height: calc(100vh - 80px); */
-/* Full height minus header */
-/* width: 200px;
-  background-color: var(--background-light);
-  padding: var(--header-padding);
-  transition: transform var(--transition-speed) ease;
-  transform: translateX(0);
-  z-index: 999; */
-/* Below header but above content */
-/* }
-
-aside.hidden {
-  transform: translateX(-100%); */
-/* display: none;*/
-/* } */
-
 main {
   margin-left: 208px;
   margin-right: 280px;
@@ -124,7 +88,7 @@ main {
   transition: margin-left var(--transition-speed) ease;
   flex: 1;
   /* Takes up remaining space, pushing footer down */
-  text-align: center;
+  /* text-align: center; */
 }
 
 /* When sidebar is hidden, main content takes full width */
