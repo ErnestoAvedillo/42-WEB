@@ -112,7 +112,7 @@ SessionManager::getInstance();
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
     $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../pages/footer/footer.php';
+    include __DIR__ . '/../../views/footer.php';
     ?>
 </body>
 

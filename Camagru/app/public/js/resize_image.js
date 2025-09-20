@@ -158,8 +158,12 @@ function createFloatingImage(src, container) {
   img.draggable = false; // Prevent default drag behavior
 
   innersrc.onload = () => {
-    img.style.width = innersrc.naturalWidth + 'px';
-    img.style.height = innersrc.naturalHeight + 'px';
+    console.log('Image loaded:', innersrc.naturalWidth, innersrc.naturalHeight);
+    // img.style.width = innersrc.naturalWidth + 'px';
+    // img.style.height = innersrc.naturalHeight + 'px';
+    console.log('Image resized:', container.style.naturalWidth, container.style.naturalHeight);
+    img.style.width = container.style.width;
+    img.style.height = container.style.height;
   };
   // Esquinas y centros
   ['top-left', 'top-right', 'bottom-left', 'bottom-right',
@@ -177,6 +181,7 @@ function createFloatingImage(src, container) {
   });
 
   container.appendChild(img);
+  selectImage(img);
 }
 export { createFloatingImage };
 

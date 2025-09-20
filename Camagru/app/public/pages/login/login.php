@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$autofilling = '/tmp/Camagru.log';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,11 +27,14 @@ SessionManager::getInstance();
     $errors = $_SESSION['error_messages'] ?? [];
     $data = $_SESSION['login_data'] ?? [];
     $successMessage = $_SESSION['success_message'] ?? '';
-
     // Verificar si viene del registro
     $fromRegister = isset($_GET['registered']) && $_GET['registered'] == '1';
-    $registeredUser = $_SESSION['registered_user'] ?? '';
-
+    // $registeredUser = $_SESSION['registered_user'] ?? '';
+    // debugger
+    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Errors: " . json_encode($errors) . "\n", FILE_APPEND);
+    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Edit link: " . json_encode($data) . "\n", FILE_APPEND);
+    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Success msg: " . json_encode($successMessage) . "\n", FILE_APPEND);
+    // file_put_contents($autofilling, "Login ==> login.php - fromRegister: " . date('Y-m-d H:i:s') . "Registered user: " . $registeredUser . "\n", FILE_APPEND);
     // Limpiar mensajes después de mostrarlos
     unset($_SESSION['error_messages']);
     unset($_SESSION['login_data']);
@@ -51,7 +55,7 @@ SessionManager::getInstance();
 
         <?php if (!empty($successMessage)): ?>
             <div class="alert-success">
-                <?php echo htmlspecialchars($successMessage); ?>
+                <?php echo htmlspecialchars(json_encode($successMessage)); ?>
             </div>
         <?php endif; ?>
         <p>Please enter your credentials to access your account.</p>

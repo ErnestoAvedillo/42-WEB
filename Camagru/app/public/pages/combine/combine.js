@@ -159,20 +159,23 @@ combinedImages.addEventListener('drop', (event) => {
       img.style.height = '100%';
       img.draggable = false; // Prevent default drag behavior
       img.style.userSelect = 'none'; // Prevent image selection
-      combinedImages.style.width = `${img.width}px`;
-      combinedImages.style.height = `${img.height}px`;
+      const maxImageWidth = Math.min(Math.floor(window.innerWidth * 0.8), img.width);
+      const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
+      combinedImages.style.width = `${maxImageWidth}px`;
+      combinedImages.style.height = `${maxImageHeight}px`;
       const imageContainer = document.createElement('div');
       imageContainer.style.position = 'absolute';
       imageContainer.style.top = '0';
       imageContainer.style.left = '0';
-      imageContainer.style.width = `${img.width}px`;
-      imageContainer.style.height = `${img.height}px`;
+      imageContainer.style.width = `${maxImageWidth}px`;
+      imageContainer.style.height = `${maxImageHeight}px`;
       imageContainer.appendChild(img);
       combinedImages.appendChild(imageContainer);
       allowDragFromMyPictures = false;
     };
   } else {
     // Get the dropped image source
+    console.log('Max image window size:', window.innerWidth, window.innerHeight);
     const imageSrc = event.dataTransfer.getData('text/plain');
     createFloatingImage(imageSrc, combinedImages);
   }

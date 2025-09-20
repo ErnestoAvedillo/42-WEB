@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php';
 if (!SessionManager::getSessionKey('uuid')) {
-    header('Location: /pages/request_login/request_login.php');
+  header('Location: /pages/login/login.php');
     exit();
 }
 require_once __DIR__ . '/../../database/posts.php';
@@ -17,7 +17,7 @@ require_once __DIR__ . '/../../database/posts.php';
     <title>Gallery - Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/picture.css">
+    <link rel="stylesheet" href="/pages/picture/picture.css">
 </head>
 
 <body>
@@ -64,12 +64,12 @@ require_once __DIR__ . '/../../database/posts.php';
         </div>
         <?php include __DIR__ . '/../../utils/wait/wait.php'; ?>
         <div class="picture-actions">
-            <form action="/pages/picture/add_post.php" method="post">
+            <form class="picture-action-form" action="/pages/picture/add_post.php" method="post">
                 <input type="hidden" name="picture_uuid" value="<?php echo htmlspecialchars($picture_uuid); ?>">
                 <input type="hidden" name="user_uuid" value="<?php echo $_SESSION['uuid']; ?>">
                 <textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>
-                <button type="submit">Post</button>
-                <button type="button" id="auto-fill">Auto Fill</button>
+                <button class="button" type="submit">Post</button>
+                <button class="button" type="button" id="auto-fill">Auto Fill</button>
             </form>
         </div>
     </div>
