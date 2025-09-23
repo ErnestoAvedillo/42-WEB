@@ -1,6 +1,7 @@
 <?php
 class SessionManager
 {
+    private $logFile = '/tmp/session_manager.log';
     private static $instance = null;
 
     // Constructor privado para patrón Singleton
@@ -50,6 +51,7 @@ class SessionManager
     }
     public static function getSessionData($key)
     {
+        file_put_contents('/tmp/debug.log', "Getting session data for key: $key" . $_SESSION[$key] . "\n", FILE_APPEND);
         return $_SESSION[$key] ?? null;
     }
     public static function setSessionKey($key, $value)
@@ -65,11 +67,7 @@ class SessionManager
         foreach ($data as $key => $value) {
             $_SESSION[$key] = $value;
         }
-        //Deberia guardar la información del usuario en la sesión
-        //$_SESSION['id'] = $data['id'];
-        //$_SESSION['username'] = $data['username'];
-        //$_SESSION['email'] = $data['email'];
-        //$_SESSION['user_uuid'] = $data['uuid'];
+        //para visualizar lo que guarda
         $_SESSION['logged_in'] = true;
     }
     public static function clearSessionData()

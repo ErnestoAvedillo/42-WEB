@@ -24,8 +24,8 @@ if (!SessionManager::getSessionKey('uuid')) {
   <?php
   //    include __DIR__ . '/../../views/debugger.php';
   $pageTitle = "Home - Camagru";
-  include __DIR__ . '/../header/header.php';
-  include __DIR__ . '/../left_bar/left_bar.php';
+  include __DIR__ . '/../../pages/header/header.php';
+  include __DIR__ . '/../../pages/left_bar/left_bar.php';
   ?>
   <div class="uopload-container">
     <?php
@@ -126,7 +126,7 @@ if (!SessionManager::getSessionKey('uuid')) {
   //    echo "<pre>";
   //    var_dump($_SESSION);
   //    echo "</pre>";
-  include __DIR__ . '/../right_bar/right_bar.php';
+  include __DIR__ . '/../../right_bar/right_bar.php';
   include __DIR__ . '/../../views/footer.php';
   ?>
   <script src="/pages/upload/upload.js"></script>

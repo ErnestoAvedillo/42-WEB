@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 if (!SessionManager::getSessionKey('uuid')) {
   // echo "<script>alert('You must be logged in to access this page.');</script>";
-	header('Location: /pages/login/login.php');
+  header('Location: /pages/login/login.php');
   exit();
 }
 $autofilling = '/tmp/demandas.log';
@@ -30,8 +30,8 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
 <body>
   <?php
   $pageTitle = "Lista de demandas";
-  include __DIR__ . '/../header/header.php';
-  include __DIR__ . '/../left_bar/left_bar.php';
+  include __DIR__ . '/../../pages/header/header.php';
+  include __DIR__ . '/../../pages/left_bar/left_bar.php';
   ?>
   <?php include __DIR__ . '/../../utils/wait/wait.php'; ?>
   <div class="demandasDiv">
@@ -116,7 +116,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
 
 
   <?php
-  include __DIR__ . '/../right_bar/right_bar.php';
+  include __DIR__ . '/../../right_bar/right_bar.php';
   include __DIR__ . '/../../views/footer.php';
   ?>
   <script src="/pages/demandas/demandas.js"></script>
