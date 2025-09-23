@@ -1,6 +1,7 @@
 /* Professional centering and styling for gallery.php content */
 .picture-container {
-    width: 90%;
+    max-width: 90%;
+    max-height: 60%;
     margin: 0 auto;
     padding: 40px 30px;
     background: #fff;
@@ -50,7 +51,7 @@
     align-items: center;
     width: 80%;
     margin: 20px;
-}   
+}
 
 .picture-action-form {
     display: flex;
