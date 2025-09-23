@@ -34,3 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.querySelector('.upload-form').addEventListener('submit', function (event) {
+    const files = document.querySelector('input[name="file[]"]');
+    console.log(files.files);
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
+    let SumSizes = 0
+    for (let i = 0; i < files.files.length; i++) {
+        if (files.files[i].size > MAX_FILE_SIZE) {
+            alert('File size exceeds 10 MB limit.');
+            event.preventDefault();
+            return;
+        }
+        SumSizes += files.files[i].size;
+    }
+    if (SumSizes > MAX_FILE_SIZE) {
+        alert('Total file size exceeds 10 MB limit.');
+        event.preventDefault();
+        return;
+    }
+});
