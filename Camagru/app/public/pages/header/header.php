@@ -42,5 +42,4 @@ $client = new DocumentDB('uploads');
       <?php } ?>
     </ul>
   </nav>
-  <script src="/pages/header/header.js"></script>
 </header>
