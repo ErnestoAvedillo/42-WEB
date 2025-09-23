@@ -27,4 +27,8 @@
 
 * **[Configuration PHPMail to send mails with GMAIL.](https://www.kodetop.com/como-enviar-correos-con-php-y-gmail/#:~:text=Configurar%20PHPMailer&text=En%20este%20script%20hay%20que,en%20este%20caso%20tu%20correo)**
 
-
+### For assets such as icons or illustrations with transparent backgrounds, check out:
+- [StickingPNG](https://www.stickpng.com/) – large and well organised PNG images.
+- [PNGTree](https://pngtree.com) – large collection of PNGs with transparent backgrounds.
+- [CleanPNG](https://www.cleanpng.com) – free PNG images and clipart.
+- [PNGWing](https://www.pngwing.com) – transparent background images for projects.
