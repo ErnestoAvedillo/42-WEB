@@ -30,12 +30,10 @@ class User
                 SET two_factor_secret = :secret , two_factor_enabled = TRUE
                 WHERE uuid = :userId
             ");
-      file_put_contents($this->logfile, "Activating 2FA for user: " . $userId . " And secret Code: " . $secret . "\n", FILE_APPEND);
       $stmt->execute([
         ':secret' => $secret,
         ':userId' => $userId
       ]);
-      file_put_contents($this->logfile, "2FA activated successfully for user: " . $userId . "\n", FILE_APPEND);
       return ['success' => true, 'message' => '2FA activated successfully'];
     } catch (PDOException $e) {
       return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
@@ -50,7 +48,6 @@ class User
   public function disable2FA($userId)
   {
     try {
-      file_put_contents($this->logfile, "Disabling 2FA for user: " . $userId . "\n", FILE_APPEND);
       $stmt = $this->pdo->prepare("
                 UPDATE users 
                 SET two_factor_secret = NULL, two_factor_enabled = FALSE
@@ -58,7 +55,6 @@ class User
             ");
 
       $stmt->execute([':userId' => $userId]);
-      file_put_contents($this->logfile, "Disabled 2FA for user: " . $userId . "\n", FILE_APPEND);
 
       return ['success' => true, 'message' => '2FA deactivated successfully'];
     } catch (PDOException $e) {

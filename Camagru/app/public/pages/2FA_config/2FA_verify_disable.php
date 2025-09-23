@@ -31,9 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($totp->verify($token)) {
         $user = new User();
         $user->disable2FA($user_uuid);
-        file_put_contents("/tmp/debug.log", "2FA disabled for user: " . $_SESSION['two_factor_enabled'] . "\n", FILE_APPEND);
         SessionManager::getInstance()->setSessionKey('two_factor_enabled', false);
-        file_put_contents("/tmp/debug.log", "2FA disabled for user: " . $_SESSION['two_factor_enabled'] . "\n", FILE_APPEND);
         // Mensaje de éxito
         $_SESSION['success_message'] = 'Two-Factor Authentication has been disabled.';
         header('Location: /index.php');
