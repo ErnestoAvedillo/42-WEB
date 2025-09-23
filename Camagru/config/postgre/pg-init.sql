@@ -4,6 +4,8 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password TEXT NOT NULL,
+    two_factor_secret TEXT,
+    two_factor_enabled BOOLEAN DEFAULT FALSE,
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     email_verified BOOLEAN DEFAULT FALSE,

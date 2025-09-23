@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+if (SessionManager::getSessionKey('uuid')) {
+    // echo "<script>alert('You are already logged in.');</script>";
+    header('Location: /index.php');
+    exit();
+}
 $autofilling = '/tmp/Camagru.log';
 ?>
 <!DOCTYPE html>
