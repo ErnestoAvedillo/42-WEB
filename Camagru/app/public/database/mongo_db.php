@@ -183,4 +183,14 @@ class DocumentDB
         }
         return $file;
     }
+    public function getAllFiles()
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $files = $collection->find()->toArray();
+        return $files;
+    }
 }

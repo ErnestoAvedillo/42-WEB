@@ -59,10 +59,9 @@ if (!SessionManager::getSessionKey('uuid')) {
             }
           }
         }
-      } else {
-        echo '<p>Upload your photos to make collages in our <a href="/pages/upload/upload.php">Upload</a></p>';
-      }
-      ?>
+      } else { ?>
+        <p>Upload your photos to make collages in our <a href="/pages/upload/upload.php?type=photo">Upload</a></p>
+      <?php } ?>
     </div>
     <button id="scroll-right" class="scroll-button">▶</button>
   </div>
@@ -81,10 +80,10 @@ if (!SessionManager::getSessionKey('uuid')) {
     <button id="scroll-left" class="scroll-button">◀</button>
     <div id=Master class="dragzone">
       <?php
-      $user_uuid = SessionManager::getSessionKey('uuid');
+      // $user_uuid = SessionManager::getSessionKey('uuid');
       $MasterInstance = new DocumentDB('masters');
       $MasterInstance->connect();
-      $photos = $MasterInstance->getUserPhotos($user_uuid);
+      $photos = $MasterInstance->getAllFiles();
       // Display images
       if (!empty($photos)) {
         // Loop through each photo and display it
@@ -94,17 +93,16 @@ if (!SessionManager::getSessionKey('uuid')) {
             $base64 = base64_encode($photo['filedata']->getData());
             $imgTag = '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
             // Link to a photo details page, passing photo id as GET parameter
+            $photoId = isset($photo['_id']) ? (string)$photo['_id'] : '';
             echo '<div class="draggable-item" draggable="true" id="photo-' . htmlspecialchars($photoId) . '">';
             echo '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '">';
             echo '</div>';
-            // $photoId = isset($photo['_id']) ? (string)$photo['_id'] : '';
             // echo '<a href="/pages/picture/picture.php?picture_uuid=' . urlencode($photoId) . '" draggable="true">' . $imgTag . '</a>';
           }
         }
-      } else {
-        echo '<p>Upload your photos to make collages in our <a href="/pages/upload/upload.php">Upload</a></p>';
-      }
-      ?>
+      } else { ?>
+        <p>Upload your photos to make collages in our <a href="/pages/upload/upload.php?type=master">Upload</a></p>
+      <?php } ?>
     </div>
     <button id="scroll-right" class="scroll-button">▶</button>
   </div>

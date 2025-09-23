@@ -28,11 +28,11 @@ if (!SessionManager::getSessionKey('uuid')) {
   ?>
   <div class="gallery-container">
     <h1>Gallery of collages</h1>
-    <p>Select the picture you want to comment.</p>
+    <p>Select the picture you want to comment. Or create <a href="/pages/combine/combine.php">your own collage.</a></p>
     <?php $user_uuid = SessionManager::getSessionKey('uuid'); ?>
     <?php $client = new DocumentDB($container); ?>
     <?php $client->connect(); ?>
-    <?php $photos = $client->getUserPhotos($user_uuid); ?>
+    <?php $photos = $client->getAllFiles(); ?>
     <?php if (!empty($photos)) { ?>
       <div class="user-gallery">
         <div class="photo-grid">
@@ -57,7 +57,7 @@ if (!SessionManager::getSessionKey('uuid')) {
           <?php } ?>
         </div>
       <?php } else { ?>
-        <p>Upload your photos to make collages in our <a href="/pages/upload/upload.php">Upload</a></p>
+        <p>Upload your photos to make collages in our <a method href="/pages/upload/upload.php">Upload</a></p>
       <?php } ?>
       </div>
   </div>
