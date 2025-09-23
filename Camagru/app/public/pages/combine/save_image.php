@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../class_session/session.php';
+require_once __DIR__ . '/correct_orientation.php';
 SessionManager::getInstance();
 if (!SessionManager::getSessionKey('uuid')) {
   // echo "<script>alert('You must be logged in to access this page.');</script>";
@@ -49,6 +50,7 @@ foreach ($data as $image) {
     FILE_APPEND
   );
   if ($img !== false) {
+    $img = correctImageOrientation($img, $decodedData); // Correct the orientation
     // Use the provided dimensions and positions
     $Top2Save = $image['top'];
     $Left2Save = $image['left'];

@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
     --with-jpeg=/usr/include/ \
     && docker-php-ext-install gd \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mysqli \
+    && docker-php-ext-install exif \
+    && docker-php-ext-enable exif \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
     && pecl install redis \
