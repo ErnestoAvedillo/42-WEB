@@ -8,7 +8,7 @@ CERTS=selfsigned.crt selfsigned.key
 # Define targets
 all: build 
 
-build: 	build_certs 
+build: 	env_create build_certs 
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) build --no-cache
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
 
@@ -20,7 +20,7 @@ $(CERTS):
 down:
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) down
 
-restart: down
+restart: env_create down
 	$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) up -d
 
 logs:
@@ -29,12 +29,17 @@ logs:
 stop : 
 	@$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) stop
 
-start : 
+start : env_create
 	@$(COMPOSE) -f $(DOCKER_COMPOSE_FILE) start
 
 rebuild: down build
 
 re: clean build
+
+env_create:
+	@echo "Creating .env file..."
+	@. ./config/php/env_create.sh; 
+	@echo ".env data created."
 
 status:
 	@echo "Checking status of containers..."

@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     unzip \
     git \
+    && apt-get install -y iproute2 \
     && docker-php-ext-configure gd \
     --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/ \
