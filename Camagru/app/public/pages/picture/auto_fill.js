@@ -3,21 +3,12 @@ document.getElementById('auto-fill').addEventListener('mouseenter', function () 
    this.style.backgroundColor = '#f0f0f0';
    this.innerText = 'Auto Filling...';
 });
+
 document.getElementById('auto-fill').addEventListener('mouseleave', function () {
    this.style.backgroundColor = '';
    this.innerText = 'Auto Fill';
 });
-document.getElementById('picture').addEventListener('click', function () {
-   this.style.cursor = 'pointer';
-   this.style.backgroundColor = '#f0f0f0';
-   const file = this.currentSrc;
-   if (file) {
-      alert('First 10 chars: ' + file.substring(0, 10));
-   }
-});
-// document.getElementById('auto-fill').addEventListener('click', function () {
-//     startWait('Testing Auto Fill');
-// });
+
 document.getElementById('auto-fill').addEventListener('click', function () {
 
    console.log("Submitting form data...");

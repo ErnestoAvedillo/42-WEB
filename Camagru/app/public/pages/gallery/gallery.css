@@ -31,6 +31,26 @@
     align-items: center;
 }
 
+.user-section {
+    margin-bottom: 40px;
+    width: 100%;
+    border: 1px solid #c8d2d1;
+    padding-bottom: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
 .photo-grid {
     display: flex;
     flex-wrap: wrap;

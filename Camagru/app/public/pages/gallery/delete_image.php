@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../database/User.php';
+require_once __DIR__ . '/../../database/posts.php';
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
@@ -19,15 +20,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Process deletion
         $user_uuid = SessionManager::getSessionKey('uuid');
-        $client = new DocumentDB($container);
-        $client->connect();
-        $client->setCollection($container);
-        if ($client->delete($pictureid)) {
+        $posts = new Posts();
+        if (!$posts->deletePostsByDocUuid($pictureid)) {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'success', 'message' => 'Photo deleted successfully']);
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete posts from database']);
         } else {
-            header('Content-Type: application/json');
-            echo json_encode(['status' => 'error', 'message' => 'Failed to delete photo']);
+            $client = new DocumentDB($container);
+            $client->connect();
+            $client->setCollection($container);
+            if ($client->delete($pictureid)) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'success', 'message' => 'Photo deleted successfully']);
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'message' => 'Failed to delete photo']);
+            }
         }
         exit();
     }

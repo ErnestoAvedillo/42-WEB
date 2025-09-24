@@ -71,7 +71,24 @@ class Posts
             return true;
         } catch (PDOException $e) {
             $errorInfo = $stmt->errorInfo();
-            error_log('Database error in addPost: ' . $e->getMessage());
+            error_log('Database error in addPost: ' . $e->getMessage() . ' Info: ' . print_r($errorInfo, true));
+            return false;
+        }
+    }
+    public function deletePostsByDocUuid($docUuid)
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                DELETE FROM posts 
+                WHERE document_uuid = :docUuid
+            ");
+            $stmt->bindParam(':docUuid', $docUuid);
+            $result = $stmt->execute();
+
+            return true;
+        } catch (PDOException $e) {
+            $errorInfo = $stmt->errorInfo();
+            error_log('Database error in deletePost: ' . $e->getMessage() . ' Info: ' . print_r($errorInfo, true));
             return false;
         }
     }

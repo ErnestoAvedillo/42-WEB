@@ -442,4 +442,19 @@ class User
       return null;
     }
   }
+  public function getAllUsers()
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT id, uuid, username, email 
+                FROM users 
+                ORDER BY username ASC
+            ");
+
+      $stmt->execute();
+      return $stmt->fetchAll();
+    } catch (PDOException $e) {
+      return [];
+    }
+  }
 }
