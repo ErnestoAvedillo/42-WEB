@@ -5,7 +5,7 @@ require_once __DIR__ . '/pg_database.php';
 class User
 {
   private $pdo;
-  private $logfile = '/tmp/camagru_user.log';
+  private $logfile = '/tmp/camagru.log';
   public function __construct()
   {
     try {
@@ -22,94 +22,6 @@ class User
     }
   }
 
-  public function activate2FA($userId, $secret)
-  {
-    try {
-      $stmt = $this->pdo->prepare("
-                UPDATE users 
-                SET two_factor_secret = :secret , two_factor_enabled = TRUE
-                WHERE uuid = :userId
-            ");
-      $stmt->execute([
-        ':secret' => $secret,
-        ':userId' => $userId
-      ]);
-      return ['success' => true, 'message' => '2FA activated successfully'];
-    } catch (PDOException $e) {
-      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
-    } finally {
-      // Close the database connection
-      $this->pdo = null;
-    }
-  }
-
-  public function disable2FA($userId)
-  {
-    try {
-      $stmt = $this->pdo->prepare("
-                UPDATE users 
-                SET two_factor_secret = NULL, two_factor_enabled = FALSE
-                WHERE uuid = :userId
-            ");
-
-      $stmt->execute([':userId' => $userId]);
-
-      return ['success' => true, 'message' => '2FA deactivated successfully'];
-    } catch (PDOException $e) {
-      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
-    } finally {
-      // Close the database connection
-      $this->pdo = null;
-    }
-  }
-  public function is2FAEnabled($userId)
-  {
-    try {
-      $stmt = $this->pdo->prepare("
-                SELECT two_factor_enabled
-                FROM users 
-                WHERE uuid = :userId
-            ");
-
-      $stmt->execute([':userId' => $userId]);
-      $result = $stmt->fetch();
-
-      return $result ? (bool)$result['two_factor_enabled'] : false;
-    } catch (PDOException $e) {
-      return false;
-    } catch (Exception $e) {
-      return false;
-    } finally {
-      // Close the database connection
-      $this->pdo = null;
-    }
-  }
-  public function get2FASecret($userId)
-  {
-    try {
-      $stmt = $this->pdo->prepare("
-                SELECT two_factor_secret
-                FROM users 
-                WHERE uuid = :userId
-            ");
-
-      $stmt->execute([':userId' => $userId]);
-      $result = $stmt->fetch();
-
-      return $result ? $result['two_factor_secret'] : null;
-    } catch (PDOException $e) {
-      return null;
-    } catch (Exception $e) {
-      return null;
-    } finally {
-      // Close the database connection
-      $this->pdo = null;
-    }
-  }
   /**
    * Register a new user
    */
@@ -213,7 +125,7 @@ class User
   /**
    * Check if user exists
    */
-  private function userExists($username, $email)
+  public function userExists($username, $email)
   {
     $stmt = $this->pdo->prepare("
             SELECT COUNT(*) FROM users 
@@ -455,6 +367,137 @@ class User
       return $stmt->fetchAll();
     } catch (PDOException $e) {
       return [];
+    }
+  }
+  public function activate2FA($userId)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET two_factor_enabled = TRUE
+                WHERE uuid = :userId
+            ");
+      $stmt->execute([':userId' => $userId]);
+      return ['success' => true, 'message' => '2FA activated successfully'];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    } catch (Exception $e) {
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  public function save2FAtoken($userId, $token)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET two_factor_token = :token, token_created_at = CURRENT_TIMESTAMP
+                WHERE uuid = :userId
+            ");
+      $stmt->execute([
+        ':token' => $token,
+        ':userId' => $userId
+      ]);
+      return ['success' => true, 'message' => '2FA token saved successfully'];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    } catch (Exception $e) {
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+
+  public function save2FAsecret($userId, $secret, $enabled = true)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET two_factor_secret = :secret , two_factor_enabled = :enabled
+                WHERE uuid = :userId
+            ");
+      $stmt->execute([
+        ':secret' => $secret,
+        ':userId' => $userId,
+        ':enabled' => $enabled
+      ]);
+      return ['success' => true, 'message' => '2FA activated successfully'];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    } catch (Exception $e) {
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+
+  public function disable2FA($userId)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET two_factor_secret = NULL, two_factor_enabled = FALSE
+                WHERE uuid = :userId
+            ");
+
+      $stmt->execute([':userId' => $userId]);
+
+      return ['success' => true, 'message' => '2FA deactivated successfully'];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    } catch (Exception $e) {
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  public function is2FAEnabled($userId)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT two_factor_enabled
+                FROM users 
+                WHERE uuid = :userId
+            ");
+
+      $stmt->execute([':userId' => $userId]);
+      $result = $stmt->fetch();
+
+      return $result ? (bool)$result['two_factor_enabled'] : false;
+    } catch (PDOException $e) {
+      return false;
+    } catch (Exception $e) {
+      return false;
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  public function get2FASecret($userId)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT two_factor_secret
+                FROM users 
+                WHERE uuid = :userId
+            ");
+
+      $stmt->execute([':userId' => $userId]);
+      $result = $stmt->fetch();
+
+      return $result ? $result['two_factor_secret'] : null;
+    } catch (PDOException $e) {
+      return null;
+    } catch (Exception $e) {
+      return null;
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
     }
   }
 }

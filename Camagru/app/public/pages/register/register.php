@@ -6,114 +6,118 @@ SessionManager::getInstance();
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Camagru</title>
-    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/register.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Camagru</title>
+  <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/register.css">
 </head>
 
 <body>
-    <?php
-    //include __DIR__ . '/../../views/debugger.php';
-    $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../pages/header/header.php';
+  <?php
+  //include __DIR__ . '/../../views/debugger.php';
+  $pageTitle = "Home - Camagru";
+  include __DIR__ . '/../../pages/header/header.php';
 
-    $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../pages/left_bar/left_bar.php';
+  $pageTitle = "sidebar - Camagru";
+  include __DIR__ . '/../../pages/left_bar/left_bar.php';
 
-    // Obtener errores y datos previos si existen
-    $errors = $_SESSION['error_messages'] ?? [];
-    $data = $_SESSION['register_data'] ?? [];
-    $successMessage = $_SESSION['success_message'] ?? '';
+  // Obtener errores y datos previos si existen
+  $errors = $_SESSION['error_messages'] ?? [];
+  $data = $_SESSION['register_data'] ?? [];
+  $successMessage = $_SESSION['success_message'] ?? '';
 
-    // Limpiar mensajes después de mostrarlos
-    unset($_SESSION['error_messages']);
-    unset($_SESSION['register_data']);
-    unset($_SESSION['success_message']);
-    ?>
+  // Limpiar mensajes después de mostrarlos
+  unset($_SESSION['error_messages']);
+  unset($_SESSION['register_data']);
+  unset($_SESSION['success_message']);
+  ?>
 
-    <div class="register-container">
-        <h1>Register for Camagru</h1>
-        <?php if (!empty($errors)) { ?>
-            <div class="alert-error">
-                <ul>
-                    <?php foreach ($errors as $error): ?>
-                        <li><?php echo htmlspecialchars($error); ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php } ?>
-        <?php if (!empty($successMessage)) { ?>
-            <div class="alert-success">
-                <?php echo htmlspecialchars($successMessage); ?>
-            </div>
-        <?php } ?>
+  <div class="register-container">
+    <h1>Register for Camagru</h1>
+    <?php if (!empty($errors)) { ?>
+      <div class="alert-error">
+        <ul>
+          <?php foreach ($errors as $error): ?>
+            <li><?php echo htmlspecialchars($error); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php } ?>
+    <?php if (!empty($successMessage)) { ?>
+      <div class="alert-success">
+        <?php echo htmlspecialchars($successMessage); ?>
+      </div>
+    <?php } ?>
 
-        <form id="register-form" action="/pages/register/register_handler.php">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="first_name">First Name:</label>
-                    <input type="text" id="first_name" name="first_name"
-                        value="<?php echo htmlspecialchars($data['first_name'] ?? ''); ?>">
-                </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name:</label>
-                    <input type="text" id="last_name" name="last_name"
-                        value="<?php echo htmlspecialchars($data['last_name'] ?? ''); ?>">
-                </div>
-            </div>
+    <form id="register-form" action="/pages/register/register_handler.php">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first_name">First Name:</label>
+          <input type="text" id="first_name" name="first_name"
+            value="<?php echo htmlspecialchars($data['first_name'] ?? ''); ?>">
+        </div>
+        <div class="form-group">
+          <label for="last_name">Last Name:</label>
+          <input type="text" id="last_name" name="last_name"
+            value="<?php echo htmlspecialchars($data['last_name'] ?? ''); ?>">
+        </div>
+      </div>
 
-            <div class="form-group">
-                <label for="username">Username: <span class="required">*</span></label>
-                <input type="text" id="username" name="username" required
-                    value="<?php echo htmlspecialchars($data['username'] ?? ''); ?>"
-                    minlength="3" maxlength="50">
-                <small class="help-text">3-50 characters, letters, numbers and underscores only</small>
-            </div>
+      <div class="form-group">
+        <label for="username">Username: <span class="required">*</span></label>
+        <input type="text" id="username" name="username" required
+          value="<?php echo htmlspecialchars($data['username'] ?? ''); ?>"
+          minlength="3" maxlength="50">
+        <small class="help-text">3-50 characters, letters, numbers and underscores only</small>
+      </div>
 
-            <div class="form-group">
-                <label for="email">Email: <span class="required">*</span></label>
-                <input type="email" id="email" name="email" required
-                    value="<?php echo htmlspecialchars($data['email'] ?? ''); ?>">
-            </div>
+      <div class="form-group">
+        <label for="email">Email: <span class="required">*</span></label>
+        <input type="email" id="email" name="email" required
+          value="<?php echo htmlspecialchars($data['email'] ?? ''); ?>">
+      </div>
 
-            <div class="form-group">
-                <label for="password">Password: <span class="required">*</span></label>
-                <input type="password" id="password" name="password" required minlength="8">
-                <small class="help-text">At least 8 characters with uppercase, lowercase, and numbers</small>
-                <div class="password-strength" id="passwordStrength"></div>
-            </div>
+      <div class="form-group">
+        <label for="password">Password: <span class="required">*</span></label>
+        <input type="password" id="password" name="password" required minlength="8">
+        <small class="help-text">At least 8 characters with uppercase, lowercase, and numbers</small>
+        <div class="password-strength" id="passwordStrength"></div>
+      </div>
 
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password: <span class="required">*</span></label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-                <div class="password-match" id="passwordMatch"></div>
-            </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password: <span class="required">*</span></label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+        <div class="password-match" id="passwordMatch"></div>
+      </div>
 
-            <div class="form-group checkbox-group">
-                <label>
-                    <input type="checkbox" id="terms" name="terms" required>
-                    I agree to the <a href="/pages/terms&cond/terms-and-cond.php" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
-                </label>
-            </div>
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" id="terms" name="terms" required>
+          I agree to the <a href="/pages/terms&cond/terms-and-cond.php" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+        </label>
+      </div>
 
-            <button type="submit" class="btn btn-primary" id="submitBtn">
-                <span class="btn-text">Register</span>
-                <span class="btn-loading" style="display: none;">Registering...</span>
-            </button>
-        </form>
+      <button type="button" class="btn btn-primary" id="submitBtn">
+        <span class="btn-text">Register using code number</span>
+        <span class="btn-loading" style="display: none;">Registering...</span>
+      </button>
+      <button type="button" class="btn btn-secondary" id="secondaryBtn">
+        <span class="btn2-text">Register using link</span>
+        <span class="btn2-loading" style="display: none;">Waiting for confirmation...</span>
+      </button>
+    </form>
 
-        <p class="login-link">Already have an account? <a href="/pages/login/login.php">Login here</a></p>
-    </div>
-    <?php
-    $pageTitle = "right side bar - Camagru";
-    include __DIR__ . '/../../pages/right_bar/right_bar.php';
+    <p class="login-link">Already have an account? <a href="/pages/login/login.php">Login here</a></p>
+  </div>
+  <?php
+  $pageTitle = "right side bar - Camagru";
+  include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
-    $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../views/footer.php';
-    ?>
+  $pageTitle = "footer - Camagru";
+  include __DIR__ . '/../../views/footer.php';
+  ?>
 </body>
 
 </html>

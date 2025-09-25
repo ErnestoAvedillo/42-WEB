@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($totp->verify($input_code)) {
         // Código correcto, guardar el secreto en la base de datos y activar 2FA
         $user = new User();
-        if ($user->activate2FA($user_id, $secret)) {
+        if ($user->save2FAsecret($user_id, $secret, true)) {
             SessionManager::getInstance()->setSessionKey('two_factor_enabled', true);
 
             file_put_contents("/tmp/debug.log", "2FA enabled for user: " . print_r($_SESSION, true) . "\n", FILE_APPEND);

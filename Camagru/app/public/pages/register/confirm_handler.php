@@ -3,51 +3,47 @@ include_once '../../class_session/session.php';
 SessionManager::getInstance();
 require_once '../../database/User.php';
 require_once '../../database/Profiles.php';
+require_once '../../database/pending_registration.php';
 $autofilling = '/tmp/Camagru.log';
 // Intentar registrar al usuario
 try {
-
-    $register_data = $_SESSION['register_data'] ?? [];
-    //echo "<p> Username: " . htmlspecialchars($register_data['username'] ?? '') . "</p>";
-    //echo "<p> Email: " . htmlspecialchars($register_data['email'] ?? '') . "</p>";
-    //echo "<p> Password: " . htmlspecialchars($register_data['password'] ?? '') . "</p>";
-    //echo "<p> First Name: " . htmlspecialchars($register_data['first_name'] ?? '') . "</p>";
-    //echo "<p> Last Name: " . htmlspecialchars($register_data['last_name'] ?? '') . "</p>";
-    $validationToken = $_POST['validation_token'] ?? '';
-    $confirmValidationToken = $_POST['confirm_validation_token'] ?? '';
-    if (empty($validationToken) || empty($confirmValidationToken)) {
-        throw new Exception('Token number is required');
+    // Verificar que la petición sea POST
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method. Please use the registration form.');
     }
+    //Recuperar datos del formulario
+    $pendingReg = new pendingRegistration();
+    $validationToken = $_POST['validation_token'] ?? 'n/a';
+    $register_data = $pendingReg->getPendingRegistrationByToken($validationToken);
+    $confirmValidationToken = $_POST['confirm_validation_token'] ?? 'n/b';
+    // Validar los datos obtenidos del formulario
+    if (!$register_data) {
+        file_put_contents($autofilling, "Register ==> confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registro no encontrado\n", FILE_APPEND);
+        throw new Exception('Invalid token. Please use the registration form.');
+    }
+    // Validar que los tokens coincidan
     if ($validationToken !== $confirmValidationToken) {
         throw new Exception('Token not match. Please try again.');
     }
+    // Registrar al usuario
     $user = new User();
     $result = $user->register($register_data['username'], $register_data['email'], $register_data['password'], $register_data['first_name'], $register_data['last_name']);
-    // ✅ DEBUG: Ver qué devuelve el registro
-    //error_log("Register result: " . json_encode($result));
-    //echo "<p>Register result: " . json_encode($result) . "</p>";
+    // Verificar el resultado del registro en caso de que falle volver a registro
     if (!$result['success']) {
         $_SESSION['error_messages'] = [$result['message']];
         $_SESSION['register_data'] = $register_data;
         header('Location: /pages/register/register.php');
         exit();
     }
+    // Eliminar el registro pendiente y redirigir al login
+    $pendingReg->deletePendingRegistration($register_data['username']);
     $_SESSION['success_message'] = ['Registro exitoso. Por favor, inicia sesión.'];
-    // Safely log session data as JSON strings
-    file_put_contents($autofilling, "Register ==> confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . json_encode($_SESSION['error_messages'] ?? []) . "\n", FILE_APPEND);
-    file_put_contents($autofilling, "Register ==> confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Register Data: " . json_encode($_SESSION['register_data'] ?? []) . "\n", FILE_APPEND);
-    file_put_contents($autofilling, "Register ==> confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Success: " . json_encode($_SESSION['success_message'] ?? []) . "\n", FILE_APPEND);
     header('Location: /pages/login/login.php');
 } catch (Exception $e) {
-    $_SESSION['error_messages'] = ['Error: ' . $e->getMessage()];
-    $_SESSION['register_data'] = [
-        'username' => $_SESSION['register_data']['username'] ?? '',
-        'email' => $_SESSION['register_data']['email'] ?? '',
-        'first_name' => $_SESSION['register_data']['first_name'] ?? '',
-        'last_name' => $_SESSION['register_data']['last_name'] ?? '',
-        'password' => $_SESSION['register_data']['password'] ?? ''
-    ];
-    header('Location: /pages/register/confirm.php?error=validation_token_mismatch');
-    //echo "<p>✖ Registro fallido: " . htmlspecialchars($e->getMessage()) . "</p>";
+    // En caso de error, redirigir al formulario de confirmación con mensaje de error
+    $_SESSION['success'] = false;
+    $_SESSION['success_messages'] = ['Error: ' . $e->getMessage()];
+    error_log("Exception during registration confirmation: " . $e->getMessage());
+    header('Location: /pages/register/confirm.php?error=validation_token_mismatch&validation_token=' . urlencode($validationToken));
     exit();
 }

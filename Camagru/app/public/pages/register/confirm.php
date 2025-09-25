@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$autofilling = '/tmp/Camagru.log';
+// Log the incoming GET parameters for debugging
+file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Validation token generated: " . print_r($_GET, true) . "\n", FILE_APPEND);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,24 +20,20 @@ SessionManager::getInstance();
 <body>
 
     <div class="confirm-registration">
-        <?php $validationToken = $_SESSION['validation_token'] ?? ''; ?>
+        <?php $validationToken = $_GET['validation_token'] ?? ''; ?>
         <?php if (!empty($_GET['error'])): ?>
             <div class="error-message">
                 <?php
-                switch ($_GET['error']) {
-                    case 'validation_token_required':
-                        echo "<p class='error'>El token de validación es requerido.</p>";
-                        break;
-                    case 'validation_token_mismatch':
-                        echo "<p class='error'>Los tokens de validación no coinciden.</p>";
-                        break;
+                if (isset($_GET['error'])) {
+                    echo "<p class='error'>Los tokens de validación no coinciden.</p>";
+                    unset($_GET['error']);
                 }
                 ?>
             </div>
         <?php endif; ?>
         <form class="confirm-form" action="/pages/register/confirm_handler.php" method="post">
             <h1>Confirm Your Registration</h1>
-            <input type="hidden" name="validation_token" value="<?php echo htmlspecialchars($validationToken ?? ''); ?>">
+            <input type="hidden" name="validation_token" value="<?php echo $validationToken; ?>">
             <input type="number" name="confirm_validation_token" placeholder="Enter your confirmation code" required>
             <button type="submit">Confirm Registration</button>
             <h1>Confirm Your Registration.</h1>

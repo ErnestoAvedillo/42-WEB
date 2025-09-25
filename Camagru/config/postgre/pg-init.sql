@@ -6,6 +6,7 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     two_factor_secret TEXT,
     two_factor_enabled BOOLEAN DEFAULT FALSE,
+    two_factor_number NUMERIC(6),
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     email_verified BOOLEAN DEFAULT FALSE,
@@ -29,6 +30,21 @@ CREATE TABLE users (
 CREATE INDEX idx_users_uuid ON users(uuid);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
+
+CREATE TABLE pending_registrations (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(255),
+    email VARCHAR(255),
+    password VARCHAR(255),
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    validation_token NUMERIC(6),
+    token_validated BOOLEAN DEFAULT FALSE,
+    token_expires TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '15 minutes'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_pending_registrations_token ON pending_registrations(validation_token);
+CREATE INDEX idx_pending_registrations_username ON pending_registrations(username);
 
 CREATE TABLE documents (
     id SERIAL PRIMARY KEY,
