@@ -19,7 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     'first_name' => $_GET['first_name'] ?? '',
     'last_name' => $_GET['last_name'] ?? ''
   ];
-  header('Location: /pages/register/register.php');
+
+  // header('Location: /pages/register/register.php');
+  header('Content-Type: application/json'); // Indicar error en la respuesta
+  echo json_encode(['success' => false]);
   exit();
 }
 
@@ -35,10 +38,12 @@ $confirmPassword = $_GET['confirm_password'] ?? '';
 $errors = [];
 
 $Users = new User();
-if ($Users->isUsernameTaken($username)) {
+$pendingReg = new pendingRegistration();
+file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " username: " . json_encode($username) . " email: " . json_encode($email) . "\n", FILE_APPEND);
+if ($Users->isUsernameTaken($username) || $pendingReg->userExists($username)) {
   $errors[] = 'El nombre de usuario ya está en uso';
 }
-if ($Users->isEmailTaken($email)) {
+if ($Users->isEmailTaken($email) || $pendingReg->emailExists($email)) {
   $errors[] = 'El email ya está en uso';
 }
 
@@ -63,6 +68,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   $errors[] = 'El email proporcionado no es válido';
 }
 // Si hay errores, regresar al formulario
+file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . json_encode($errors) . "\n", FILE_APPEND);
 if (!empty($errors)) {
   $_SESSION['error_messages'] = $errors;
   $_SESSION['register_data'] = [
@@ -71,7 +77,9 @@ if (!empty($errors)) {
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  header('Location: /pages/register/register.php');
+  // header('Location: /pages/register/register.php');
+  header('Content-Type: application/json'); // Indicar error en la respuesta
+  echo json_encode(['success' => false]);
   exit();
 }
 // Enviar correo de validación
@@ -79,6 +87,7 @@ try {
   require_once __DIR__ . '/../../EnvLoader.php';
   $ipAddress = EnvLoader::get('APP_ADDR');
   $portAddress = EnvLoader::get('APP_PORT');
+  file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Sending validation email to: " . json_encode($email) . " from: http://" . $ipAddress . ":" . $portAddress . "\n", FILE_APPEND);
   // Enviar correo con link o token según el botón presionado
   if (isset($_GET['secondaryBtn'])) {
     // Enviar correo con link de validación
@@ -100,7 +109,9 @@ try {
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  header('Location: /pages/register/register.php');
+  // header('Location: /pages/register/register.php');
+  header('Content-Type: application/json'); // Indicar error en la respuesta
+  echo json_encode(['success' => false]);
   exit();
 }
 // Guardar registro pendiente
@@ -114,7 +125,9 @@ if (!$pendingReg->createPendingRegistration($username, $email, $password, $first
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  header('Location: /pages/register/register.php');
+  // header('Location: /pages/register/register.php');
+  header('Content-Type: application/json'); // Indicar error en la respuesta
+  echo json_encode(['success' => false]);
   exit();
 }
 // Si se presionó el botón secundario (enviar link), responder con JSON para evitar redirección

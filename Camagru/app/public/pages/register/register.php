@@ -11,7 +11,7 @@ SessionManager::getInstance();
   <title>Login - Camagru</title>
   <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/register.css">
+  <link rel="stylesheet" href="/pages/register/register.css">
 </head>
 
 <body>
@@ -36,8 +36,11 @@ SessionManager::getInstance();
 
   <div class="register-container">
     <h1>Register for Camagru</h1>
+    <?php file_put_contents("/tmp/Camagru.log", "Register ==> register.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . print_r($errors, true) . " Data: " . print_r($data, true) . "\n", FILE_APPEND); ?>
     <?php if (!empty($errors)) { ?>
+      <?php file_put_contents("/tmp/Camagru.log", "Register ==> register.php - fromRegister: " . date('Y-m-d H:i:s') . " Showing errors: " . print_r($errors, true) . "\n", FILE_APPEND); ?>
       <div class="alert-error">
+        <h2>Please fix the following errors:</h2>
         <ul>
           <?php foreach ($errors as $error): ?>
             <li><?php echo htmlspecialchars($error); ?></li>
@@ -45,12 +48,6 @@ SessionManager::getInstance();
         </ul>
       </div>
     <?php } ?>
-    <?php if (!empty($successMessage)) { ?>
-      <div class="alert-success">
-        <?php echo htmlspecialchars($successMessage); ?>
-      </div>
-    <?php } ?>
-
     <form id="register-form" action="/pages/register/register_handler.php">
       <div class="form-row">
         <div class="form-group">
@@ -112,9 +109,6 @@ SessionManager::getInstance();
     <p class="login-link">Already have an account? <a href="/pages/login/login.php">Login here</a></p>
   </div>
   <?php
-  $pageTitle = "right side bar - Camagru";
-  include __DIR__ . '/../../pages/right_bar/right_bar.php';
-
   $pageTitle = "footer - Camagru";
   include __DIR__ . '/../../views/footer.php';
   ?>

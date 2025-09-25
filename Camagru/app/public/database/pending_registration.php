@@ -105,4 +105,34 @@ class pendingRegistration
             return false;
         }
     }
+    public function emailExists($email)
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                        SELECT * FROM pending_registrations 
+                        WHERE email = :email");
+            $stmt->execute([
+                ':email' => $email,
+            ]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
+        } catch (PDOException $e) {
+            file_put_contents($this->logfile, "Error checking email existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            return false;
+        }
+    }
+    public function unsernameExists($username)
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                        SELECT * FROM pending_registrations 
+                        WHERE username = :username");
+            $stmt->execute([
+                ':username' => $username,
+            ]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) === false;
+        } catch (PDOException $e) {
+            file_put_contents($this->logfile, "Error checking username non-existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            return false;
+        }
+    }
 }

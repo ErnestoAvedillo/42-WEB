@@ -80,7 +80,16 @@ document.addEventListener('DOMContentLoaded', function () {
 		const formData = new FormData(document.querySelector('form'));
 		const params = new URLSearchParams(formData);
 		console.log(params.toString());
-		window.location.href = '/pages/register/register_handler.php?submitBtn=1&' + params.toString();
+		fetch('/pages/register/register_handler.php?secondaryBtn=1&' + params.toString())
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				if (data.success) {
+					window.location.href = '/pages/register/register_handler.php?submitBtn=1&' + params.toString();
+				} else {
+					window.location.href = '/pages/register/register.php';
+				}
+			});
 	});
 
 	secondaryBtn.addEventListener('click', function (e) {
@@ -131,6 +140,8 @@ document.addEventListener('DOMContentLoaded', function () {
 								}
 							});
 					}, 2000);
+				} else {
+					window.location.href = '/pages/register/register.php';
 				}
 			});
 	});

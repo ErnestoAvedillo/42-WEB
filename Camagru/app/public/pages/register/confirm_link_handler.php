@@ -34,10 +34,11 @@ try {
     }
     // Registrar al usuario
     $user = new User();
-    $result = $user->register($register_data['username'], $register_data['email'], $register_data['password'], $register_data['first_name'], $register_data['last_name']);
+    $result = $user->copyRegisterFromPending($register_data['username']);
     // Verificar el resultado del registro en caso de que falle volver a registro
-    if (!$result['success']) {
-        $_SESSION['error_messages'] = [$result['message']];
+    if (!$result) {
+        $_SESSION['success'] = false;
+        $_SESSION['error_messages'] = "Error al copiar el registro pendiente. Por favor, intenta registrarte de nuevo.";
         $_SESSION['register_data'] = $register_data;
         $_SESSION['fromRegister'] = true;
         header('Location: /pages/register/register.php');
@@ -45,13 +46,14 @@ try {
     }
     // Eliminar el registro pendiente y redirigir al login
     $pendingReg->deletePendingRegistration($register_data['username']);
-    $_SESSION['success_message'] = ['Registro exitoso. Por favor, inicia sesión.'];
-    header('Location: /pages/login/login.php');
+    $_SESSION['success'] = true;
+    $_SESSION['success_messages'] = ['Registro exitoso. Por favor, inicia sesión.'];
+    header('Location: /pages/register/welcome.html');
 } catch (Exception $e) {
     // En caso de error, redirigir al formulario de confirmación con mensaje de error
     error_log("Exception during registration confirmation: " . $e->getMessage());
     $_SESSION['success'] = false;
-    $_SESSION['success_messages'] = ['Error: ' . $e->getMessage()];
+    $_SESSION['error_messages'] = ['Error: ' . $e->getMessage()];
     header('Location: /pages/register/register.php');
     exit();
 }

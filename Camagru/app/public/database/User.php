@@ -22,6 +22,29 @@ class User
     }
   }
 
+  public function copyRegisterFromPending($username)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                INSERT INTO users (uuid, username, email, password, first_name, last_name) 
+                SELECT gen_random_uuid(), username, email, password, first_name, last_name
+                FROM pending_registrations 
+                WHERE username = :username
+            ");
+
+      $result = $stmt->execute([':username' => $username]);
+
+      if ($result) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (PDOException $e) {
+      file_put_contents($this->logfile, "Error copying registration from pending: " . $e->getMessage() . "\n", FILE_APPEND);
+      return false;
+    }
+  }
+
   /**
    * Register a new user
    */
@@ -59,28 +82,40 @@ class User
         ':verification_token' => $verificationToken
       ]);
 
+      // if ($result) {
+      //   // Return success with user UUID
+      //   $id = $this->pdo->lastInsertId();
+      //   $data = $this->getUserById($id);
+      //   //echo "<p>✓ Registro de usuario exitoso. ID: " . $id . ", UUID: " . $data['uuid'] . "</p>";
+      //   if (!$data['uuid']) {
+      //     return ['success' => false, 'message' => 'Failed to retrieve user UUID'];
+      //   }
+      //   return [
+      //     'id' => $id,
+      //     'uuid' => $data['uuid'],
+      //     'success' => true,
+      //     'message' => 'User registered successfully',
+      //     'verification_token' => $verificationToken
+      //   ];
+      // } else {
+      //   return ['success' => false, 'message' => 'Failed to register user'];
+      // }
+      // } catch (PDOException $e) {
+      //   return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+      // } catch (Exception $e) {
+      //   return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+      // }
       if ($result) {
-        // Return success with user UUID
-        $id = $this->pdo->lastInsertId();
-        $data = $this->getUserById($id);
-        //echo "<p>✓ Registro de usuario exitoso. ID: " . $id . ", UUID: " . $data['uuid'] . "</p>";
-        if (!$data['uuid']) {
-          return ['success' => false, 'message' => 'Failed to retrieve user UUID'];
-        }
-        return [
-          'id' => $id,
-          'uuid' => $data['uuid'],
-          'success' => true,
-          'message' => 'User registered successfully',
-          'verification_token' => $verificationToken
-        ];
+        return true;
       } else {
-        return ['success' => false, 'message' => 'Failed to register user'];
+        return false;
       }
     } catch (PDOException $e) {
-      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+      error_log("Error registering user: " . $e->getMessage());
+      return false;
     } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+      error_log("Error registering user: " . $e->getMessage());
+      return false;
     }
   }
 

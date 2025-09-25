@@ -28,12 +28,6 @@
     color: #c33;
 }
 
-.alert-success {
-    background: #efe;
-    border: 1px solid #cfc;
-    color: #3c3;
-}
-
 .alert ul {
     margin: 0;
     padding-left: 20px;
