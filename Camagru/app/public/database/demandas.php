@@ -48,7 +48,6 @@ class Demandas
             deudor_email,
             importe_total_deuda,
             lista_facturas,
-            concepto,
             created_at) 
             VALUES (
             :user_uuid,
@@ -68,7 +67,6 @@ class Demandas
             :deudor_email,
             :importe_total_deuda,
             :lista_facturas,
-            :concepto,
             :created_at)");
       $stmt->bindParam(':user_uuid', $demandData['user_uuid']);
       $stmt->bindParam(':document_uuid', $demandData['document_uuid']);
@@ -87,7 +85,6 @@ class Demandas
       $stmt->bindParam(':deudor_email', $demandData['deudor_email']);
       $stmt->bindParam(':importe_total_deuda', $demandData['importe_total_deuda']);
       $stmt->bindParam(':lista_facturas', $demandData['lista_facturas']);
-      $stmt->bindParam(':concepto', $demandData['concepto']);
       $stmt->bindParam(':created_at', $demandData['created_at']);
       file_put_contents($this->autofilling, "inicio exec\n", FILE_APPEND);
       file_put_contents($this->autofilling, "Demanda añadida a la base de datos: " . json_encode($demandData) . "\n", FILE_APPEND);

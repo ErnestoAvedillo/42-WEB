@@ -90,8 +90,6 @@ CREATE TABLE demandas (
     importe_total_deuda NUMERIC(10, 2) NOT NULL,
     lista_facturas JSONB NOT NULL,
     juzgado VARCHAR(100),
-    acreedor_representante_legal VARCHAR(100),
-    deudor_representante_legal VARCHAR(100),
     origen_deuda TEXT,
     documentos_adjuntos TEXT,
     solicitud_medidas TEXT,

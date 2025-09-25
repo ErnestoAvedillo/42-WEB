@@ -9,7 +9,7 @@ if (!SessionManager::getSessionKey('uuid')) {
 require_once __DIR__ . '/../../database/facturas.php';
 require_once __DIR__ . '/../../database/demandas.php';
 
-//tendremos que añadirlo cuando tengamos incluida la parte javascript
+//tendremos que escribir las demandas tambien cuando tengamos incluida la parte javascript
 header('Content-Type: text/html; charset=utf-8');
 
 $autofilling = '/tmp/facturas.log';
