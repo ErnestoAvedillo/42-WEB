@@ -87,14 +87,18 @@ modalBody.addEventListener("click", async (event) => {
       const result = await response.text();
       const parsedData = JSON.parse(result);
       console.log("Parsed Data:", parsedData);
-      const $entradaConcepto = document.getElementById("concepto");
-      if ($entradaConcepto) {
-        if (parsedData.success) {
-          $entradaConcepto.value = parsedData.caption;
-          alert("Concepto generado con éxito!");
-        } else {
-          alert("Error al generar concepto: " + (parsedData.message || "No se pudo generar"));
-        }
+      if (parsedData.success) {
+        const $entradaJuzgado = document.getElementById("juzgado");
+        const $entradaOrigenDeuda = document.getElementById("origen_deuda");
+        const $entradaDocumentosAdjuntos = document.getElementById("documentos_adjuntos");
+        const $entradaSolicitudMedidas = document.getElementById("solicitud_medidas");
+        $entradaJuzgado.value = parsedData.caption.juzgado;
+        $entradaOrigenDeuda.value = parsedData.caption.origen_deuda;
+        $entradaDocumentosAdjuntos.value = parsedData.caption.documentos_adjuntos;
+        $entradaSolicitudMedidas.value = parsedData.caption.solicitud_medidas;
+        alert("Concepto generado con éxito!");
+      } else {
+        alert("Error al generar concepto: " + (parsedData.message || "No se pudo generar"));
       }
     } catch (error) {
       console.error("Error en fetch:", error);

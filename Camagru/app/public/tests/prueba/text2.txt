@@ -1,0 +1,8 @@
+```json
+{
+  "juzgado": "Juzgado de Primera Instancia de [Localidad correspondiente al domicilio del deudor, Corbera de Llobregat, en este caso].  (Se determinará la competencia en función de la cuantía total reclamada, que asciende a 1815€).",
+  "origen_deuda": "El presente escrito se interpone para reclamar la cantidad adeudada por el Sr. Ahmad Khatib Aiesh, con NIF 43545648-R, a ERNESTO AVEDILLO CARRETERO, con NIF 46625712C, en concepto de trabajos de peritaje realizados, según se detalla a continuación:\n\n- **Factura 2023/01:** Emitida el 2023-02-27 por importe de 1089.00 €, con concepto \"Trabajos de peritaje facturas AGBAR parte 1\".\n- **Factura 2023/02:** Emitida el 2023-03-01 por importe de 726.00 €, con concepto \"Trabajos de peritaje facturas AGBAR parte 2\".\n\nLa suma total adeudada asciende a 1815.00 €.",
+  "documentos_adjuntos": "Se adjuntan a la presente demanda:\n\n- Factura nº 2023/01 (UUID: d2baf5b1-fbb4-49e4-895f-94c9aa9b491e)\n- Factura nº 2023/02 (UUID: 0362456d-e9a0-453a-bf71-05f4f33ff733)\n- [Añadir aquí otros documentos, si los hubiera, como por ejemplo copia del contrato].",
+  "solicitud_medidas": "Se solicita al Juzgado que, previos los trámites legales pertinentes, dicte Sentencia condenando al demandado, Ahmad Khatib Aiesh, al pago de la cantidad de 1815.00 €, más los intereses legales desde la fecha de vencimiento de cada factura hasta la fecha de efectivo pago, así como las costas procesales.  En este momento no se solicitan medidas cautelares."
+}
+```

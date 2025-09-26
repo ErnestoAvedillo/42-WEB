@@ -81,8 +81,8 @@ services:
       - .env
     networks:
       - camagru_network
-    volumes:
-      - ./data/postgre:/var/lib/postgresql/data
+      # volumes:
+      # - ./data/postgre:/var/lib/postgresql/data
     ports:
       - "${PG_PORT}:${PG_PORT}"
     restart: unless-stopped

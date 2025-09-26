@@ -6,8 +6,8 @@ file_put_contents($autofilling, "GeneraConcepto: " . date('Y-m-d H:i:s') . " Ent
 $data = $_POST;
 file_put_contents($autofilling, "GeneraConcepto: " . date('Y-m-d H:i:s') . " Data received: " . json_encode($data) . "\n", FILE_APPEND);
 $lista_facturas = $data['lista_facturas'] ?? null;
-$acreedor = ["nombre" => $data['acreedor_nombre'], "cif" => $data['acreedor_cif'], "domicilio" => $data['acreedor_domicilio'], "telefono" => $data['acreedor_telefono'], "fax" => $data['acreedor_fax'], "email" => $data['acreedor_email']];
-$deudor = ["nombre" => $data['deudor_nombre'], "cif" => $data['deudor_cif'], "domicilio" => $data['deudor_domicilio'], "telefono" => $data['deudor_telefono'], "fax" => $data['deudor_fax'], "email" => $data['deudor_email']];
+$acreedor = ["nombre" => $data['acreedor_nombre'], "cif" => $data['acreedor_cif'], "domicilio" => $data['acreedor_domicilio'], "telefono" => $data['acreedor_telefono'], "fax" => $data['acreedor_fax'], "email" => $data['acreedor_email'], "representante_legal" => $data['acreedor_representante_legal']];
+$deudor = ["nombre" => $data['deudor_nombre'], "cif" => $data['deudor_cif'], "domicilio" => $data['deudor_domicilio'], "telefono" => $data['deudor_telefono'], "fax" => $data['deudor_fax'], "email" => $data['deudor_email'], "representante_legal" => $data['deudor_representante_legal']];
 if ($lista_facturas && is_string($lista_facturas)) {
     file_put_contents($autofilling, "GeneraConcepto: " . date('Y-m-d H:i:s') . " Convertir el string JSON en array PHP: " . $lista_facturas . "\n", FILE_APPEND);
     $lista_facturas = json_decode($lista_facturas, true);

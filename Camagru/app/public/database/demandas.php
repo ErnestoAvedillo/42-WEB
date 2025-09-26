@@ -107,14 +107,19 @@ class Demandas
         acreedor_telefono = :acreedor_telefono,
         acreedor_fax = :acreedor_fax,
         acreedor_email = :acreedor_email,
+        acreedor_representante_legal = :acreedor_representante_legal,
         deudor_nombre = :deudor_nombre,
         deudor_cif = :deudor_cif,
         deudor_domicilio = :deudor_domicilio,
         deudor_telefono = :deudor_telefono,
         deudor_fax = :deudor_fax,
         deudor_email = :deudor_email,
+        deudor_representante_legal = :deudor_representante_legal,
         importe_total_deuda = :importe_total_deuda,
-        concepto = :concepto,
+        juzgado = :juzgado,
+        origen_deuda = :origen_deuda,
+        documentos_adjuntos = :documentos_adjuntos,
+        solicitud_medidas = :solicitud_medidas,
         updated_at = :updated_at
         WHERE id = :id AND user_uuid = :user_uuid
       ");
@@ -125,14 +130,19 @@ class Demandas
       $stmt->bindParam(':acreedor_telefono', $data['acreedor_telefono']);
       $stmt->bindParam(':acreedor_fax', $data['acreedor_fax']);
       $stmt->bindParam(':acreedor_email', $data['acreedor_email']);
+      $stmt->bindParam(':acreedor_representante_legal', $data['acreedor_representante_legal']);
       $stmt->bindParam(':deudor_nombre', $data['deudor_nombre']);
       $stmt->bindParam(':deudor_cif', $data['deudor_cif']);
       $stmt->bindParam(':deudor_domicilio', $data['deudor_domicilio']);
       $stmt->bindParam(':deudor_telefono', $data['deudor_telefono']);
       $stmt->bindParam(':deudor_fax', $data['deudor_fax']);
       $stmt->bindParam(':deudor_email', $data['deudor_email']);
+      $stmt->bindParam(':deudor_representante_legal', $data['deudor_representante_legal']);
       $stmt->bindParam(':importe_total_deuda', $data['importe_total_deuda']);
-      $stmt->bindParam(':concepto', $data['concepto']);
+      $stmt->bindParam(':juzgado', $data['juzgado']);
+      $stmt->bindParam(':origen_deuda', $data['origen_deuda']);
+      $stmt->bindParam(':documentos_adjuntos', $data['documentos_adjuntos']);
+      $stmt->bindParam(':solicitud_medidas', $data['solicitud_medidas']);
       $stmt->bindParam(':updated_at', $updatedAt);
       $stmt->bindParam(':id', $id);
       $stmt->bindParam(':user_uuid', $user_uuid);

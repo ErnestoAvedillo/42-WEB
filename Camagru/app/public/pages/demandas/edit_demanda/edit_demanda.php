@@ -43,6 +43,8 @@ file_put_contents($autofilling, "Editdemanda: " . date('Y-m-d H:i:s') . " succes
         <input type="text" id="acreedor_fax" name="acreedor_fax" value="<?php echo htmlspecialchars($demanda['acreedor_fax']); ?>"><br>
         <label for="acreedor_email">Email:</label>
         <input type="email" id="acreedor_email" name="acreedor_email" value="<?php echo htmlspecialchars($demanda['acreedor_email']); ?>"><br>
+        <label for="acreedor_representante_legal">Representante Legal:</label>
+        <input type="text" id="acreedor_representante_legal" name="acreedor_representante_legal" value="<?php echo htmlspecialchars($demanda['acreedor_representante_legal']); ?>"><br>
       </div>
       <div id="Deudor">
         <h2>Datos del Deudor</h2>
@@ -58,16 +60,24 @@ file_put_contents($autofilling, "Editdemanda: " . date('Y-m-d H:i:s') . " succes
         <input type="text" id="deudor_fax" name="deudor_fax" value="<?php echo htmlspecialchars($demanda['deudor_fax']); ?>"><br>
         <label for="deudor_email">Email:</label>
         <input type="email" id="deudor_email" name="deudor_email" value="<?php echo htmlspecialchars($demanda['deudor_email']); ?>"><br>
+        <label for="deudor_representante_legal">Representante Legal:</label>
+        <input type="text" id="deudor_representante_legal" name="deudor_representante_legal" value="<?php echo htmlspecialchars($demanda['deudor_representante_legal']); ?>"><br>
       </div>
       <label for="importe_total_deuda">Importe Total Deuda:</label>
       <input type="number" id="importe_total_deuda" name="importe_total_deuda" value="<?php echo htmlspecialchars($demanda['importe_total_deuda']); ?>"><br>
     </div>
-    <div id="Concepto">
-      <h2>Concepto</h2>
-      <label for="concepto">Descripción:</label>
-      <textarea id="concepto" name="concepto" rows=10><?php echo htmlspecialchars($demanda['concepto']); ?></textarea><br>
+    <div id="DemandaDetails">
+      <h2>Concepto de cada demanda</h2>
       <input type="hidden" id="lista_facturas" name="lista_facturas" value="<?php echo htmlspecialchars($demanda['lista_facturas']); ?>">
-      <button type="button" id="genera_concepto" data-id="<?php echo htmlspecialchars($demanda['lista_facturas']); ?>">Genera Concepto</button>
+      <label for="juzgado">Juzgado:</label>
+      <textarea id="juzgado" name="juzgado" rows=10><?php echo htmlspecialchars($demanda['juzgado']); ?></textarea><br>
+      <label for="origen_deuda">Origen de la Deuda:</label>
+      <textarea id="origen_deuda" name="origen_deuda" rows=10><?php echo htmlspecialchars($demanda['origen_deuda']); ?></textarea><br>
+      <label for="documentos_adjuntos">Documentos Adjuntos:</label>
+      <textarea id="documentos_adjuntos" name="documentos_adjuntos" rows=10><?php echo htmlspecialchars($demanda['documentos_adjuntos']); ?></textarea><br>
+      <label for="solicitud_medidas">Solicitud de Medidas Cautelares:</label>
+      <textarea id="solicitud_medidas" name="solicitud_medidas" rows=10><?php echo htmlspecialchars($demanda['solicitud_medidas']); ?></textarea><br>
+      <button type="button" id="genera_concepto" data-id="<?php echo htmlspecialchars($demanda['lista_facturas']); ?>">Rellena demanda</button>
     </div>
     <input type="hidden" name="demanda_id" value="<?php echo htmlspecialchars($demandaId); ?>">
     <button type="button" id="saveDemandaButton" data-id="<?php echo htmlspecialchars($demandaId); ?>">Save Changes</button>
