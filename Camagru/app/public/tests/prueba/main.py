@@ -11,7 +11,7 @@ try:
     genai.configure(api_key=GOOGLE_API_KEY)
 
     model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
-    prompt = 'Eres un asistente jurídico. '
+    prompt = 'Eres un asistente jurídico.'
     prompt += 'Redacta el un escrito de demanda de tipo de cantidad para presentar ante el Juzgado de Primera Instancia en España.'
     prompt += 'Debes retornar la informacion en un json con los siguientes apartados:'
     prompt += '{"juzgado":""}, indicando el juzgado competente según la cuantía de la deuda.'
