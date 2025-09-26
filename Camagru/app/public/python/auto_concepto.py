@@ -15,8 +15,7 @@ async def autoConcepto(data: ConceptoData):
     with open(Log_file, "a") as f:
         f.write(f"Function called {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
     try:
-        # GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-        GOOGLE_API_KEY = "AIzaSyBsudAu-dnMM847uCkeEhi7OCb69C3bSQ8"
+        GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
         genai.configure(api_key=GOOGLE_API_KEY)
 
         model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
