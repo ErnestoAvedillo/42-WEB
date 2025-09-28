@@ -193,4 +193,18 @@ class DocumentDB
         $files = $collection->find()->toArray();
         return $files;
     }
+    public function getPhotoOwner($picture_uuid)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        error_log("Getting photo owner for picture UUID: " . $picture_uuid);
+        $collection = $this->getCollection();
+        $file = $collection->findOne(['_id' => $picture_uuid]);
+        if (!$file) {
+            return null; // Return null if no file found
+        }
+        return $file['user_uuid'] ?? null;
+    }
 }

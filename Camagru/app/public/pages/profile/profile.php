@@ -47,6 +47,10 @@ SessionManager::getInstance();
                 <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required>
             </div>
             <div class="form-group">
+                <label for="send_notifications">Send Notifications:</label>
+                <input type="checkbox" id="send_notifications" name="send_notifications" <?php echo $user_data['send_notifications'] ? 'checked' : ''; ?>>
+            </div>
+            <div class="form-group">
                 <label for="first_name">First Name:</label>
                 <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($user_data['first_name']); ?>" required>
                 <label for="last_name">Last Name:</label>

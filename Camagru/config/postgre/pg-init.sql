@@ -3,6 +3,7 @@ CREATE TABLE users (
     uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
+    send_notifications BOOLEAN DEFAULT TRUE,
     password TEXT NOT NULL,
     two_factor_secret TEXT,
     two_factor_enabled BOOLEAN DEFAULT FALSE,

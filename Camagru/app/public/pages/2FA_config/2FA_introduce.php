@@ -3,9 +3,12 @@ require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 if (!SessionManager::getSessionKey('temp_user')) {
-    // echo "<script>alert('You must be logged in to access this page.');</script>";
-    header('Location: /pages/login/login.php');
-    exit();
+    error_log("No temp_user in session, redirecting to login.");
+    if (!isset($_GET['forward']) || empty($_GET['forward'])) {
+        header('Location: /pages/login/login.php');
+    } else {
+        header('Location: /pages/login/login.php?forward=' . urlencode($_GET['forward']));
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -28,7 +31,7 @@ if (!SessionManager::getSessionKey('temp_user')) {
     <div class="2FA-container">
         <h2>Two-Factor Authentication</h2>
         <p>Please enter the authentication code from your authenticator app.</p>
-        <form action="/pages/2FA_config/2FA_verify.php" method="POST">
+        <form action="/pages/2FA_config/2FA_verify.php?forward=<?php echo urlencode($_GET['forward'] ?? ''); ?>" method="POST">
             <div class="form-group">
                 <label for="token">Authentication Code:</label>
                 <input type="text" id="token" name="token" required pattern="\d{6}" title="Enter the 6-digit code from your authenticator app">

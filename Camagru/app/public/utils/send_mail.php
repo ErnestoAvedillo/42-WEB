@@ -93,3 +93,22 @@ function send_recovery_email($email_recipient, $username, $token)
 
     return send_mail($email_sender, $password_sender, $email_recipient, $asunto, $mensaje, $host, $port, $HTML);
 }
+
+function send_comment_notification($email_recipient, $username, $picture_uuid, $commenter)
+{
+    $ipAddress = EnvLoader::get('APP_ADDR');
+    $portAddress = EnvLoader::get('APP_PORT');
+    $asunto = "Nueva notificación de comentario en Camagru";
+    $mensaje = "Hola " . htmlspecialchars($username) . ",\n \r<br>";
+    $mensaje .= "El usuario " . htmlspecialchars($commenter) . " ha comentado una de tus fotos.\n \r";
+    $mensaje .= "Puedes ver el comentario pinchando en el siguiente enlace:";
+    $mensaje .= " <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/picture/picture.php?picture_uuid=" . urlencode($picture_uuid) . "'>Ver comentario</a> \n \r<br>";
+    $mensaje .= "Si no deseas recibir más notificaciones de este tipo, puedes cambiar tus preferencias en la configuración de tu cuenta.";
+    $email_sender = EnvLoader::get('NO_REPLY_EMAIL');
+    $password_sender = EnvLoader::get('NO_REPLY_PASSWORD');
+    $host = EnvLoader::get('SMTP_HOST');
+    $port = EnvLoader::get('SMTP_PORT');
+    $HTML = true;
+
+    return send_mail($email_sender, $password_sender, $email_recipient, $asunto, $mensaje, $host, $port, $HTML);
+}

@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php';
 if (!SessionManager::getSessionKey('uuid')) {
-  header('Location: /pages/login/login.php');
+    header('Location: /pages/login/login.php?forward=/pages/picture/picture.php?picture_uuid=' . urlencode($_GET['picture_uuid'] ?? ''));
     exit();
 }
 require_once __DIR__ . '/../../database/posts.php';

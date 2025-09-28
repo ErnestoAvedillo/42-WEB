@@ -3,6 +3,14 @@ require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 if (SessionManager::getSessionKey('uuid')) {
     // echo "<script>alert('You are already logged in.');</script>";
+    if (isset($_GET['forward']) && !empty($_GET['forward'])) {
+        $forward = $_GET['forward'];
+        // Prevent open redirect vulnerabilities
+        if (strpos($forward, '/') === 0 && strpos($forward, 'http') === false) {
+            header('Location: ' . $forward);
+            exit();
+        }
+    }
     header('Location: /index.php');
     exit();
 }
@@ -65,6 +73,7 @@ $autofilling = '/tmp/Camagru.log';
         <?php endif; ?>
         <p>Please enter your credentials to access your account.</p>
         <form action="/pages/login/login_handler.php" method="post" id="loginForm">
+            <input type="hidden" name="forward" value="<?php echo isset($_GET['forward']) ? htmlspecialchars($_GET['forward']) : ''; ?>">
             <div class="form-group">
                 <label for="username">Username or Email: <span class="required">*</span></label>
                 <input type="text" id="username" name="username" required

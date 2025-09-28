@@ -370,6 +370,7 @@ class User
       $allowedFields = [
         'username',
         'email',
+        'send_notifications',
         'first_name',
         'last_name',
         'national_id_nr',
