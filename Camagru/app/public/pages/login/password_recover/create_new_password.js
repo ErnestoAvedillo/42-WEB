@@ -60,3 +60,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+function togglePassword(inputId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleText = document.getElementById(inputId + '-toggle-text');
+    const newPassword = document.getElementById("new-password").value;
+    const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleText.textContent = '🙈'; // Icono de ocultar
+    } else {
+        passwordInput.type = 'password';
+        toggleText.textContent = '👁️'; // Icono de mostrar
+    }
+}

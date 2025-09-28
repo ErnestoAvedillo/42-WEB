@@ -68,6 +68,41 @@
     box-sizing: border-box;
 }
 
+/* Password Input Container */
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-container input {
+    padding-right: 50px;
+    /* Espacio para el botón */
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 1.2rem;
+    color: #666;
+    transition: color 0.3s ease;
+    border-radius: 4px;
+}
+
+.password-toggle:hover {
+    color: #333;
+    background-color: #f0f0f0;
+}
+
+.password-toggle:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
 .form-group input:focus {
     outline: none;
     border-color: #667eea;

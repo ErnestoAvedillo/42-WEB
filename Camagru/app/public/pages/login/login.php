@@ -17,7 +17,7 @@ $autofilling = '/tmp/Camagru.log';
     <title>Login - Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/pages/login/login.css">
 </head>
 
 <body>
@@ -73,8 +73,12 @@ $autofilling = '/tmp/Camagru.log';
             </div>
             <div class="form-group">
                 <label for="password">Password: <span class="required">*</span></label>
-                <input type="password" id="password" name="password" required
-                    placeholder="Enter your password">
+                <div class="password-input-container">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <span class="toggle-text" id="password-toggle-text">👁️</span>
+                    </button>
+                </div>
                 <div class="form-actions">
                     <a href="/pages/login/password_recover/recover.php" class="forgot-password">Forgot your password???</a>
                 </div>
@@ -102,6 +106,6 @@ $autofilling = '/tmp/Camagru.log';
     include __DIR__ . '/../../views/footer.php';
     ?>
 </body>
+<script src="../../pages/login/login.js"></script>
 
 </html>
-<script src="../../js/login_event_listener.js"></script>
