@@ -29,6 +29,17 @@ if (empty($username) || empty($email)) {
 }
 $userInstance = new User();
 $user = $userInstance->getUserByUUID($_SESSION['uuid']);
+
+if ($userInstance->isUsernameTaken($username, $user['uuid'])) {
+    $_SESSION['errors'] = 'Username is already taken.';
+    header('Location: /pages/profile/profile.php');
+    exit();
+}
+if ($userInstance->isEmailTaken($email, $user['uuid'])) {
+    $_SESSION['errors'] = 'Email is already taken.';
+    header('Location: /pages/profile/profile.php');
+    exit();
+}
 // Actualizar datos del perfil
 
 $file = $_FILES['profile_picture'] ?? null;
@@ -49,6 +60,8 @@ if ($file != null && $file['error'] === UPLOAD_ERR_OK) {
     exit();
 }
 $profileData = [
+    'username' => $username,
+    'email' => $email,
     'first_name' => $data['first_name'] ?? '',
     'last_name' => $data['last_name'] ?? '',
     'national_id_nr' => $data['national_id'] ?? '',

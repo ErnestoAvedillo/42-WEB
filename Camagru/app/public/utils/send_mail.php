@@ -83,7 +83,7 @@ function send_recovery_email($email_recipient, $username, $token)
     $mensaje = "Hola " . htmlspecialchars($username) . ",\n \r<br>";
     $mensaje .= "Has solicitado restablecer tu contraseña.\n \r";
     $mensaje .= "Puedes acceder a la página de recuperación pinchando en el siguiente enlace:";
-    $mensaje .= " <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/login/password_recover/create_new_password.php?username=" . urlencode($username) . "&token=" . $token . "'>Recuperar contraseña</a> \n \r<br>";
+    $mensaje .= " <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/create_new_password/create_new_password.php?username=" . urlencode($username) . "&token=" . $token . "'>Recuperar contraseña</a> \n \r<br>";
     $mensaje .= "Si no has solicitado esta recuperación, puedes ignorar este correo.";
     $email_sender = EnvLoader::get('NO_REPLY_EMAIL');
     $password_sender = EnvLoader::get('NO_REPLY_PASSWORD');

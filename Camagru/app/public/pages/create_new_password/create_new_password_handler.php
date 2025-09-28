@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . "/../../../database/User.php";
-require_once __DIR__ . "/../../../class_session/session.php";
+require_once __DIR__ . "/../../database/User.php";
+require_once __DIR__ . "/../../class_session/session.php";
 SessionManager::getInstance();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newPassword = $_POST['new-password'] ?? '';
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic validation
     if (empty($newPassword) || empty($confirmPassword)) {
         $_SESSION['error_messages'] = ['All fields are required.'];
-        header("Location: create_new_password.php?token=$token&username=$username");
+        header("Location: /pages/create_new_password/create_new_password.php?token=$token&username=$username");
         exit;
     }
 
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userData = $userInstance->getUserByUsername($username);
     if (!$userData) {
         $_SESSION['error_messages'] = ['User not found.'];
-        header("Location: create_new_password.php?token=$token&username=$username");
+        header("Location: /pages/create_new_password/create_new_password.php?token=$token&username=$username");
         exit;
     }
 
@@ -30,11 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         $_SESSION['error_messages'] = ['Failed to update password. Please try again later.'];
-        header("Location: create_new_password.php?token=$token&username=$username");
+        header("Location: /pages/create_new_password/create_new_password.php?token=$token&username=$username");
         exit;
     }
 } else {
     // If not a POST request, redirect to the form
-    header("Location: create_new_password.php?token=$token&username=$username");
+    header("Location: /pages/create_new_password/create_new_password.php?token=$token&username=$username");
     exit;
 }

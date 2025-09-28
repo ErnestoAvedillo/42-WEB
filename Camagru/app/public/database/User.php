@@ -336,27 +336,29 @@ class User
   /**
    * Check if username is already taken
    */
-  public function isUsernameTaken($username)
+  public function isUsernameTaken($username, $uuid = null)
   {
     $stmt = $this->pdo->prepare("
             SELECT COUNT(*) 
             FROM users 
             WHERE username = :username
+            " . ($uuid ? " AND uuid != :uuid" : "") . "
         ");
-    $stmt->execute([':username' => $username]);
+    $stmt->execute([':username' => $username, ':uuid' => $uuid]);
     return $stmt->fetchColumn() > 0;
   }
   /**
    * Check if email is already taken
    */
-  public function isEmailTaken($email)
+  public function isEmailTaken($email, $uuid = null)
   {
     $stmt = $this->pdo->prepare("
             SELECT COUNT(*) 
             FROM users 
             WHERE email = :email
+            " . ($uuid ? " AND uuid != :uuid" : "") . "
         ");
-    $stmt->execute([':email' => $email]);
+    $stmt->execute([':email' => $email, ':uuid' => $uuid]);
     return $stmt->fetchColumn() > 0;
   }
   /**
@@ -366,6 +368,8 @@ class User
   {
     try {
       $allowedFields = [
+        'username',
+        'email',
         'first_name',
         'last_name',
         'national_id_nr',
@@ -385,7 +389,16 @@ class User
       foreach ($data as $field => $value) {
         if (in_array($field, $allowedFields)) {
           $updates[] = "$field = :$field";
-          $params[":$field"] = $value;
+          // Handle empty date fields - convert empty strings to NULL for date columns
+          if ($field === 'date_of_birth' && (empty($value) || $value === '')) {
+            $params[":$field"] = null;
+          }
+          // Handle empty UUID fields - convert empty strings to NULL for UUID columns
+          elseif ($field === 'profile_uuid' && (empty($value) || $value === '')) {
+            $params[":$field"] = null;
+          } else {
+            $params[":$field"] = $value;
+          }
         }
       }
 
@@ -395,9 +408,10 @@ class User
 
       $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE uuid = :uuid";
       $stmt = $this->pdo->prepare($sql);
-
+      error_log("Executing SQL: $sql with params: " . json_encode($params));
       return $stmt->execute($params);
     } catch (PDOException $e) {
+      error_log("Error updating user profile: " . $e->getMessage());
       return false;
     }
   }
@@ -580,6 +594,10 @@ class User
       $stmt->execute([':username' => $username]);
       $result = $stmt->fetch();
       $tokenCreatedAt = $result['token_created_at']; // Acceso manual
+      if ($result['verification_token'] === null) {
+        error_log("No token found for user $username");
+        return null; // No token set
+      }
       error_log("Token creation time: " . var_export($tokenCreatedAt, true));
       if ($tokenCreatedAt) {
         $tokenAge = time() - strtotime($tokenCreatedAt);

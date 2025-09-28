@@ -30,14 +30,21 @@ SessionManager::getInstance();
     ?>
     <div class="profile-container">
         <h1>Your Profile</h1>
+        <?php if (isset($_SESSION['errors'])) { ?>
+            <div class="error-message">
+                <h2>Please correct the following errors:</h2>
+                <p><?php echo htmlspecialchars($_SESSION['errors']); ?></p>
+            </div>
+            <?php unset($_SESSION['errors']); ?>
+        <?php } ?>
         <form class="profile-update-form" action="/pages/profile/profile_handler.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" readonly>
+                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" readonly>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="first_name">First Name:</label>
