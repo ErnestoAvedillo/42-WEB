@@ -31,6 +31,12 @@ header {
 
 /* Sidebar Footer */
 
+.logo {
+	height: 40px;
+	margin-right: 15px;
+	vertical-align: middle;
+}
+
 nav.nav-links {
 	list-style: none;
 	display: flex;

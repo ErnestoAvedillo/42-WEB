@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../../class_session/session.php';
-SessionManager::getInstance();
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
 $user = new User();
@@ -8,7 +6,10 @@ $client = new DocumentDB('uploads');
 ?>
 <header>
   <link rel="stylesheet" href="/pages/header/header.css">
-  <button id="toggleSidebarBtn">☰</button>
+  <div>
+    <button id="toggleSidebarBtn">☰</button>
+    <a href="/index.php"><img id="logo" src="/img/logo.png" alt="Logo" class="logo"></a>
+  </div>
   <h1><?php echo htmlspecialchars($pageTitle); ?></h1>
   <nav class="nav-links">
     <ul>
