@@ -55,10 +55,11 @@ async def autoFill(data: InputData):
 
     try:
         GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+        USE_MODEL = os.getenv("USE_MODEL")
         genai.configure(api_key=GOOGLE_API_KEY)
 
         prompt = "Return only one funny caption for this picture"
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+        model = genai.GenerativeModel(USE_MODEL)
 
         response = model.generate_content([prompt, image_json])
         # response = "GenerateContentResponse(\n"

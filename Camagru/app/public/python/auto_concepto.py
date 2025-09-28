@@ -16,9 +16,10 @@ async def autoConcepto(data: ConceptoData):
         f.write(f"Function called {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
     try:
         GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+        USE_MODEL = os.getenv("USE_MODEL")
         genai.configure(api_key=GOOGLE_API_KEY)
 
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+        model = genai.GenerativeModel(USE_MODEL)
         prompt = 'Eres un asistente jurídico. Te paso un JSON con facturas impagadas (cada objeto contiene: número de factura, fecha de emisión, fecha de vencimiento, concepto).'
         prompt += 'Con esa información, redacta el un escrito de demanda de reclamación de cantidad en España para presentar ante el Juzgado de Primera Instancia.'
         prompt += 'Debes retornara la informacion en un json con los siguientes apartados:'

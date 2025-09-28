@@ -29,16 +29,18 @@ async def autoFactura(factura: UploadFile = File(...)):
 
     try:
         GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+        USE_MODEL = os.getenv("USE_MODEL")
         genai.configure(api_key=GOOGLE_API_KEY)
 
-        model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
-        prompt = 'Devuelve la siguiente información de este documento en un archivo JSON exacto, sin explicaciones ni texto adicional:'
-        prompt += 'Las fechas las debes devolver en formato d/m/Y'
-        prompt += '{"acreedor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
-        prompt += '{"deudor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}}'
-        prompt += '{"numero_contrato":""}'
-        prompt += '{"factura":{"numero":"","fecha":"","vencimiento":"","importe_total":"","importe_iva":"","importe_base":""}}'
-        prompt += '{"concepto":""}'
+        model = genai.GenerativeModel(USE_MODEL)
+        prompt = 'Devuelve la siguiente información de este documento en un texto para poder generar una única variable JSON exacto, sin explicaciones ni texto adicional.'
+        prompt += 'Las fechas las debes devolver en formato d/m/Y.'
+        prompt += 'Cada objeto del json debe contener los siguientes campos:'
+        prompt += '"acreedor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}'
+        prompt += '"deudor":{"nombre":"","CIF":"","domicilio":"","telefono":"","FAX":"","email":""}'
+        prompt += '"numero_contrato":""'
+        prompt += '"factura":{"numero":"","fecha":"","vencimiento":"","importe_total":"","importe_iva":"","importe_base":""}'
+        prompt += '"concepto":""'
 
         response = model.generate_content([prompt, image_json])
         with open("/var/log/app.log", "a") as f:
