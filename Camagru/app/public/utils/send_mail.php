@@ -61,8 +61,6 @@ function send_validation_link($email_recipient, $username)
     $mensaje .= "con el usuario " . htmlspecialchars($username) . ".\n \r<br>";
     $mensaje .= "Por favor confirma tu registro haciendo clic en el siguiente enlace: \n \r <br>";
     $mensaje .= "Validar mi cuenta ha <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/register/confirm_link_handler.php?username=" . urlencode($username) . "&token=" . $validationToken . "'>Aquí</a><br>";
-    $mensaje .= "Alternativamente, puedes introducir el siguiente código de verificación en el navegador: \n \r";
-    $mensaje .= "Código: " . $validationToken . "<br>";
     $mensaje .= "\n \r Si no has sido tú quien se ha registrado, puedes ignorar este correo.";
     $email_sender = EnvLoader::get('NO_REPLY_EMAIL');
     $password_sender = EnvLoader::get('NO_REPLY_PASSWORD');
@@ -75,4 +73,23 @@ function send_validation_link($email_recipient, $username)
         return $validationToken;
     }
     return null;
+}
+
+function send_recovery_email($email_recipient, $username, $token)
+{
+    $ipAddress = EnvLoader::get('APP_ADDR');
+    $portAddress = EnvLoader::get('APP_PORT');
+    $asunto = "Recuperación de contraseña en Camagru";
+    $mensaje = "Hola " . htmlspecialchars($username) . ",\n \r<br>";
+    $mensaje .= "Has solicitado restablecer tu contraseña.\n \r";
+    $mensaje .= "Puedes acceder a la página de recuperación pinchando en el siguiente enlace:";
+    $mensaje .= " <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/login/password_recover/create_new_password.php?username=" . urlencode($username) . "&token=" . $token . "'>Recuperar contraseña</a> \n \r<br>";
+    $mensaje .= "Si no has solicitado esta recuperación, puedes ignorar este correo.";
+    $email_sender = EnvLoader::get('NO_REPLY_EMAIL');
+    $password_sender = EnvLoader::get('NO_REPLY_PASSWORD');
+    $host = EnvLoader::get('SMTP_HOST');
+    $port = EnvLoader::get('SMTP_PORT');
+    $HTML = true;
+
+    return send_mail($email_sender, $password_sender, $email_recipient, $asunto, $mensaje, $host, $port, $HTML);
 }
