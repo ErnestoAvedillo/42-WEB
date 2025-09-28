@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../utils/send_mail.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 
-use PHPMailer\PHPMailer\Exception;
+// use PHPMailer\PHPMailer\Exception;
 
 $autofilling = '/tmp/Camagru.log';
 // Verificar que la petición sea POST
@@ -40,10 +40,11 @@ $errors = [];
 $Users = new User();
 $pendingReg = new pendingRegistration();
 file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " username: " . json_encode($username) . " email: " . json_encode($email) . "\n", FILE_APPEND);
-if ($Users->isUsernameTaken($username) || $pendingReg->userExists($username)) {
+
+if ($Users->isUsernameTaken($username)) {
   $errors[] = 'El nombre de usuario ya está en uso';
 }
-if ($Users->isEmailTaken($email) || $pendingReg->emailExists($email)) {
+if ($Users->isEmailTaken($email)) {
   $errors[] = 'El email ya está en uso';
 }
 
@@ -67,6 +68,16 @@ $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   $errors[] = 'El email proporcionado no es válido';
 }
+
+if ($pendingReg->usernameMailExists($username, $email)) {
+  $pendingReg->deletePendingRegistration($username, $email);
+}
+if ($pendingReg->emailExists($email)) {
+  $errors[] = 'Ya existe un registro pendiente con este email. Por favor, revisa tu correo para completar el registro o utiliza otro email.';
+}
+if ($pendingReg->usernameExists($username)) {
+  $errors[] = 'Ya existe un registro pendiente con este nombre de usuario. Por favor, utiliza otro nombre de usuario.';
+}
 // Si hay errores, regresar al formulario
 file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . json_encode($errors) . "\n", FILE_APPEND);
 if (!empty($errors)) {
@@ -82,6 +93,7 @@ if (!empty($errors)) {
   echo json_encode(['success' => false]);
   exit();
 }
+
 // Enviar correo de validación
 try {
   require_once __DIR__ . '/../../EnvLoader.php';

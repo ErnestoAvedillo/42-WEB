@@ -45,7 +45,7 @@ try {
         exit();
     }
     // Eliminar el registro pendiente y redirigir al login
-    $pendingReg->deletePendingRegistration($register_data['username']);
+    $pendingReg->deletePendingRegistration($register_data['username'], $register_data['email']);
     $_SESSION['success'] = true;
     $_SESSION['success_messages'] = ['Registro exitoso. Por favor, inicia sesión.'];
     header('Location: /pages/register/welcome.html');
