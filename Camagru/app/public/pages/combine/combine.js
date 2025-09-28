@@ -8,13 +8,26 @@ const saveButton = document.getElementById('save');
 let selectedImage = null;
 let allowDragFromMyPictures = true;
 
-['left', 'right'].forEach(direction => {
-  document.getElementById(`scroll-${direction}`).addEventListener('click', () => {
-    console.log(`scroll ${direction}`);
-    // dragZone.scrollLeft += direction === 'left' ? -200 : 200;
-    const dragZone = document.querySelector('.dragzone');
-    dragZone.scrollBy({ left: direction === 'left' ? -200 : 200, behavior: 'smooth' }); // Scroll by 200px
-  });
+// Handle scroll buttons for MyPictures container
+document.getElementById('mypictures-scroll-left').addEventListener('click', () => {
+  console.log('scroll left MyPictures');
+  myPictures.scrollBy({ left: -200, behavior: 'smooth' });
+});
+
+document.getElementById('mypictures-scroll-right').addEventListener('click', () => {
+  console.log('scroll right MyPictures');
+  myPictures.scrollBy({ left: 200, behavior: 'smooth' });
+});
+
+// Handle scroll buttons for Master container
+document.getElementById('master-scroll-left').addEventListener('click', () => {
+  console.log('scroll left Master');
+  myMasters.scrollBy({ left: -200, behavior: 'smooth' });
+});
+
+document.getElementById('master-scroll-right').addEventListener('click', () => {
+  console.log('scroll right Master');
+  myMasters.scrollBy({ left: 200, behavior: 'smooth' });
 });
 
 // Function to handle image selection

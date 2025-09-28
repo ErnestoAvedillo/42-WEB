@@ -29,7 +29,7 @@ if (!SessionManager::getSessionKey('uuid')) {
   ?>
   <h1> Create your personalized pictures </h1>
   <div id="MyPictures-container" class="dragzone-container">
-    <button id="scroll-left" class="scroll-button">◀</button>
+    <button id="mypictures-scroll-left" class="scroll-button">◀</button>
     <div id=MyPictures class="dragzone">
       <?php
       $user_uuid = SessionManager::getSessionKey('uuid');
@@ -63,7 +63,7 @@ if (!SessionManager::getSessionKey('uuid')) {
         <p>Upload your photos to make collages in our <a href="/pages/upload/upload.php?type=photo">Upload</a></p>
       <?php } ?>
     </div>
-    <button id="scroll-right" class="scroll-button">▶</button>
+    <button id="mypictures-scroll-right" class="scroll-button">▶</button>
   </div>
   <div id="combine-container">
     <h2>Combine Pictures</h2>
@@ -77,7 +77,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     </form>
   </div>
   <div id="Master-container" class="dragzone-container">
-    <button id="scroll-left" class="scroll-button">◀</button>
+    <button id="master-scroll-left" class="scroll-button">◀</button>
     <div id=Master class="dragzone">
       <?php
       // $user_uuid = SessionManager::getSessionKey('uuid');
@@ -104,7 +104,7 @@ if (!SessionManager::getSessionKey('uuid')) {
         <p>Upload your photos to make collages in our <a href="/pages/upload/upload.php?type=master">Upload</a></p>
       <?php } ?>
     </div>
-    <button id="scroll-right" class="scroll-button">▶</button>
+    <button id="master-scroll-right" class="scroll-button">▶</button>
   </div>
   <?php
   include __DIR__ . '/../../pages/right_bar/right_bar.php';
