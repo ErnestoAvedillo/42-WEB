@@ -225,7 +225,6 @@ class User
       return false;
     }
   }
-
   public function getUserByUUID($uuid)
   {
     try {
@@ -241,7 +240,36 @@ class User
       return false;
     }
   }
+  public function getUserByEmail($email)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+              SELECT username, email, uuid
+              FROM users 
+              WHERE email = :email
+          ");
 
+      $stmt->execute([':email' => $email]);
+      return $stmt->fetch();
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
+  public function getUserByUsername($username)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+              SELECT username, email, uuid
+              FROM users 
+              WHERE username = :username
+          ");
+
+      $stmt->execute([':username' => $username]);
+      return $stmt->fetch();
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
   /**
    * Verify email
    */
@@ -423,29 +451,6 @@ class User
       $this->pdo = null;
     }
   }
-  public function save2FAtoken($userId, $token)
-  {
-    try {
-      $stmt = $this->pdo->prepare("
-                UPDATE users 
-                SET two_factor_token = :token, token_created_at = CURRENT_TIMESTAMP
-                WHERE uuid = :userId
-            ");
-      $stmt->execute([
-        ':token' => $token,
-        ':userId' => $userId
-      ]);
-      return ['success' => true, 'message' => '2FA token saved successfully'];
-    } catch (PDOException $e) {
-      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
-    } catch (Exception $e) {
-      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
-    } finally {
-      // Close the database connection
-      $this->pdo = null;
-    }
-  }
-
   public function save2FAsecret($userId, $secret, $enabled = true)
   {
     try {
@@ -530,6 +535,94 @@ class User
       return null;
     } catch (Exception $e) {
       return null;
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  public function setRecoveryToken($userId, $token)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET verification_token = :token, token_created_at = CURRENT_TIMESTAMP
+                WHERE uuid = :userId
+            ");
+      $stmt->execute([
+        ':token' => $token,
+        ':userId' => $userId
+      ]);
+      return ['success' => true, 'message' => 'Recovery token saved successfully'];
+    } catch (PDOException $e) {
+      return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+    } catch (Exception $e) {
+      return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  /**
+   * Check if the recovery token is valid
+   * @param string $username
+   * @param string $token
+   * @return null Token is invalid expired or user not found
+   *       array Token is valid (user data)
+   */
+  public function isRecoveryTokenValid($username, $token)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT verification_token, token_created_at
+                FROM users 
+                WHERE username = :username
+            ");
+      $stmt->execute([':username' => $username]);
+      $result = $stmt->fetch();
+      $tokenCreatedAt = $result['token_created_at']; // Acceso manual
+      error_log("Token creation time: " . var_export($tokenCreatedAt, true));
+      if ($tokenCreatedAt) {
+        $tokenAge = time() - strtotime($tokenCreatedAt);
+        if ($tokenAge > 3600) { // 1 hour expiration
+          error_log("Token expired: age $tokenAge seconds");
+          return null; // Token expired
+        }
+      } else {
+        error_log("No token creation time found");
+        return null; // No token creation time found
+      }
+      return $result && $result['verification_token'] === $token ? $result : null;
+    } catch (PDOException $e) {
+      error_log("Database error: " . $e->getMessage());
+      return null;
+    } catch (Exception $e) {
+      error_log("Error: " . $e->getMessage());
+      return null;
+    } finally {
+      // Close the database connection
+      $this->pdo = null;
+    }
+  }
+  public function updatePassword($userId, $newPassword)
+  {
+    try {
+      // Hash the new password
+      $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET password = :password, verification_token = NULL, token_created_at = NULL
+                WHERE uuid = :userId
+            ");
+
+      return $stmt->execute([
+        ':password' => $hashedPassword,
+        ':userId' => $userId
+      ]);
+    } catch (PDOException $e) {
+      return false;
+    } catch (Exception $e) {
+      return false;
     } finally {
       // Close the database connection
       $this->pdo = null;

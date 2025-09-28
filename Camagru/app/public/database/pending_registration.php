@@ -24,7 +24,7 @@ class pendingRegistration
     public function createPendingRegistration($username, $email, $password, $first_name, $last_name, $validation_token)
     {
         try {
-            if ($this->userExists($username)) {
+            if ($this->usernameExists($username)) {
                 $stmt = $this->pdo->prepare("DELETE FROM pending_registrations WHERE username = :username");
                 $stmt->execute([':username' => $username]);
             }
@@ -56,11 +56,11 @@ class pendingRegistration
             return null;
         }
     }
-    public function deletePendingRegistration($username)
+    public function deletePendingRegistration($username, $email)
     {
         try {
-            $stmt = $this->pdo->prepare("DELETE FROM pending_registrations WHERE username = :username");
-            $stmt->execute([':username' => $username]);
+            $stmt = $this->pdo->prepare("DELETE FROM pending_registrations WHERE username = :username AND email = :email");
+            $stmt->execute([':username' => $username, ':email' => $email]);
             return true;
         } catch (PDOException $e) {
             file_put_contents($this->logfile, "Error deleting pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
@@ -81,16 +81,16 @@ class pendingRegistration
             $registration = $stmt->fetch(PDO::FETCH_ASSOC);
             if ($registration) {
                 // Aquí podrías agregar lógica para mover los datos a la tabla de usuarios
-                $this->deletePendingRegistration($username);
+                $this->deletePendingRegistration($username, $registration['email']);
                 return true;
             }
-            return false;
+            return true;
         } catch (PDOException $e) {
             file_put_contents($this->logfile, "Error confirming registration: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
-    public function userExists($username)
+    public function usernameExists($username)
     {
         try {
             $stmt = $this->pdo->prepare("
@@ -120,16 +120,17 @@ class pendingRegistration
             return false;
         }
     }
-    public function unsernameExists($username)
+    public function usernameMailExists($username, $email)
     {
         try {
             $stmt = $this->pdo->prepare("
                         SELECT * FROM pending_registrations 
-                        WHERE username = :username");
+                        WHERE username = :username AND email = :email");
             $stmt->execute([
                 ':username' => $username,
+                ':email' => $email,
             ]);
-            return $stmt->fetch(PDO::FETCH_ASSOC) === false;
+            return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
             file_put_contents($this->logfile, "Error checking username non-existence: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
