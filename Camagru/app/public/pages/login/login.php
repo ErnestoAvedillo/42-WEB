@@ -76,7 +76,7 @@ $autofilling = '/tmp/Camagru.log';
                 <input type="password" id="password" name="password" required
                     placeholder="Enter your password">
                 <div class="form-actions">
-                    <a href="#" class="forgot-password">Forgot your password???</a>
+                    <a href="/pages/login/password_recover/recover.php" class="forgot-password">Forgot your password???</a>
                 </div>
             </div>
 
