@@ -72,8 +72,9 @@ if (!SessionManager::getSessionKey('uuid')) {
       <!-- Combined images will appear here -->
 
     </div>
-    <button class="save" id="save" type="submit">Save</button>
-    <button class="clean" id="clean" type="clean">Clean</button>
+    <button class="Save" id="save" type="submit">Save</button>
+    <button class="Magic" id="magic" type="submit">Magic</button>
+    <button class="Clean" id="clean" type="clean">Clean</button>
     </form>
   </div>
   <div id="Master-container" class="dragzone-container">

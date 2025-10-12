@@ -5,6 +5,7 @@ const myMasters = document.getElementById('Master');
 const combinedImages = document.getElementById('CombinedImages');
 const cleanButton = document.getElementById('clean');
 const saveButton = document.getElementById('save');
+const magicButton = document.getElementById('magic');
 let selectedImage = null;
 let allowDragFromMyPictures = true;
 
@@ -53,6 +54,94 @@ cleanButton.addEventListener('click', (event) => {
 // Handle the saveutton click
 const referenceWidth = combinedImages.offsetWidth; // Reference width of the container
 const referenceHeight = combinedImages.offsetHeight; // Reference height of the container
+
+magicButton.addEventListener('click', async (event) => {
+  event.preventDefault();
+  // Prepare the data to be sent
+  const imagesData = [];
+  const images = combinedImages.querySelectorAll('img');
+  images.forEach(img => {
+    console.log('Processing top, left, width, height for image:');
+    const parentDiv = img.parentElement;
+    console.log('Top:', parentDiv.style.top);
+    console.log('Left:', parentDiv.style.left);
+    console.log('Width:', parentDiv.style.width);
+    console.log('Height:', parentDiv.style.height);
+
+    // Convert percentage values to pixels based on reference dimensions
+    const top = parentDiv.style.top.includes('%')
+      ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
+      : parseFloat(parentDiv.style.top);
+    const left = parentDiv.style.left.includes('%')
+      ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
+      : parseFloat(parentDiv.style.left);
+    const width = parentDiv.style.width.includes('auto')
+      ? referenceWidth
+      : parentDiv.style.width.includes('%')
+        ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
+        : parseFloat(parentDiv.style.width);
+    const height = parentDiv.style.height.includes('auto')
+      ? referenceHeight
+      : parentDiv.style.height.includes('%')
+        ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
+        : parseFloat(parentDiv.style.height);
+
+    imagesData.push({
+      top: Math.trunc(top),
+      left: Math.trunc(left),
+      width: Math.trunc(width),
+      height: Math.trunc(height),
+      img: img.src,
+    });
+  });
+  console.log('imagesData for magic combine:', imagesData);
+
+  // Send the data to the server
+  try {
+    const response = await fetch('/pages/combine/magic_combine.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(imagesData)
+    });
+    const data = await response.text();
+    console.log('Success:', data);
+    const parsedData = JSON.parse(data);
+    console.log('Parsed Data:', parsedData);
+    if (parsedData.success && parsedData.image) {
+      // Clear existing images and display the new combined image
+      combinedImages.innerHTML = '';
+      const img = new Image();
+      img.src = parsedData.output_file;
+      img.style.position = 'absolute'; // Ensure it's positioned correctly
+      img.style.top = '0';
+      img.style.left = '0';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.draggable = false; // Prevent default drag behavior
+      img.style.userSelect = 'none'; // Prevent image selection
+      const imageContainer = document.createElement('div');
+      imageContainer.style.position = 'absolute';
+      imageContainer.style.top = '0';
+      imageContainer.style.left = '0';
+      imageContainer.style.width = `${referenceWidth}px`;
+      imageContainer.style.height = `${referenceHeight}px`;
+      imageContainer.appendChild(img);
+      combinedImages.appendChild(imageContainer);
+      // Optionally, provide user feedback
+      alert('Magic combine successful!');
+    } else {
+      alert(parsedData.message || 'Error during magic combine.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    // Optionally, provide user feedback
+    alert('Error during magic combine.');
+  }
+});
+
+
 
 saveButton.addEventListener('click', async (event) => {
   event.preventDefault();
