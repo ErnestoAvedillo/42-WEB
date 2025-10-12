@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   echo json_encode(['success' => false]);
   exit();
 }
+file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Get data from GET\n", FILE_APPEND);
 
 // Obtener datos del formulario
 $username = trim($_GET['username'] ?? '');
@@ -44,6 +45,7 @@ file_put_contents($autofilling, "Register ==> register_handler.php - fromRegiste
 if ($Users->isUsernameTaken($username)) {
   $errors[] = 'El nombre de usuario ya está en uso';
 }
+file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
 if ($Users->isEmailTaken($email)) {
   $errors[] = 'El email ya está en uso';
 }
@@ -63,6 +65,7 @@ if (empty($password)) {
 if ($password !== $confirmPassword) {
   $errors[] = 'Las contraseñas no coinciden';
 }
+file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 2\n", FILE_APPEND);
 
 $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {

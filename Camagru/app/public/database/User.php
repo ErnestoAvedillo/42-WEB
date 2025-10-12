@@ -5,7 +5,7 @@ require_once __DIR__ . '/pg_database.php';
 class User
 {
   private $pdo;
-  private $logfile = '/tmp/camagru.log';
+  private $logfile = '/tmp/Camagru.log';
   public function __construct()
   {
     try {
@@ -338,13 +338,20 @@ class User
    */
   public function isUsernameTaken($username, $uuid = null)
   {
-    $stmt = $this->pdo->prepare("
-            SELECT COUNT(*) 
-            FROM users 
-            WHERE username = :username
-            " . ($uuid ? " AND uuid != :uuid" : "") . "
-        ");
-    $stmt->execute([':username' => $username, ':uuid' => $uuid]);
+    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
+    
+    $params = [':username' => $username];
+    $sql = "SELECT COUNT(*) FROM users WHERE username = :username";
+    
+    if ($uuid) {
+      $sql .= " AND uuid != :uuid";
+      $params[':uuid'] = $uuid;
+    }
+    
+    $stmt = $this->pdo->prepare($sql);
+    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 2\n", FILE_APPEND);
+    $stmt->execute($params);
+    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 3\n", FILE_APPEND);
     return $stmt->fetchColumn() > 0;
   }
   /**
@@ -352,13 +359,16 @@ class User
    */
   public function isEmailTaken($email, $uuid = null)
   {
-    $stmt = $this->pdo->prepare("
-            SELECT COUNT(*) 
-            FROM users 
-            WHERE email = :email
-            " . ($uuid ? " AND uuid != :uuid" : "") . "
-        ");
-    $stmt->execute([':email' => $email, ':uuid' => $uuid]);
+    $params = [':email' => $email];
+    $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+    
+    if ($uuid) {
+      $sql .= " AND uuid != :uuid";
+      $params[':uuid'] = $uuid;
+    }
+    
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
     return $stmt->fetchColumn() > 0;
   }
   /**
