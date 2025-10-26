@@ -8,6 +8,17 @@ const saveButton = document.getElementById('save');
 const magicButton = document.getElementById('magic');
 let selectedImage = null;
 let allowDragFromMyPictures = true;
+let lastCombinedImage = null; // Store the last combined image data
+
+// Function to get the last combined image
+function getLastCombinedImage() {
+  return lastCombinedImage;
+}
+
+// Function to check if there's a combined image available
+function hasCombinedImage() {
+  return lastCombinedImage !== null;
+}
 
 // Handle scroll buttons for MyPictures container
 document.getElementById('mypictures-scroll-left').addEventListener('click', () => {
@@ -106,14 +117,20 @@ magicButton.addEventListener('click', async (event) => {
       body: JSON.stringify(imagesData)
     });
     const data = await response.text();
-    console.log('Success:', data);
+    console.log('Raw response:', data);
     const parsedData = JSON.parse(data);
     console.log('Parsed Data:', parsedData);
+    if (parsedData.image) {
+      console.log('Image data length:', parsedData.image.length);
+    }
     if (parsedData.success && parsedData.image) {
+      // Store the image data globally
+      lastCombinedImage = parsedData.image;
+      
       // Clear existing images and display the new combined image
       combinedImages.innerHTML = '';
       const img = new Image();
-      img.src = parsedData.output_file;
+      img.src = parsedData.image;
       img.style.position = 'absolute'; // Ensure it's positioned correctly
       img.style.top = '0';
       img.style.left = '0';

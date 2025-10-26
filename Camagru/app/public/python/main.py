@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from data_classes import InputData, ConceptoData, Factura, Contacto
+from data_classes import InputData, ConceptoData, Factura, Contacto, PicturesList
 from urllib import response
 from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import JSONResponse
@@ -47,12 +47,27 @@ async def autofill(data: InputData):
     return response
 
 @app.post("/magic_combine")
-async def magic_combine(data: list[UploadFile] = File(...)):
-    output_file = "combined_image"+time.strftime('%Y%m%d%H%M%S')+".png"
-    response = await magicCombine(data, output_file=output_file)
-    with open(Log_file, "a") as f:
-        f.write(f"Response recived {time.strftime('%Y-%m-%d %H:%M:%S')}- {json.dumps(response, default=str)}\n")
-    return response
+async def magic_combine(request: Request):
+    try:
+        with open(Log_file, "a") as f:
+            f.write(f"Request emited {time.strftime('%Y-%m-%d %H:%M:%S')}- Entrando en magic_combine\n")
+        data = await request.json()
+        with open(Log_file, "a") as f:
+            f.write(f"Request emited {time.strftime('%Y-%m-%d %H:%M:%S')}- {json.dumps(data)}\n")
+        response = magicCombine(data)  # This now returns a dict
+        with open(Log_file, "a") as f:
+            f.write(f"Response recived {time.strftime('%Y-%m-%d %H:%M:%S')}- {json.dumps(response, default=str)}\n")
+        
+        # Return appropriate HTTP status based on success
+        if response.get("success", False):
+            return JSONResponse(status_code=200, content=response)
+        else:
+            return JSONResponse(status_code=400, content=response)
+            
+    except Exception as e:
+        with open(Log_file, "a") as f:
+            f.write(f"Error processing request: {str(e)}\n")
+        return JSONResponse(status_code=400, content={"success": False, "error": str(e)})
 
 @app.post("/factura")
 async def factura(factura: UploadFile = File(...)):
