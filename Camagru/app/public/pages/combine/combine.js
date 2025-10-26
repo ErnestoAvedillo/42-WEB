@@ -42,6 +42,8 @@ document.getElementById('master-scroll-right').addEventListener('click', () => {
   myMasters.scrollBy({ left: 200, behavior: 'smooth' });
 });
 
+
+
 // Function to handle image selection
 function selectImage(image) {
   // Deselect the previously selected image, if any
@@ -65,6 +67,36 @@ cleanButton.addEventListener('click', (event) => {
 // Handle the saveutton click
 const referenceWidth = combinedImages.offsetWidth; // Reference width of the container
 const referenceHeight = combinedImages.offsetHeight; // Reference height of the container
+
+const tooltip = document.createElement('div');
+tooltip.textContent = 'Click to combine images using Gemini AI';
+Object.assign(tooltip.style, {
+  position: 'fixed',
+  padding: '6px 8px',
+  background: 'yellow',
+  color: '#000',
+  borderRadius: '4px',
+  fontSize: '12px',
+  pointerEvents: 'none',
+  zIndex: 9999,
+  display: 'none',
+  transform: 'translate(10%, -20px)'
+});
+document.body.appendChild(tooltip);
+
+function showTooltip(e) {
+  const rect = magicButton.getBoundingClientRect();
+  tooltip.style.left = `${rect.left + rect.width / 2}px`;
+  tooltip.style.top = `${rect.top}px`;
+  tooltip.style.display = 'block';
+}
+
+function hideTooltip() {
+  tooltip.style.display = 'none';
+}
+
+magicButton.addEventListener('mouseenter', showTooltip);
+magicButton.addEventListener('mouseleave', hideTooltip);
 
 magicButton.addEventListener('click', async (event) => {
   event.preventDefault();
@@ -106,6 +138,11 @@ magicButton.addEventListener('click', async (event) => {
     });
   });
   console.log('imagesData for magic combine:', imagesData);
+  console.log('Prompt:', document.getElementById('prompt').value);
+  const DataToSend = { prompt: document.getElementById('prompt').value,
+                       images: imagesData
+                     };
+
 
   // Send the data to the server
   try {
@@ -114,23 +151,22 @@ magicButton.addEventListener('click', async (event) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(imagesData)
+      body: JSON.stringify(DataToSend)
     });
     const data = await response.text();
     console.log('Raw response:', data);
     const parsedData = JSON.parse(data);
+    console.log('Response parsed as JSON.');
     console.log('Parsed Data:', parsedData);
-    if (parsedData.image) {
-      console.log('Image data length:', parsedData.image.length);
-    }
-    if (parsedData.success && parsedData.image) {
+    if (parsedData.success && Array.isArray(parsedData.images) && parsedData.images.length > 0) {
+      console.log('Image data received.');
       // Store the image data globally
-      lastCombinedImage = parsedData.image;
-      
+      lastCombinedImage = parsedData.images[0];
+      console.log('Last combined image updated.');
       // Clear existing images and display the new combined image
       combinedImages.innerHTML = '';
       const img = new Image();
-      img.src = parsedData.image;
+      img.src = parsedData.images[0];
       img.style.position = 'absolute'; // Ensure it's positioned correctly
       img.style.top = '0';
       img.style.left = '0';
@@ -142,14 +178,14 @@ magicButton.addEventListener('click', async (event) => {
       imageContainer.style.position = 'absolute';
       imageContainer.style.top = '0';
       imageContainer.style.left = '0';
-      imageContainer.style.width = `${referenceWidth}px`;
-      imageContainer.style.height = `${referenceHeight}px`;
+      imageContainer.style.width = `1024px`;
+      imageContainer.style.height = `1024px`;
       imageContainer.appendChild(img);
       combinedImages.appendChild(imageContainer);
       // Optionally, provide user feedback
       alert('Magic combine successful!');
     } else {
-      alert(parsedData.message || 'Error during magic combine.');
+      alert(parsedData.error || parsedData.message || 'Magic combine failed.');
     }
   } catch (error) {
     console.error('Error:', error);

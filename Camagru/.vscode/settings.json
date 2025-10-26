@@ -66,5 +66,10 @@
         "**/*.php",
         "mongodb-stubs.php"
     ],
-    "php.suggest.basic": false
+    "php.suggest.basic": false,
+    "python.formatting.provider": "black",
+    "python.linting.flake8Enabled": true,
+    "editor.formatOnSave": true,
+    "python.linting.enabled": true,
+    "files.trimTrailingWhitespace": true
 }

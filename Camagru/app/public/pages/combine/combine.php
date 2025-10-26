@@ -72,9 +72,14 @@ if (!SessionManager::getSessionKey('uuid')) {
       <!-- Combined images will appear here -->
 
     </div>
-    <button class="Save" id="save" type="submit">Save</button>
-    <button class="Magic" id="magic" type="submit">Magic</button>
-    <button class="Clean" id="clean" type="clean">Clean</button>
+    <div id="magic_controls">
+      <textarea id="prompt" name="prompt" placeholder="Enter prompt for AI generation" rows="4" ></textarea>
+      <button class="manage" id="magic" type="submit">Magic</button>
+    </div>
+    <div id="save-controls">
+      <button class="manage" id="save" type="submit">Save</button>
+      <button class="manage" id="clean" type="clean">Clean</button>
+    </div>
     </form>
   </div>
   <div id="Master-container" class="dragzone-container">

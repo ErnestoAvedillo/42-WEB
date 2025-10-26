@@ -17,7 +17,10 @@ if (empty($data)) {
   exit;
 };
 
-foreach ($data as $key => $image) {
+$images = $data['images'];
+$prompt = $data['prompt'];
+
+foreach ($images as $key => $image) {
   preg_match('/^data:(.*?);base64,(.*)$/', $image['img'], $matches);
   $mime = $matches[1];
   $base64Data = $matches[2];
@@ -41,13 +44,17 @@ foreach ($data as $key => $image) {
 }
 // Prepare data for Python script
 $pythonData = [
-  'images' => []
+  'images' => [],
+  'prompt' => $prompt
 ];
-foreach ($data as $image) {
+foreach ($images as $image) {
   $pythonData['images'][] = [
     'img' => $image['img']
   ];
 }
+
+
+
 file_put_contents($autofilling, "Sending data to Python: " . json_encode($pythonData) . "\n", FILE_APPEND);
 // Call the Python script
 $ch = curl_init('http://python:6000/magic_combine');
