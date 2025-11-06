@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     error_log("Picture owner UUID: " . print_r($pictureOwner, true));
     $userInstance = new User();
     $pictureOwnerData = $userInstance->getUserByUuid($pictureOwner);
-    if ($pictureOwnerData["send_notifications"]) {
+    if ($userInstance->send_notification_enabled($pictureOwner)) {
         send_comment_notification($pictureOwnerData['email'], $pictureOwnerData['username'], $pictureUuid, SessionManager::getSessionKey('username'));
     }
     if ($userUuid && $pictureUuid && $caption) {

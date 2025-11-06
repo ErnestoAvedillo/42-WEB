@@ -339,15 +339,15 @@ class User
   public function isUsernameTaken($username, $uuid = null)
   {
     file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
-    
+
     $params = [':username' => $username];
     $sql = "SELECT COUNT(*) FROM users WHERE username = :username";
-    
+
     if ($uuid) {
       $sql .= " AND uuid != :uuid";
       $params[':uuid'] = $uuid;
     }
-    
+
     $stmt = $this->pdo->prepare($sql);
     file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 2\n", FILE_APPEND);
     $stmt->execute($params);
@@ -361,12 +361,12 @@ class User
   {
     $params = [':email' => $email];
     $sql = "SELECT COUNT(*) FROM users WHERE email = :email";
-    
+
     if ($uuid) {
       $sql .= " AND uuid != :uuid";
       $params[':uuid'] = $uuid;
     }
-    
+
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetchColumn() > 0;
@@ -655,6 +655,23 @@ class User
     } finally {
       // Close the database connection
       $this->pdo = null;
+    }
+  }
+  public function send_notification_enabled($user_uuid)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                SELECT send_notifications 
+                FROM users 
+                WHERE uuid = :user_uuid
+            ");
+      $stmt->execute([
+        ':user_uuid' => $user_uuid
+      ]);
+      $result = $stmt->fetch();
+      return $result ? (bool)$result['send_notifications'] : false;
+    } catch (PDOException $e) {
+      return false;
     }
   }
 }
