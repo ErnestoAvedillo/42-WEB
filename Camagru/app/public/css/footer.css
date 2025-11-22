@@ -1,19 +1,30 @@
 /* Footer Styles */
 footer {
-    margin-left: 280px;
+    /* Fixed to bottom so it is always visible */
+    position: fixed;
+    bottom: 0;
+    /* Si tienes una sidebar fija a la izquierda, ajusta este left/width
+       para no taparla. Aquí se asume sidebar de ~280px como antes. */
+    left: 280px;
+    width: calc(100% - 280px);
     background-color: var(--footer_color);
     color: var(--text-color);
     text-align: center;
     padding: var(--header-padding);
-    transition: margin-left var(--transition-speed) ease;
-    margin-top: auto;
-    /* Pushes footer to bottom */
+    transition: left var(--transition-speed) ease, width var(--transition-speed) ease;
     border-top: 2px solid var(--hover-color);
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    /* altura fija para calcular el padding-bottom del main/working-area */
+    height: var(--footer-height, 64px);
+    display: flex;
+    align-items: center;
 }
 
 footer.full-width {
-    margin-left: 0;
+    /* Cuando el layout se hace full-width (sidebar escondido) */
+    left: 0 !important;
+    width: 100% !important;
 }
 
 .footer-content {
@@ -56,6 +67,12 @@ footer p {
         padding: 1rem 0.5rem;
     }
 
+    /* En pantallas pequeñas, el footer debe ocupar todo el ancho y situarse en el left:0 */
+    footer {
+        left: 0 !important;
+        width: 100% !important;
+    }
+
     .footer-content {
         flex-direction: column;
         gap: 1rem;
@@ -69,6 +86,13 @@ footer p {
     .footer-links a {
         font-size: 0.8rem;
     }
+}
+
+/* Reserve espacio para el footer fijo y evitar que el contenido quede
+   oculto debajo del footer. Ajusta si cambias --footer-height. */
+main,
+.working-area {
+    padding-bottom: calc(var(--footer-height, 64px) + 12px);
 }
 
 /* Footer hover effects */

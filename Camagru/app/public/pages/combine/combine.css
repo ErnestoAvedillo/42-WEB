@@ -7,24 +7,85 @@ h1 {
     align-self: center;
 }
 
+.working-area {
+    display: grid;
+    /* three-column layout: MyPictures | Combine | Masters */
+    grid-template-columns: 1fr 3fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+    align-items: baseline;
+    /* Limitar la altura para que el footer pueda quedar siempre visible
+       y hacer que el scroll afecte solo a esta área. Ajusta el valor
+       160px si tu header/footer tienen otra altura. */
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+
+/* Generic panel styling for the three main columns */
+.working-area .panel,
+/* Aplicar estilos genéricos a los paneles/containers correctos (consistentes con el HTML):
+   tanto a los IDs internos (#MyPictures, #Master) como a los contenedores externos
+   (#MyPictures-container, #Master-container) y al panel central. */
+.working-area .panel,
+#MyPictures-container,
+#MyPictures,
+#combine-container,
+#Master-container,
+#Master {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+    min-height: 180px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 12px;
+}
+
 .dragzone-container {
-    width: 100;
-    height: 250px;
+    width: 80%;
+    height: 80%;
     position: relative;
-    display: flex;
-    align-items: center;
+    display: grid;
+    /* Alineamos los contenidos al inicio (arriba). Antes estaba center y provocaba
+       que MyPictures quedara centrado verticalmente mientras Master no. */
+    align-items: start;
     gap: 10px;
 }
 
+.draggable-item {
+    width: 100%;
+}
+
 .scroll-button {
+    justify-self: start;
+    align-self: center;
+    display: inline-block;
+    width: auto;
     background-color: #007BFF;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
     font-size: 1.2rem;
     transition: background-color 0.3s;
+    /* fixed size to avoid stretching */
+    width: 40px;
+    /* fixed size to avoid stretching */
+    height: 40px;
+    /* center contents and avoid block-stretch */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* don't grow/shrink if inside a flex parent */
+    flex: 0 0 auto;
+    /* center if inside a grid cell */
+    justify-self: center;
+    /* center vertically in grid/flex */
+    align-self: center;
 }
 
 .scroll-button:hover {
@@ -33,26 +94,28 @@ h1 {
 
 .dragzone {
     /* align-self: center; */
-    width: 90%;
-    height: 250px;
+    width: 60%;
+    height: 95%;
     overflow-x: scroll;
     overflow-y: hidden;
     /* IE and Edge */
     white-space: nowrap;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+    /* display: flex; */
+    flex-direction: column;
+    /* gap: 20px; */
     vertical-align: middle;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* padding: 20px; */
+    /* background-color: #f9f9f9; */
+    /* border: 1px solid #ddd; */
+    /* border-radius: 5px; */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    justify-self: center;
+    align-self: center;
 }
 
 .dragzone img {
-    width: auto;
-    height: 100%;
+    width: 100%;
+    height: auto;
     border: 2px solid #ccc;
     border-radius: 5px;
     transition: transform 0.2s;
@@ -62,15 +125,67 @@ h1 {
     transform: scale(1.05);
 }
 
-#Masters {
-    pointer-events: none;
-    /* Specific styles for the Masters dragzone if needed */
+/* Selector corregido: el HTML usa id="Master" para la zona interna y
+   id="Master-container" para el contenedor exterior. Ajustamos al selector
+   correcto para evitar inconsistencias. */
+#Master,
+#Master-container {
+    /* Mantener comportamiento por defecto; poner aquí estilos específicos si se necesitan. */
+    pointer-events: auto;
+}
+
+/* MyPictures panel - horizontal gallery */
+#MyPictures .dragzone,
+#Master .dragzone {
+    width: 100%;
+    height: 150px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* Smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    display: grid;
+    gap: 12px;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+/* Ensure combine center area uses available space */
+#combine-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Responsive: collapse to single column on small screens */
+@media (max-width: 900px) {
+    .working-area {
+        grid-template-columns: 1fr;
+    }
+
+    #CombinedImages {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Medium screens: two columns (mypictures+combine, masters below or combined) */
+@media (min-width: 901px) and (max-width: 1200px) {
+    .working-area {
+        grid-template-columns: 1fr 1.5fr;
+        grid-auto-rows: minmax(200px, auto);
+    }
+
+    #Master {
+        order: 3;
+    }
+
 }
 
 /* Combine container styles */
 #combine-container {
-    width: auto;
-    height: auto;
+    width: 90%;
+    height: 80;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -80,8 +195,8 @@ h1 {
 }
 
 #CombinedImages {
-    width: 500px;
-    height: 300px;
+    width: 600px;
+    height: 600px;
     border: 2px solid #ccc;
     border-radius: 5px;
     align-self: auto;
@@ -100,14 +215,14 @@ h1 {
     left: 0;
     /* width: 100%;
     height: 100%; */
-    object-fit: contain;
+    /* object-fit: contain; */
     /* Ajusta la imagen para que se contenga dentro del contenedor */
     /* pointer-events: none; */
     /* Evita que las imágenes interfieran con eventos de ratón */
 }
 
 /* Button styles */
-button.manage{
+button.manage {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -119,11 +234,34 @@ button.manage{
     margin: 10px 5px;
 }
 
-button.manage:hover {
-    background-color: #98b8db;
+/* estado enabled explícito (opcional) */
+button.manage:enabled {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
 }
 
-div#magic_controls, div#save-controls {
+/* estado hover y focus */
+button.manage:enabled:hover,
+button.manage:enabled:focus {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+    outline: none;
+}
+
+/* estado disabled (visual + accesibilidad) */
+button.manage:disabled,
+button.manage[aria-disabled="true"] {
+    background: var(--btn-bg-disabled, #c0c0c0);
+    color: var(--btn-color-disabled, #666);
+    opacity: 0.85;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+    /* redundant cuando disabled, pero útil si usas aria-disabled */
+}
+
+div#magic_controls,
+div#save-controls {
     margin-top: 20px;
     grid-row: 2;
     text-align: left;

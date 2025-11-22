@@ -143,10 +143,10 @@ function createFloatingImage(src, container) {
   const img = document.createElement('div');
   const innersrc = document.createElement('img');
   innersrc.src = src;
-  innersrc.style.top = '0px';
-  innersrc.style.left = '0px';
-  innersrc.style.width = '100%';
-  innersrc.style.height = '100%';
+  innersrc.style.top = '10px';
+  innersrc.style.left = '10px';
+  innersrc.style.width = '80%';
+  innersrc.style.height = '80%';
   innersrc.style.userSelect = 'none'; // Prevent image selection
   innersrc.draggable = false; // Prevent default drag behavior
   img.appendChild(innersrc);
