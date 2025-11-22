@@ -8,8 +8,10 @@ export const magicButton = document.getElementById('magic');
 export const cameraButton = document.getElementById('open_camera');
 export const closeCameraButton = document.getElementById('close_camera');
 export const snapshotButton = document.getElementById('take_snapshot');
-export const maxImageHeight = 600; // Maximum height for combined images
-export const maxImageWidth = 600;
+// Maximum height for combined images
+export const maxImageHeight = document.getElementById('CombinedImages').style.height.replace('px',''); 
+// Maximum width for combined images
+export const maxImageWidth = document.getElementById('CombinedImages').style.width.replace('px','');
 window.sharedState = {
   allowDragFromMyPictures: true,
 }; // Global shared state
@@ -68,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
   cleanButton.addEventListener('click', (event) => {
     event.preventDefault();
     combinedImages.innerHTML = ''; // Clear all images in the dropzone
-    combinedImages.style.width = '500px'; // Reset to default width
-    combinedImages.style.height = '400px'; // Reset to default height
+    combinedImages.style.width = maxImageWidth; // Reset to default width
+    combinedImages.style.height = maxImageHeight; // Reset to default height
     window.sharedState.allowDragFromMyPictures = true; // Reset to allow dragging from MyPictures again
     selectedImage = null; // Reset selected image
     cameraButton.disabled = false;
@@ -79,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Cleared images. Dragging from MyPictures re-enabled.');
   });
 
-  // Handle the saveutton click
+  // Handle the saveButton click
   const referenceWidth = combinedImages.offsetWidth; // Reference width of the container
   const referenceHeight = combinedImages.offsetHeight; // Reference height of the container
 
@@ -205,15 +207,15 @@ document.addEventListener('DOMContentLoaded', () => {
         img.style.userSelect = 'none'; // Prevent image selection
         if (img.width >= img.height) {
           let aspectRatio = img.height / img.width;
-          const finalImageWidth = Math.min(Math.floor(img.width), maxImageWidth);
+          const finalImageWidth = Math.min(Math.floor(img.width), c);
           img.style.width = `${finalImageWidth}px`;
           img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
-        } else {
+        } else  {
           let aspectRatio = img.width / img.height;
           const finalImageHeight = Math.min(Math.floor(img.height), maxImageHeight);
           img.style.height = `${finalImageHeight}px`;
           img.style.width = `${Math.round(finalImageHeight * aspectRatio)}px`;
-        }
+        } 
         // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
@@ -428,6 +430,9 @@ document.addEventListener('DOMContentLoaded', () => {
         combinedImages.style.height = `${img.style.height}`;
         window.sharedState.allowDragFromMyPictures = false;
         cameraButton.disabled = true;
+        closeCameraButton.disabled = true;
+        snapshotButton.disabled = true;
+        console.log('Base image added from MyPictures. Further drags must be from Masters.');
         // Clear fallback after use
         window.__dragImageSrc = null;
       };

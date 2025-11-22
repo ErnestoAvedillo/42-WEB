@@ -27,7 +27,6 @@ if (!SessionManager::getSessionKey('uuid')) {
   include __DIR__ . '/../../pages/header/header.php';
   include __DIR__ . '/../../pages/left_bar/left_bar.php';
   ?>
-  <h1> Create your personalized pictures </h1>
   <div class="working-area">
     <div id="MyPictures-container" class="dragzone-container">
       <button id="mypictures-scroll-up" class="scroll-button">◀</button>
@@ -67,24 +66,27 @@ if (!SessionManager::getSessionKey('uuid')) {
       <button id="mypictures-scroll-down" class="scroll-button">▶</button>
     </div>
     <div id="combine-container">
-      <h2>Combine Pictures</h2>
       <p>Drag and drop your pictures here starting from the upper bar</p>
       <div id="CombinedImages" class="dropzone">
         <!-- <canvas id="combined_canvas" hidden=true></canvas> -->
         <!-- Combined images will appear here -->
       </div>
-      <div id="camera_controls">
-        <button class="manage" id="open_camera" type="button">Open Camera</button>
-        <button class="manage" id="close_camera" type="button">Close Camera</button>
-        <button class="manage" id="take_snapshot" type="button">Take Snapshot</button>
-      </div>
-      <div id="save-controls">
-        <button class="manage" id="save" type="submit">Save</button>
-        <button class="manage" id="clean" type="clean">Clean</button>
-      </div>
-      <div id="magic_controls">
-        <textarea id="prompt" name="prompt" placeholder="Enter prompt for AI generation" rows="4"></textarea>
-        <button class="manage" id="magic" type="submit">Magic</button>
+      <div id="controls-container">
+        <div id="camera-save-controls">
+          <div id="camera_controls">
+            <button class="manage" id="open_camera" type="button">Open Camera</button>
+            <button class="manage" id="close_camera" type="button">Close Camera</button>
+            <button class="manage" id="take_snapshot" type="button">Take Snapshot</button>
+          </div>
+          <div id="save-controls">
+            <button class="manage" id="save" type="submit">Save</button>
+            <button class="manage" id="clean" type="clean">Clean</button>
+          </div>
+        </div>
+        <div id="magic_controls">
+          <textarea id="prompt" name="prompt" placeholder="Enter prompt for AI generation" rows="4"></textarea>
+          <button class="manage" id="magic" type="submit">Magic</button>
+        </div>
       </div>
     </div>
     <div id="Master-container" class="dragzone-container">

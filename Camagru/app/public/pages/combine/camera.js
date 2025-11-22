@@ -1,4 +1,3 @@
-import { maxImageWidth } from "./combine";
 import { combinedImages, maxImageHeight, maxImageWidth } from "/pages/combine/combine.js";
 document.addEventListener('DOMContentLoaded', () => {
     const openCameraButton = document.getElementById('open_camera');
@@ -108,20 +107,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const finalImageHeight = Math.min(Math.floor(canvas.height), maxImageHeight);
             img.style.height = `${finalImageHeight}px`;
             img.style.width = `${Math.round(finalImageHeight * aspectRatio)}px`;
+        } else {
+            img.style.width = `${canvas.width}px`;
+            img.style.height = `${canvas.height}px`;
         }
         console.log("Creating a div element to contain the image");
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
         imageContainer.style.top = '0%';
         imageContainer.style.left = '0%';
-        imageContainer.style.width = `100%`;
-        imageContainer.style.height = `100`;
+        imageContainer.style.width = img.style.width;
+        imageContainer.style.height = img.style.height;
         console.log("Appending the image to the container and the container to the dropzone");
         imageContainer.appendChild(img);
         console.log("Appending to combinedImages");
         combinedImages.appendChild(imageContainer);
-        combinedImages.style.width = `${maxImageWidth}px`;
-        combinedImages.style.height = `${maxImageHeight}px`;
+        combinedImages.style.width = img.style.width;
+        combinedImages.style.height = img.style.height;
+        console.log('dimensions combinedImages:', combinedImages.style.width, combinedImages.style.height);
         window.sharedState.allowDragFromMyPictures = false;
     });
 });
