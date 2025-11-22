@@ -26,6 +26,7 @@ try {
         throw new Exception('Token not match. Please try again.');
     }
     // Registrar al usuario
+    header('Location: /pages/login/login.php');
     $user = new User();
     $result = $user->copyRegisterFromPending($register_data['username']);
     // Verificar el resultado del registro en caso de que falle volver a registro

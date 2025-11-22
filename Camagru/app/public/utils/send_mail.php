@@ -4,10 +4,13 @@ require_once __DIR__ . '/../EnvLoader.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 
+
 function send_mail($email_sender, $password_sender, $email_recipient, $asunto, $mensaje, $host, $port, $isHTML = false)
 {
+    $autofilling = '/tmp/Camagru.log';
     $mail = new PHPMailer(true);
     //$mail->SMTPDebug = 2; // Habilita la depuración para ver los errores
+    file_put_contents($autofilling, "send_mail ==> Sending email to: " . $email_recipient . " at " . date('Y-m-d H:i:s')  . " Subject: " . $asunto . "\n", FILE_APPEND);
     $mail->setFrom($email_sender, 'Camagru');
     $mail->addAddress($email_recipient);
     $mail->Subject = $asunto;
@@ -60,7 +63,7 @@ function send_validation_link($email_recipient, $username)
     $mensaje = "Has recibido este correo porque te has registrado en nuestro sitio web ";
     $mensaje .= "con el usuario " . htmlspecialchars($username) . ".\n \r<br>";
     $mensaje .= "Por favor confirma tu registro haciendo clic en el siguiente enlace: \n \r <br>";
-    $mensaje .= "Validar mi cuenta ha <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/register/confirm_link_handler.php?username=" . urlencode($username) . "&token=" . $validationToken . "'>Aquí</a><br>";
+    $mensaje .= "Validar mi cuenta haciendo click <a href='http://" . $ipAddress . ":" . $portAddress . "/pages/register/confirm_link_handler.php?username=" . urlencode($username) . "&token=" . $validationToken . "'>Aquí</a><br>";
     $mensaje .= "\n \r Si no has sido tú quien se ha registrado, puedes ignorar este correo.";
     $email_sender = EnvLoader::get('NO_REPLY_EMAIL');
     $password_sender = EnvLoader::get('NO_REPLY_PASSWORD');

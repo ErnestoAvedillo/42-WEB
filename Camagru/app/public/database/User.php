@@ -407,6 +407,8 @@ class User
           // Handle empty UUID fields - convert empty strings to NULL for UUID columns
           elseif ($field === 'profile_uuid' && (empty($value) || $value === '')) {
             $params[":$field"] = null;
+          } elseif ($field === 'send_notifications') {
+            $params[":$field"] = $value ? true : false;
           } else {
             $params[":$field"] = $value;
           }
@@ -420,7 +422,26 @@ class User
       $sql = "UPDATE users SET " . implode(', ', $updates) . ", updated_at = CURRENT_TIMESTAMP WHERE uuid = :uuid";
       $stmt = $this->pdo->prepare($sql);
       error_log("Executing SQL: $sql with params: " . json_encode($params));
-      return $stmt->execute($params);
+
+      // Bind parameters with explicit PDO types to avoid type conversion issues
+      // (e.g. PHP boolean false -> empty string when sent as PDO::PARAM_STR)
+      foreach ($params as $pname => $pvalue) {
+        // Determine PDO param type
+        if (is_null($pvalue)) {
+          $type = PDO::PARAM_NULL;
+        } elseif (is_bool($pvalue)) {
+          $type = PDO::PARAM_BOOL;
+        } elseif (is_int($pvalue)) {
+          $type = PDO::PARAM_INT;
+        } else {
+          $type = PDO::PARAM_STR;
+        }
+
+        // bindValue expects parameter name without any change (we already include the leading colon)
+        $stmt->bindValue($pname, $pvalue, $type);
+      }
+
+      return $stmt->execute();
     } catch (PDOException $e) {
       error_log("Error updating user profile: " . $e->getMessage());
       return false;

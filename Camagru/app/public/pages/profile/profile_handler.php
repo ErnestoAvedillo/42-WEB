@@ -62,6 +62,7 @@ if ($file != null && $file['error'] === UPLOAD_ERR_OK) {
 $profileData = [
     'username' => $username,
     'email' => $email,
+    'send_notifications' => isset($data['send_notifications']) ? true : false,
     'first_name' => $data['first_name'] ?? '',
     'last_name' => $data['last_name'] ?? '',
     'national_id_nr' => $data['national_id'] ?? '',

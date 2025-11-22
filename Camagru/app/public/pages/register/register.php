@@ -23,6 +23,8 @@ SessionManager::getInstance();
   $pageTitle = "sidebar - Camagru";
   include __DIR__ . '/../../pages/left_bar/left_bar.php';
 
+  include __DIR__ . '/../../utils/wait/wait.php';
+
   // Obtener errores y datos previos si existen
   $errors = $_SESSION['error_messages'] ?? [];
   $data = $_SESSION['register_data'] ?? [];
