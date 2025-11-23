@@ -3,6 +3,12 @@ require_once __DIR__ . "/../../database/User.php";
 require_once __DIR__ . "/../../class_session/session.php";
 SessionManager::getInstance();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF token check
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $_SESSION['error_messages'] = ['Invalid CSRF token.'];
+        header("Location: /pages/create_new_password/create_new_password.php?token=" . ($_POST['token'] ?? '') . "&username=" . ($_POST['username'] ?? ''));
+        exit;
+    }
     $newPassword = $_POST['new-password'] ?? '';
     $confirmPassword = $_POST['confirm-password'] ?? '';
     $username = $_POST['username'] ?? '';

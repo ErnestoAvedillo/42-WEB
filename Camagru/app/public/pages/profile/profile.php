@@ -3,6 +3,11 @@ require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../database/Profiles.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,6 +43,7 @@ SessionManager::getInstance();
             <?php unset($_SESSION['errors']); ?>
         <?php } ?>
         <form class="profile-update-form" action="/pages/profile/profile_handler.php" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>

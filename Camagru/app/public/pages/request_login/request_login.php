@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +31,7 @@ SessionManager::getInstance();
         <h1>Please Log In</h1>
         <p>To upload your photos, or see your gallery, please log in.</p>
         <form action="/pages/login/login.php" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <button type="submit" class="btn btn-primary">Log In</button>
         </form>
     </div>

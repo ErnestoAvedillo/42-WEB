@@ -1,3 +1,8 @@
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+$csrf_token = bin2hex(random_bytes(32));
+$_SESSION['csrf_token'] = $csrf_token;
+}
 <?php
 require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
@@ -31,6 +36,7 @@ SessionManager::getInstance();
     <div class="new-password-container">
         <h2>Create a New Password</h2>
         <form action="create_new_password_handler.php" method="POST" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <input type="hidden" name="username" value="<?php echo htmlspecialchars($username); ?>">
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
             <label for="new-password">New Password:</label>

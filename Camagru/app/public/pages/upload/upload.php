@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
+}
 if (!SessionManager::getSessionKey('uuid')) {
   // echo "<script>alert('You must be logged in to access this page.');</script>";
   header('Location: /pages/login/login.php');
@@ -48,6 +53,7 @@ if (!SessionManager::getSessionKey('uuid')) {
       <p>Share your creativity with the world by uploading your photos.</p>
     <?php } ?>
     <form class="upload-form" action="upload_handler.php?type=<?php echo htmlspecialchars($type); ?>" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <?php if ($type === 'master') { ?>
         <input class="upload-input" type="file" multiple name="file[]" accept=".png" required>
       <?php } elseif ($type === 'photo') { ?>

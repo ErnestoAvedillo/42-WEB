@@ -12,6 +12,12 @@ if (!SessionManager::getSessionKey('uuid')) {
 $successMessage = '';
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF token check
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Invalid CSRF token']);
+        exit();
+    }
     // Validate file upload
     $container = $_POST['container'] ?: null;
     $pictureid = $_POST['image-id'];

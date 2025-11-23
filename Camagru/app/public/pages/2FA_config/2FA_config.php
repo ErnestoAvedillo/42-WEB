@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
+}
 if (!SessionManager::getSessionKey('uuid')) {
   // echo "<script>alert('You must be logged in to access this page.');</script>";
   header('Location: /pages/login/login.php');
@@ -66,6 +71,7 @@ if (!SessionManager::getSessionKey('uuid')) {
       <p>Or manually enter this secret key: <strong><?php echo $secret; ?></strong></p>
       <p>After scanning the QR code or entering the secret key, your authenticator app will generate a 6-digit code. Enter that code below to enable 2FA.</p>
       <form method="POST" action="/pages/2FA_config/2FA_config_handler.php">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
         <input type="hidden" name="user_id" value="<?php echo $username; ?>">
         <input type="hidden" name="2fa_secret" value="<?php echo $secret; ?>">
         <label for="2fa_code">2FA Code:</label>

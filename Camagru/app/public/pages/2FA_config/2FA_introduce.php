@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
+}
 if (!SessionManager::getSessionKey('temp_user')) {
     error_log("No temp_user in session, redirecting to login.");
     if (!isset($_GET['forward']) || empty($_GET['forward'])) {
@@ -32,6 +37,7 @@ if (!SessionManager::getSessionKey('temp_user')) {
         <h2>Two-Factor Authentication</h2>
         <p>Please enter the authentication code from your authenticator app.</p>
         <form action="/pages/2FA_config/2FA_verify.php?forward=<?php echo urlencode($_GET['forward'] ?? ''); ?>" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <div class="form-group">
                 <label for="token">Authentication Code:</label>
                 <input type="text" id="token" name="token" required pattern="\d{6}" title="Enter the 6-digit code from your authenticator app">

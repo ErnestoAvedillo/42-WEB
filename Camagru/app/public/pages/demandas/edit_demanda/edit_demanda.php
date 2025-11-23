@@ -1,3 +1,8 @@
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+$csrf_token = bin2hex(random_bytes(32));
+$_SESSION['csrf_token'] = $csrf_token;
+}
 <link href="/pages/demandas/edit_demanda/edit_demanda.css" rel="stylesheet">
 <?php
 require_once __DIR__ . '/../../../database/demandas.php';
@@ -25,6 +30,7 @@ file_put_contents($autofilling, "Editdemanda: " . date('Y-m-d H:i:s') . " succes
 ?>
 <div id="demanda">
   <form id="formularioDemanda" action="/pages/demandas/edit_demanda/edit_demanda_handler.php" method="POST">
+    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
     <div id="DatosGenerales">
       <h2>Datos Generales</h2>
       <input type="hidden" id="user_uuid" name="user_uuid" value="<?php echo htmlspecialchars($demanda['user_uuid']); ?>">

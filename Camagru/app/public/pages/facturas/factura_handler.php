@@ -35,6 +35,11 @@ $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
 $maxBytes = 10 * 1024 * 1024; // 10 MB
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . " Invalid CSRF token\n", FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => 'Invalid CSRF token', 'redirect' => '/pages/facturas/factura.php']);
+        exit();
+    }
     file_put_contents($autofilling, "Factura_handler: " . date('Y-m-d H:i:s') . "Invalid request method\n", FILE_APPEND);
     echo json_encode(['success' => false, 'error' => 'Invalid request method', 'redirect' => '/pages/facturas/factura.php']);
     exit();

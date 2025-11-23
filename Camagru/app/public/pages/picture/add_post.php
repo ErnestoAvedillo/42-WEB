@@ -7,6 +7,11 @@ require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../utils/send_mail.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF token check
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        echo '<script> alert("Invalid CSRF token."); </script>';
+        exit();
+    }
     $userUuid = $_POST['user_uuid'] ?? null;
     $pictureUuid = $_POST['picture_uuid'] ?? null;
     $caption = $_POST['caption'] ?? null;

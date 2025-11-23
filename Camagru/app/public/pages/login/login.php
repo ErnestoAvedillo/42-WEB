@@ -14,6 +14,11 @@ if (SessionManager::getSessionKey('uuid')) {
     header('Location: /index.php');
     exit();
 }
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
+}
 $autofilling = '/tmp/Camagru.log';
 ?>
 <!DOCTYPE html>
@@ -74,6 +79,7 @@ $autofilling = '/tmp/Camagru.log';
         <p>Please enter your credentials to access your account.</p>
         <form action="/pages/login/login_handler.php" method="post" id="loginForm">
             <input type="hidden" name="forward" value="<?php echo isset($_GET['forward']) ? htmlspecialchars($_GET['forward']) : ''; ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <div class="form-group">
                 <label for="username">Username or Email: <span class="required">*</span></label>
                 <input type="text" id="username" name="username" required

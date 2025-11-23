@@ -3,6 +3,11 @@ require_once __DIR__ . '/../../../database/demandas.php';
 
 $autofilling = '/tmp/demandas.log';
 $data = $_POST;
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!isset($data['csrf_token']) || !$csrf_token || !hash_equals($csrf_token, $data['csrf_token'])) {
+    echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+    exit();
+}
 $user_uuid = $data['user_uuid'] ?? null;
 $id = $data['id'] ?? null;
 

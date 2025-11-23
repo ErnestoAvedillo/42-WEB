@@ -166,7 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Prompt:', document.getElementById('prompt').value);
     const DataToSend = {
       prompt: document.getElementById('prompt').value,
-      images: imagesData
+      images: imagesData,
+      csrf_token: window.CSRF_TOKEN
     };
 
 
@@ -294,12 +295,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Send the data to the server
     console.log('imagesData:', imagesData);
     try {
+      const DataToSend = imagesData;
+      DataToSend.csrf_token = window.CSRF_TOKEN;
       const response = await fetch('/pages/combine/save_image.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(imagesData)
+        body: JSON.stringify(DataToSend)
       });
       const data = await response.text();
       console.log('Success:', data);

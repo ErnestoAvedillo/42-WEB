@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const iconsDelete = document.getElementsByClassName('delete-image');
+    const csrfToken = document.getElementById('csrf_token')?.value;
     for (let i = 0; i < iconsDelete.length; i++) {
         iconsDelete[i].addEventListener('click', async function (event) {
             event.preventDefault();
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: `container=${encodeURIComponent(container)}&image-id=${encodeURIComponent(imageId)}`,
+                    body: `container=${encodeURIComponent(container)}&image-id=${encodeURIComponent(imageId)}&csrf_token=${encodeURIComponent(csrfToken)}`,
                 });
                 const result = await response.text();
                 const resultJson = JSON.parse(result);

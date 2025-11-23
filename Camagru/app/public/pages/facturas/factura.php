@@ -2,6 +2,11 @@
 require_once __DIR__ . '/../../database/User.php';
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
+}
 if (!SessionManager::getSessionKey('uuid')) {
   // echo "<script>alert('You must be logged in to access this page.');</script>";
   header('Location: /pages/login/login.php');
@@ -32,6 +37,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
   <div class="Facturas" id="Facturas">
     <h1>Carge el documento con la factura escaneada o en PDF</h1>
     <form id="facturaForm" action="/pages/facturas/factura_handler.php" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <input id="file_field" type="file" multiple name="factura[]" accept=".jpg,.jpeg,.png,.gif,.pdf,.mp4,.zip,.docx" required>
       <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars(SessionManager::getSessionKey('uuid')); ?>">
       <button id="fill_factura" class="button_factura" type="submit">Rellenar factura</button>

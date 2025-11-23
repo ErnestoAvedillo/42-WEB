@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+    $csrf_token = bin2hex(random_bytes(32));
+    $_SESSION['csrf_token'] = $csrf_token;
+}
 require_once __DIR__ . '/../../database/mongo_db.php';
 if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/login/login.php?forward=/pages/picture/picture.php?picture_uuid=' . urlencode($_GET['picture_uuid'] ?? ''));
@@ -65,6 +70,7 @@ require_once __DIR__ . '/../../database/posts.php';
         <?php include __DIR__ . '/../../utils/wait/wait.php'; ?>
         <div class="picture-actions">
             <form class="picture-action-form" action="/pages/picture/add_post.php" method="post">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                 <input type="hidden" name="picture_uuid" value="<?php echo htmlspecialchars($picture_uuid); ?>">
                 <input type="hidden" name="user_uuid" value="<?php echo $_SESSION['uuid']; ?>">
                 <textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>

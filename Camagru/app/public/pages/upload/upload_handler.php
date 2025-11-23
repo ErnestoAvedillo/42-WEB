@@ -34,6 +34,12 @@ if ($typeFile === 'master') {
     $documentDB = new DocumentDB('uploads');
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+    // CSRF token check
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $_SESSION['error_messages'] = ["Invalid CSRF token."];
+        header('Location: /pages/upload/upload.php?type=' . urlencode($typeFile));
+        exit();
+    }
     if (empty($_FILES['file']['name'][0])) {
         $_SESSION['error_messages'] = ["No file selected. Please choose a file to upload."];
         header('Location: /pages/upload/upload.php?type=' . urlencode($typeFile));

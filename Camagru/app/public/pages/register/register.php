@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,6 +56,7 @@ SessionManager::getInstance();
       </div>
     <?php } ?>
     <form id="register-form" action="/pages/register/register_handler.php">
+      <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
       <div class="form-row">
         <div class="form-group">
           <label for="first_name">First Name:</label>

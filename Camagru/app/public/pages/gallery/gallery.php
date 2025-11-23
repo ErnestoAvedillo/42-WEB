@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+if (!$csrf_token) {
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
+}
 require_once __DIR__ . '/../../database/mongo_db.php';
 if (!SessionManager::getSessionKey('uuid')) {
   header('Location: /pages/login/login.php');
@@ -20,6 +25,7 @@ if (!SessionManager::getSessionKey('uuid')) {
 </head>
 
 <body>
+  <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
   <?php
   $pageTitle = "Home - Camagru";
   include __DIR__ . '/../../pages/header/header.php';

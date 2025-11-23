@@ -25,6 +25,11 @@ use OTPHP\TOTP;
 
 $totp = TOTP::create($secret);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF token check
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        echo '<p style="color: red;">Invalid CSRF token.</p>';
+        exit();
+    }
     $token = trim($_POST['token'] ?? '');
     if (empty($token) || !preg_match('/^\d{6}$/', $token)) {
         $_SESSION['error_messages'] = ['Invalid authentication code format.'];
