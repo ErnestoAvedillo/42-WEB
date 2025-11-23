@@ -78,7 +78,7 @@ require_once __DIR__ . '/../../database/posts.php';
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
     $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 <script src="/pages/picture/auto_fill.js"></script>

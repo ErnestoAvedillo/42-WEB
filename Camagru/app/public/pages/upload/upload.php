@@ -127,7 +127,7 @@ if (!SessionManager::getSessionKey('uuid')) {
   //    var_dump($_SESSION);
   //    echo "</pre>";
   include __DIR__ . '/../../pages/right_bar/right_bar.php';
-  include __DIR__ . '/../../views/footer.php';
+  include __DIR__ . '/../../pages/footer/footer.php';
   ?>
   <script src="/pages/upload/upload.js"></script>
 </body>

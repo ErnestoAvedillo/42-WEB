@@ -11,7 +11,7 @@ SessionManager::getInstance();
     <title>Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/request_login.css">
+    <link rel="stylesheet" href="/pages/request_login/request_login.css">
 </head>
 
 <body>

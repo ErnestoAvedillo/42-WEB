@@ -122,7 +122,7 @@ SessionManager::getInstance();
   </div>
   <?php
   $pageTitle = "footer - Camagru";
-  include __DIR__ . '/../../views/footer.php';
+  include __DIR__ . '/../../pages/footer/footer.php';
   ?>
 </body>
 

@@ -43,7 +43,7 @@ if (!SessionManager::getSessionKey('temp_user')) {
     </div>
     <?php
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 

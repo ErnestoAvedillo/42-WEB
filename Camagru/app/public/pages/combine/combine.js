@@ -8,13 +8,19 @@ export const magicButton = document.getElementById('magic');
 export const cameraButton = document.getElementById('open_camera');
 export const closeCameraButton = document.getElementById('close_camera');
 export const snapshotButton = document.getElementById('take_snapshot');
-// Maximum height for combined images
-export const maxImageHeight = document.getElementById('CombinedImages').style.height.replace('px',''); 
+export const maxImageHeight = "100%";
+// const maxImageWidth = "auto";
+// const maxImageHeight = document.getElementById('CombinedImages').offsetHeight;
+// export const maxImageHeight = document.getElementById('CombinedImages').style.height.replace('px', '');
 // Maximum width for combined images
-export const maxImageWidth = document.getElementById('CombinedImages').style.width.replace('px','');
+// const maxImageWidth = document.getElementById('CombinedImages').offsetWidth;
+// export const maxImageWidth = document.getElementById('CombinedImages').style.width.replace('px', '');
 window.sharedState = {
   allowDragFromMyPictures: true,
-}; // Global shared state
+};
+// Global shared state
+
+// Main DOMContentLoaded handler
 document.addEventListener('DOMContentLoaded', () => {
   let selectedImage = null;
   let lastCombinedImage = null; // Store the last combined image data
@@ -23,12 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function getLastCombinedImage() {
     return lastCombinedImage;
   }
-
-  // Function to check if there's a combined image available
-  function hasCombinedImage() {
-    return lastCombinedImage !== null;
-  }
-
   // closeCameraButton.disabled = true;
   // snapshotButton.disabled = true;
   // Handle scroll buttons for MyPictures container
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cleanButton.addEventListener('click', (event) => {
     event.preventDefault();
     combinedImages.innerHTML = ''; // Clear all images in the dropzone
-    combinedImages.style.width = maxImageWidth; // Reset to default width
+    // combinedImages.style.width = maxImageWidth; // Reset to default width
     combinedImages.style.height = maxImageHeight; // Reset to default height
     window.sharedState.allowDragFromMyPictures = true; // Reset to allow dragging from MyPictures again
     selectedImage = null; // Reset selected image
@@ -201,35 +201,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = new Image();
         img.src = parsedData.images[0];
         img.style.position = 'absolute'; // Ensure it's positioned correctly
-        img.style.top = '0';
-        img.style.left = '0';
+        // img.style.top = '0';
+        // img.style.left = '0';
         img.draggable = false; // Prevent default drag behavior
         img.style.userSelect = 'none'; // Prevent image selection
-        if (img.width >= img.height) {
+        img.onload = function () {
+          // Ahora img.width y img.height tienen los valores correctos
           let aspectRatio = img.height / img.width;
-          const finalImageWidth = Math.min(Math.floor(img.width), c);
-          img.style.width = `${finalImageWidth}px`;
-          img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
-        } else  {
-          let aspectRatio = img.width / img.height;
-          const finalImageHeight = Math.min(Math.floor(img.height), maxImageHeight);
-          img.style.height = `${finalImageHeight}px`;
-          img.style.width = `${Math.round(finalImageHeight * aspectRatio)}px`;
-        } 
-        // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
-        const imageContainer = document.createElement('div');
-        imageContainer.style.position = 'absolute';
-        imageContainer.style.top = '0%';
-        imageContainer.style.left = '0%';
-        imageContainer.style.width = img.style.width;
-        // Ensure the container has height so absolutely positioned children are visible
-        imageContainer.style.height = img.style.height;
-        imageContainer.appendChild(img);
-        combinedImages.appendChild(imageContainer);
-        combinedImages.style.width = `${img.style.width}`;
-        combinedImages.style.height = `${img.style.height}`;
-        // Optionally, provide user feedback
-        alert('Magic combine successful!');
+          if (img.width >= img.height) {
+            const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
+            img.style.width = `${finalImageWidth}px`;
+            img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
+          } else {
+            const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
+            img.style.height = `${finalImageHeight}px`;
+            img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
+          }
+          img.style.display = "block";
+          img.style.margin = "0 auto";
+          img.style.alignSelf = 'center';
+
+          // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
+          const imageContainer = document.createElement('div');
+          imageContainer.style.position = 'absolute';
+          // imageContainer.style.top = '0%';
+          // imageContainer.style.left = '0%';
+          imageContainer.style.width = img.style.width;
+          // Ensure the container has height so absolutely positioned children are visible
+          imageContainer.style.height = img.style.height;
+          imageContainer.style.justifySelf = 'center';
+          imageContainer.style.alignSelf = 'center';
+          imageContainer.appendChild(img);
+          combinedImages.appendChild(imageContainer);
+          combinedImages.style.width = `${img.style.width}`;
+          combinedImages.style.height = `${img.style.height}`;
+          combinedImages.style.justifySelf = 'center';
+          // Optionally, provide user feedback
+          alert('Magic combine successful!');
+        };
       } else {
         alert(parsedData.error || parsedData.message || 'Magic combine failed.');
       }
@@ -401,33 +410,40 @@ document.addEventListener('DOMContentLoaded', () => {
       img.onload = () => {
         // Set combinedImages dimensions to the image dimensions
         img.style.position = 'absolute'; // Ensure it's positioned correctly
-        img.style.top = '0';
-        img.style.left = '0';
+        // img.style.top = '0';
+        // img.style.left = '0';
         img.draggable = false; // Prevent default drag behavior for base image
         img.style.userSelect = 'none'; // Prevent image selection
+
+        let aspectRatio = img.height / img.width;
         if (img.width >= img.height) {
-          let aspectRatio = img.height / img.width;
-          const finalImageWidth = Math.min(Math.floor(img.width), maxImageWidth);
+          const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
           img.style.width = `${finalImageWidth}px`;
           img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
         } else {
-          let aspectRatio = img.width / img.height;
-          const finalImageHeight = Math.min(Math.floor(img.height), maxImageHeight);
+          const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
           img.style.height = `${finalImageHeight}px`;
-          img.style.width = `${Math.round(finalImageHeight * aspectRatio)}px`;
+          img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
         }
+        img.style.display = "block";
+        img.style.margin = "0 auto";
+        img.style.alignSelf = 'center';
+
         // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
-        imageContainer.style.top = '0%';
-        imageContainer.style.left = '0%';
+        // imageContainer.style.top = '0%';
+        // imageContainer.style.left = '0%';
         imageContainer.style.width = img.style.width;
         // Ensure the container has height so absolutely positioned children are visible
         imageContainer.style.height = img.style.height;
+        imageContainer.style.justifySelf = 'center';
+        imageContainer.style.alignSelf = 'center';
         imageContainer.appendChild(img);
         combinedImages.appendChild(imageContainer);
         combinedImages.style.width = `${img.style.width}`;
         combinedImages.style.height = `${img.style.height}`;
+        combinedImages.style.justifySelf = 'center';
         window.sharedState.allowDragFromMyPictures = false;
         cameraButton.disabled = true;
         closeCameraButton.disabled = true;

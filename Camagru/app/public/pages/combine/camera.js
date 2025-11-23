@@ -1,4 +1,4 @@
-import { combinedImages, maxImageHeight, maxImageWidth } from "/pages/combine/combine.js";
+import { combinedImages, maxImageHeight } from "/pages/combine/combine.js";
 document.addEventListener('DOMContentLoaded', () => {
     const openCameraButton = document.getElementById('open_camera');
     const closeCameraButton = document.getElementById('close_camera');
@@ -93,29 +93,22 @@ document.addEventListener('DOMContentLoaded', () => {
             e.dataTransfer.setData('text/plain', e.target.src);
         });
 
-        // Use canvas dimensions for aspect ratio calculations (image may not be loaded yet)
-        // The captured image element (img) may not have its intrinsic dimensions available
-        // until it finishes loading. We already have the correct dimensions on the canvas,
-        // so use those to compute aspect ratio and sizing immediately.
-        if (canvas.width >= maxImageWidth) {
-            let aspectRatio = canvas.height / canvas.width;
-            const finalImageWidth = Math.min(Math.floor(canvas.width), maxImageWidth);
-            img.style.width = `${finalImageWidth}px`;
-            img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
-        } else if (canvas.height >= maxImageHeight) {
-            let aspectRatio = canvas.width / canvas.height;
-            const finalImageHeight = Math.min(Math.floor(canvas.height), maxImageHeight);
+        let aspectRatio = canvas.width / canvas.height;
+        if (canvas.height > canvas.width) {
+            const finalImageHeight = Math.min(Math.floor(canvas.height), combinedImages.offsetHeight);
             img.style.height = `${finalImageHeight}px`;
             img.style.width = `${Math.round(finalImageHeight * aspectRatio)}px`;
         } else {
-            img.style.width = `${canvas.width}px`;
-            img.style.height = `${canvas.height}px`;
+            const finalImageWidth = Math.min(Math.floor(canvas.width), combinedImages.offsetWidth);
+            img.style.width = `${finalImageWidth}px`;
+            img.style.height = `${Math.round(finalImageWidth / aspectRatio)}px`;
         }
+
         console.log("Creating a div element to contain the image");
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
-        imageContainer.style.top = '0%';
-        imageContainer.style.left = '0%';
+        // imageContainer.style.top = '0%';
+        // imageContainer.style.left = '0%';
         imageContainer.style.width = img.style.width;
         imageContainer.style.height = img.style.height;
         console.log("Appending the image to the container and the container to the dropzone");
@@ -124,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         combinedImages.appendChild(imageContainer);
         combinedImages.style.width = img.style.width;
         combinedImages.style.height = img.style.height;
+        combinedImages.style.justifySelf = 'center';
         console.log('dimensions combinedImages:', combinedImages.style.width, combinedImages.style.height);
         window.sharedState.allowDragFromMyPictures = false;
     });

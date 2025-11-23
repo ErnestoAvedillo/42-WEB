@@ -75,7 +75,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     </div>
     <?php
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
     <script src="/pages/gallery/gallery.js"></script>
 </body>

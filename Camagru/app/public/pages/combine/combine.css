@@ -1,9 +1,7 @@
-/* CSS Custom Properties for Combined Container Dimensions */
-/* These values are synchronized with config.js COMBINED_CONTAINER_CONFIG */
-:root {
-    --max-combined-images-width: 1200px;
-    --max-combined-images-height: 600px;
-}
+/* Import shared variables from the global variables file.
+    Note: path is relative to this CSS file. Adjust if you move files.
+*/
+@import url("../../css/variables.css");
 
 h1 {
     margin-top: 5px;
@@ -14,94 +12,53 @@ h1 {
 }
 
 .working-area {
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
     justify-items: center;
     align-items: baseline;
-    max-height: calc(100vh - 160px);
+    /* --header-height: var(--header-height, 80px); */
+    /* --footer-height: var(--footer-height, 80px); */
+    position: fixed;
+    top: var(--header-height, 80px);
+    bottom: var(--footer-height, 64px);
+    /* left: var(--left-sidebar-width, 0); */
+    /* right: var(--right-sidebar-width, 0); */
+    width: auto;
+    height: auto;
+    max-height: none;
     overflow-y: auto;
+    margin: 10px;
 }
 
+.working-area>div {
+    align-self: stretch;
+    height: 100%;
+}
+
+/* #MyPictures,
+#Master  */
 /* Panel styling */
+/* padding: var(--panel-padding); */
 #MyPictures-container,
-#MyPictures,
 #combine-container,
-#Master-container,
-#Master {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+#Master-container {
+    background-color: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius);
+    margin: 10px;
+    box-shadow: var(--shadow-soft);
     min-height: 180px;
     display: grid;
     grid-template-rows: auto 1fr;
-    gap: 12px;
+    gap: var(--spacing-md);
+    align-self: stretch;
+    justify-self: stretch;
 }
 
-.dragzone-container {
-    width: 90%;
-    height: 90%;
-    position: relative;
-    display: grid;
-    /* Alineamos los contenidos al inicio (arriba). Antes estaba center y provocaba
-       que MyPictures quedara centrado verticalmente mientras Master no. */
-    align-items: start;
-    gap: 10px;
-}
-
-.draggable-item {
-    width: 100%;
-}
-
-.scroll-button {
-    width: 40px;
-    height: 40px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: background-color 0.3s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
+#combine-container p {
     justify-self: center;
-    align-self: center;
-}
 
-.scroll-button:hover {
-    background-color: #0056b3;
-}
-
-.dragzone {
-    width: 60%;
-    height: 95%;
-    overflow-x: scroll;
-    overflow-y: auto;
-    white-space: nowrap;
-    justify-self: center;
-    align-self: center;
-}
-
-.dragzone img {
-    width: 100%;
-    height: auto;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    transition: transform 0.2s;
-}
-
-.dragzone img:hover {
-    transform: scale(1.05);
-}
-
-/* Master containers */
-#Master,
-#Master-container {
-    pointer-events: auto;
 }
 
 /* Side panel dragzones */
@@ -118,8 +75,72 @@ h1 {
     white-space: nowrap;
 }
 
+
+.dragzone-container {
+    width: 90%;
+    height: 90%;
+    position: relative;
+    display: grid;
+    align-items: start;
+    gap: var(--spacing-sm);
+}
+
+.draggable-item {
+    width: 100%;
+}
+
+.scroll-button {
+    width: var(--scroll-button-size);
+    height: var(--scroll-button-size);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    justify-self: center;
+    align-self: center;
+}
+
+.scroll-button:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.dragzone {
+    width: 60%;
+    height: 95%;
+    overflow-x: scroll;
+    overflow-y: auto;
+    white-space: nowrap;
+    justify-self: center;
+    align-self: center;
+}
+
+.dragzone img {
+    width: 100%;
+    height: auto;
+    border: 2px solid var(--color-muted);
+    border-radius: var(--border-radius);
+    transition: transform 0.2s;
+}
+
+.dragzone img:hover {
+    transform: scale(1.1);
+}
+
+/* Master containers */
+/* #Master,
+#Master-container {
+    pointer-events: auto;
+} */
+
 /* Combine center area */
-#combine-container {
+/* #combine-container {
     margin: 0 auto;
     padding: 20px;
     display: flex;
@@ -127,7 +148,7 @@ h1 {
     align-items: center;
     justify-content: flex-start;
     position: relative;
-}
+} */
 
 /* Responsive: collapse to single column on small screens */
 @media (max-width: 900px) {
@@ -141,37 +162,29 @@ h1 {
     }
 }
 
-/* Medium screens: two columns (mypictures+combine, masters below or combined) */
-@media (min-width: 901px) and (max-width: 1200px) {
-    .working-area {
-        grid-template-columns: 1fr 1.5fr;
-        grid-auto-rows: minmax(200px, auto);
-    }
 
-    #Master {
-        order: 3;
-    }
-}
-
-
-/* Combined images container */
 #CombinedImages {
-    width: var(--max-combined-images-width);
-    height: var(--max-combined-images-height);
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    background-color: rgb(124, 124, 124);
     position: relative;
-    margin-bottom: 20px;
+    height: 100%;
+    width: auto;
+    border-radius: var(--border-radius);
+    background-color: rgb(124, 124, 124);
+    margin: 10px;
+    margin-bottom: var(--combined-margin-bottom);
+    align-self: stretch;
+    justify-self: stretch;
+    overflow: hidden;
 }
 
+/* 
 #CombinedImages img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-}
+} */
+
 #controls-container {
     position: static;
     display: grid;
@@ -185,15 +198,15 @@ h1 {
 
 /* Button styles */
 button.manage {
-    background-color: #007BFF;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
     border: none;
-    padding: 5px;
-    border-radius: 5px;
+    padding: var(--btn-padding);
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s;
-    margin: 5px 5px;
+    margin: var(--spacing-sm) var(--spacing-sm);
 }
 
 button.manage:enabled {
@@ -220,7 +233,7 @@ button.manage[aria-disabled="true"] {
 
 div#magic_controls,
 div#save-controls {
-    margin-top: 20px;
+    margin-top: 5px;
     text-align: left;
     position: relative;
 }
@@ -230,8 +243,8 @@ textarea#prompt {
     max-width: 600px;
     height: 80px;
     padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid var(--color-muted);
+    border-radius: var(--border-radius);
     font-size: 1rem;
     resize: vertical;
     box-sizing: border-box;
@@ -239,13 +252,13 @@ textarea#prompt {
 
 /* Dropzone styles */
 .dropzone {
-    border: 2px dashed #007BFF;
+    border: 2px dashed var(--color-primary);
     padding: 5px;
     text-align: center;
     transition: background-color 0.3s;
 }
 
 .dropzone.drag-over {
-    background-color: #e0f7ff;
-    border-color: #0056b3;
+    background-color: var(--color-dropzone-bg);
+    border-color: var(--color-primary-dark);
 }

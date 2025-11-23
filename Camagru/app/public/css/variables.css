@@ -1,0 +1,44 @@
+/* Global CSS variables for the project (shared)
+   Place variables used across pages here. Other page-specific stylesheets
+   can import this file using a relative @import or include it directly in
+   the HTML <head>.
+*/
+:root {
+    /* Combined images sizing (kept for sync with config.js COMBINED_CONTAINER_CONFIG) */
+    --max-combined-images-width: 1200px;
+    --max-combined-images-height: 600px;
+
+    /* Layout: header/footer heights (valores por defecto) */
+    --header-height: var(--header-height, 80px);
+    --footer-height: var(--footer-height, 80px);
+
+    /* Colors */
+    --color-primary: #007BFF;
+    --color-primary-dark: #0056b3;
+    --color-surface: #f9f9f9;
+    --color-border: #ddd;
+    --color-muted: #ccc;
+    --color-on-primary: #ffffff;
+    --color-dropzone-bg: #e0f7ff;
+
+    /* Spacing & sizing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 20px;
+    --panel-padding: 12px;
+    --btn-padding: 6px 10px;
+    --scroll-button-size: 40px;
+    --combined-margin-bottom: 20px;
+
+    /* Borders & radius */
+    --border-radius: 5px;
+    --border-width: 1px;
+
+    /* Shadows */
+    --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.03);
+
+    /* Buttons disabled */
+    --btn-bg-disabled: #c0c0c0;
+    --btn-color-disabled: #666;
+}

@@ -138,7 +138,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
 
   <?php
   include __DIR__ . '/../../pages/right_bar/right_bar.php';
-  include __DIR__ . '/../../views/footer.php';
+  include __DIR__ . '/../../pages/footer/footer.php';
   ?>
   <script src="/pages/facturas/factura.js"></script>
   <script src="/pages/facturas/delete_factura/delete_factura.js"></script>

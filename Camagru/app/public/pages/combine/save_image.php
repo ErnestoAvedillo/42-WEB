@@ -52,10 +52,10 @@ foreach ($data as $image) {
   if ($img !== false) {
     $img = correctImageOrientation($img, $decodedData); // Correct the orientation
     // Use the provided dimensions and positions
-    $Top2Save = $image['top'];
-    $Left2Save = $image['left'];
-    $Wide2Save = $image['width'];
-    $Height2Save = $image['height'];
+    $Top2Save = isset($image['top']) ? (int)$image['top'] : 0;
+    $Left2Save = isset($image['left']) ? (int)$image['left'] : 0;
+    $Wide2Save = isset($image['width']) ? (int)$image['width'] : imagesx($img);
+    $Height2Save = isset($image['height']) ? (int)$image['height'] : imagesy($img);
 
     // Resize and copy the image onto the canvas
     imagecopyresampled(

@@ -13,7 +13,7 @@ SessionManager::getInstance();
     <title>Login - Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/pages/profile/profile.css">
 </head>
 
 <body>
@@ -121,7 +121,7 @@ SessionManager::getInstance();
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
     $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 

@@ -3,10 +3,10 @@ footer {
     /* Fixed to bottom so it is always visible */
     position: fixed;
     bottom: 0;
-    /* Si tienes una sidebar fija a la izquierda, ajusta este left/width
-       para no taparla. Aquí se asume sidebar de ~280px como antes. */
-    left: 280px;
-    width: calc(100% - 280px);
+    /* Respect left sidebar width via CSS variable so layouts using
+         different sidebar widths will adapt automatically. */
+    left: var(--left-sidebar-width, 280px);
+    width: calc(100% - var(--left-sidebar-width, 280px));
     background-color: var(--footer_color);
     color: var(--text-color);
     text-align: center;

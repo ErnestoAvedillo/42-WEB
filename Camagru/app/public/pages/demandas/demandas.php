@@ -114,7 +114,7 @@ $_user_uuid = SessionManager::getSessionKey('uuid');
 
   <?php
   include __DIR__ . '/../../pages/right_bar/right_bar.php';
-  include __DIR__ . '/../../views/footer.php';
+  include __DIR__ . '/../../pages/footer/footer.php';
   ?>
   <script src="/pages/demandas/demandas.js"></script>
   <script src="/pages/demandas/delete_demanda/delete_demanda.js"></script>

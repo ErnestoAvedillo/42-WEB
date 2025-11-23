@@ -11,7 +11,7 @@ SessionManager::getInstance();
     <title>Login - Camagru</title>
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/logout.css">
+    <link rel="stylesheet" href="/pages/logout/logout.css">
 </head>
 
 <body>
@@ -25,9 +25,8 @@ SessionManager::getInstance();
         SessionManager::destroySession();
     }
     $pageTitle = "Home - Camagru";
-    include __DIR__ . '/../../views/header.php';
-    $pageTitle = "sidebar - Camagru";
-    include __DIR__ . '/../../views/side_bar.php';
+    include __DIR__ . '/../../pages/header/header.php';
+    include __DIR__ . '/../../pages/left_bar/left_bar.php';
     ?>
     <div class="logout-container">
         <h1>You exited successfully from Camagru</h1>
@@ -40,8 +39,8 @@ SessionManager::getInstance();
     </div>
 
     <?php
-    $pageTitle = "footer - Camagru";
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/right_bar/right_bar.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 

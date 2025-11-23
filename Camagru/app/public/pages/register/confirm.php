@@ -13,7 +13,7 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Registration</title>
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/confirm.css">
+    <link rel="stylesheet" href="/pages/register/confirm.css">
 </head>
 <?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Loaded header confirm.php page\n", FILE_APPEND); ?>
 

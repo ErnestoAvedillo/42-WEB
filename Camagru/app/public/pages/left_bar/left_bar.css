@@ -1,11 +1,12 @@
 /* Modern Sidebar Styles */
 #left {
     position: fixed;
-    top: 70px;
-    /* Match header height */
+    /* Use header height variable so sidebar positions itself correctly
+       under the fixed header even if header height changes. */
+    top: var(--header-height, 80px);
     left: 0;
-    height: calc(100vh - 70px);
-    width: 280px;
+    height: calc(100vh - var(--header-height, 80px));
+    width: var(--left-sidebar-width, 280px);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     backdrop-filter: blur(10px);
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);

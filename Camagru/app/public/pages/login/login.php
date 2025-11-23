@@ -112,7 +112,7 @@ $autofilling = '/tmp/Camagru.log';
     $pageTitle = "left side bar - Camagru";
     include __DIR__ . '/../../pages/right_bar/right_bar.php';
 
-    include __DIR__ . '/../../views/footer.php';
+    include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>
 <script src="../../pages/login/login.js"></script>
