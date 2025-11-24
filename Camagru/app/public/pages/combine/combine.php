@@ -27,6 +27,16 @@ if (!SessionManager::getSessionKey('uuid')) {
   include __DIR__ . '/../../pages/header/header.php';
   include __DIR__ . '/../../pages/left_bar/left_bar.php';
   ?>
+  <script>
+    // Expose CSRF token to JS
+    <?php
+    if (!isset($_SESSION['csrf_token'])) {
+      $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    $csrf_token = $_SESSION['csrf_token'];
+    ?>
+    window.CSRF_TOKEN = "<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>";
+  </script>
   <div class="working-area">
     <div id="MyPictures-container" class="dragzone-container">
       <button id="mypictures-scroll-up" class="scroll-button">◀</button>

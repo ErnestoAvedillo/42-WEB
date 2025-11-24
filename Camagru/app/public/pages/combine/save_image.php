@@ -14,30 +14,52 @@ $autofilling = '/tmp/combine.log';
 
 // Get the JSON data from the request
 $data = json_decode(file_get_contents('php://input'), true);
+foreach ($data as $key => $value) {
+  if (is_string($value)) {
+    $logVal = substr($value, 0, 100);
+  } else {
+    $logVal = print_r($value, true);
+  }
+  file_put_contents($autofilling, "Save_image.php: " . date('Y-m-d H:i:s') . " Key: " . $key . " Value: " . $logVal . "\n", FILE_APPEND);
+}
 
 // CSRF token check
+if (!isset($_SESSION['csrf_token'])) {
+  echo json_encode(['success' => false, 'message' => 'No CSRF token in session']);
+  exit;
+}
+
+if (!isset($data['csrf_token'])) {
+  echo json_encode(['success' => false, 'message' => 'No CSRF token in data']);
+  exit;
+}
+if (!hash_equals($_SESSION['csrf_token'], $data['csrf_token'])) {
+  echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+  exit;
+}
 if (!isset($data['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $data['csrf_token'])) {
   echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
   exit;
 }
 
-// Check if data is valid
-if (empty($data)) {
-  echo json_encode(['success' => false, 'message' => 'No data received']);
+
+// Check if images data is valid
+if (!isset($data['images']) || empty($data['images']) || !is_array($data['images'])) {
+  echo json_encode(['success' => false, 'message' => 'No images data received']);
   exit;
 }
-
+$images = $data['images'];
 
 //I use the first image to get the dimensions of the canvas
-$width = $data[0]['width'];
-$height = $data[0]['height'];
+$width = $images[0]['width'];
+$height = $images[0]['height'];
 
 //I create the canvas and fill it with a white background
 $canvas = imagecreatetruecolor($width, $height);
 $white = imagecolorallocate($canvas, 255, 255, 255);
 imagefill($canvas, 0, 0, $white);
 
-foreach ($data as $image) {
+foreach ($images as $image) {
   preg_match('/^data:(.*?);base64,(.*)$/', $image['img'], $matches);
   $mime = $matches[1];
   $base64Data = $matches[2];

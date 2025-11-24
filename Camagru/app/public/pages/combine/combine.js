@@ -69,9 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle the clean button click
   cleanButton.addEventListener('click', (event) => {
     event.preventDefault();
-    combinedImages.innerHTML = ''; // Clear all images in the dropzone
-    // combinedImages.style.width = maxImageWidth; // Reset to default width
-    combinedImages.style.height = maxImageHeight; // Reset to default height
+    // Clear all images in the dropzone
+    combinedImages.innerHTML = '';
+    // // Reset to default width
+    combinedImages.removeAttribute('style');
     window.sharedState.allowDragFromMyPictures = true; // Reset to allow dragging from MyPictures again
     selectedImage = null; // Reset selected image
     cameraButton.disabled = false;
@@ -258,14 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesData = [];
     const images = combinedImages.querySelectorAll('img');
     images.forEach(img => {
-      console.log('Processing top, left, width, height for image:');
+      // ...existing code...
       const parentDiv = img.parentElement;
-      console.log('Top:', parentDiv.style.top);
-      console.log('Left:', parentDiv.style.left);
-      console.log('Width:', parentDiv.style.width);
-      console.log('Height:', parentDiv.style.height);
-
-      // Convert percentage values to pixels based on reference dimensions
       const top = parentDiv.style.top.includes('%')
         ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
         : parseFloat(parentDiv.style.top);
@@ -282,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
         : parentDiv.style.height.includes('%')
           ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
           : parseFloat(parentDiv.style.height);
-
       imagesData.push({
         top: Math.trunc(top),
         left: Math.trunc(left),
@@ -293,10 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Send the data to the server
-    console.log('imagesData:', imagesData);
     try {
-      const DataToSend = imagesData;
-      DataToSend.csrf_token = window.CSRF_TOKEN;
+      const DataToSend = {
+        images: imagesData,
+        csrf_token: window.CSRF_TOKEN
+      };
+      console.log('DataToSend:', DataToSend);
       const response = await fetch('/pages/combine/save_image.php', {
         method: 'POST',
         headers: {
