@@ -44,10 +44,16 @@ if (!SessionManager::getSessionKey('uuid')) {
       <select class="sort-select">
         <option value="newest">Newest</option>
         <option value="oldest">Oldest</option>
-        <option value="username">Username</option>
+      </select>
+      <select class="user-sort-select">
+        <option value="all">all</option>
+        <?php foreach ($users as $user) : ?>
+          <option value="<?php echo htmlspecialchars($user['username']); ?>"><?php echo htmlspecialchars($user['username']); ?></option>
+        <?php endforeach; ?>
       </select>
       <label for="number_elements">Pictures per page:</label>
       <select id="number_elements" class="number-elements-select">
+        <option value="3" >3</option>
         <option value="5" selected>5</option>
         <option value="10">10</option>
         <option value="20">20</option>
@@ -58,8 +64,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     <div class="user-gallery">
       <a> Texto para visualizar el div correctamente </a>
     </div>
-    <div id="pagination_div" class="pagination_div">
-      <button class="pagination">"1"</button>
+    <div id="pagination-container" class="pagination-container">
     </div>
   </div>
   <?php

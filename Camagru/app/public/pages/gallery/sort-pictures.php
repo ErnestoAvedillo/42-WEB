@@ -1,33 +1,55 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
-$csrf_token = $SESSION['csrf_token'] ?? null;
+$csrf_token = $_SESSION['csrf_token'] ?? null;
+file_put_contents('/tmp/sort_debug.log', "Current session data: " . print_r($_SESSION, true) . "\n", FILE_APPEND);
 if (!$csrf_token) {
     $csrf_token = bin2hex(random_bytes(32));
-    $SESSION['csrf_token'] = $csrf_token;
+    $_SESSION['csrf_token'] = $csrf_token;
+    file_put_contents('/tmp/sort_debug.log', "Generated new CSRF token: $csrf_token\n", FILE_APPEND);
 }
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
+
+// Debug: Log all POST data
+
+// Validate CSRF token
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $csrf_token) {
+    file_put_contents('/tmp/sort_debug.log', "CSRF token validation failed. Expected: $csrf_token, Received: " . ($_POST['csrf_token'] ?? 'null') . "\n", FILE_APPEND);
+    http_response_code(403);
+    echo json_encode(['error' => 'Invalid CSRF token']);
+    exit();
+}
+
 if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/login/login.php');
     exit();
 }
+file_put_contents('/tmp/sort_debug.log', "POST data received in sort-pictures: " . print_r($_POST, true) . "\n", FILE_APPEND);
 $uuid = SessionManager::getSessionKey('uuid');
 $sort_type = $_POST['sort-by'] ?? 'newest';
-$number_elements = $_POST['nr_elements'] ?? 10;
-$page = $_POST['page'] ?? 1; ?>
-<?php $client = new DocumentDB('combines'); ?>
-<?php if ($sort_type === 'newest'): ?>
-    <?php $pictures = $client->getFilesSortedByDate(false, $number_elements, ($page - 1) * $number_elements); ?>
-<?php elseif ($sort_type === 'oldest'): ?>
-    <?php $pictures = $client->getFilesSortedByDate(true, $number_elements, ($page - 1) * $number_elements); ?>
-<?php elseif ($sort_type === 'username'): ?>
-    <?php $pictures = $client->getFilesSortedByUsername($number_elements, ($page - 1) * $number_elements); ?>
-    <?php $Users = new User(); ?>
-    <?php $all_users = $Users->getAllUsers(); ?>
-<?php endif; ?>
-<?php $total_pictures = $client->getTotalFilesCount(); ?>
-<?php $foundPictures = false; ?>
+$number_elements = intval($_POST['nr_elements'] ?? 10);
+$page = intval($_POST['page']); 
+$user_filter = $_POST['user'] ?? 'all';
+
+file_put_contents('/tmp/sort_debug.log', "!Number of elements: $number_elements, Page: $page, User filter: $user_filter\n", FILE_APPEND);
+
+$client = new DocumentDB('combines');
+if ($sort_type === 'newest'):
+    $ascendant = false;
+else:
+    $ascendant = true;
+endif;
+file_put_contents('/tmp/sort_debug.log', "!!!Number of elements: $number_elements, Page: $page, User filter: $user_filter\n", FILE_APPEND);
+if ($user_filter !== 'all'):
+    $Users = new User();
+    $user_data = $Users->getUserByUsername($user_filter);
+    $pictures = $client->getFilesSortedByUsername($user_data['uuid'], $ascendant, $number_elements, ($page - 1) * $number_elements);
+else:
+    $pictures = $client->getFilesSortedByDate($ascendant, $number_elements, ($page - 1) * $number_elements);
+endif;
+$total_pictures = $pictures ? count($pictures) : 0;
+?>
 
 <div class="user-section">
     <?php foreach ($pictures as $photo) { ?>
@@ -51,4 +73,3 @@ $page = $_POST['page'] ?? 1; ?>
         <?php } ?>
     <?php } ?>
 </div>
-<div id="pagination_info" data-total-pictures="<?php echo $total_pictures; ?>"> </div>

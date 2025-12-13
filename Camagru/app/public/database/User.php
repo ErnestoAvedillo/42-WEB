@@ -81,30 +81,6 @@ class User
         ':last_name' => $lastName,
         ':verification_token' => $verificationToken
       ]);
-
-      // if ($result) {
-      //   // Return success with user UUID
-      //   $id = $this->pdo->lastInsertId();
-      //   $data = $this->getUserById($id);
-      //   //echo "<p>✓ Registro de usuario exitoso. ID: " . $id . ", UUID: " . $data['uuid'] . "</p>";
-      //   if (!$data['uuid']) {
-      //     return ['success' => false, 'message' => 'Failed to retrieve user UUID'];
-      //   }
-      //   return [
-      //     'id' => $id,
-      //     'uuid' => $data['uuid'],
-      //     'success' => true,
-      //     'message' => 'User registered successfully',
-      //     'verification_token' => $verificationToken
-      //   ];
-      // } else {
-      //   return ['success' => false, 'message' => 'Failed to register user'];
-      // }
-      // } catch (PDOException $e) {
-      //   return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
-      // } catch (Exception $e) {
-      //   return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
-      // }
       if ($result) {
         return true;
       } else {
@@ -225,6 +201,10 @@ class User
       return false;
     }
   }
+
+  /**
+   * Get user by UUID
+   */
   public function getUserByUUID($uuid)
   {
     try {
@@ -240,6 +220,10 @@ class User
       return false;
     }
   }
+
+  /**
+   * Get user by email
+   */
   public function getUserByEmail($email)
   {
     try {
@@ -255,6 +239,9 @@ class User
       return false;
     }
   }
+  /**
+   * Get user data by username
+   */
   public function getUserByUsername($username)
   {
     try {

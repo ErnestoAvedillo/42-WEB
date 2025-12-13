@@ -193,6 +193,16 @@ class DocumentDB
         $files = $collection->find()->toArray();
         return $files;
     }
+    public function getAllFilesFromUser($user_uuid)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $files = $collection->find(['user_uuid' => $user_uuid])->toArray();
+        return $files;
+    }
     public function getPhotoOwner($picture_uuid)
     {
         $this->connect();
@@ -216,18 +226,31 @@ class DocumentDB
         $collection = $this->getCollection();
         $sortOrder = $ascending ? 1 : -1;
         $files = $collection->find([], ['sort' => ['uploaded_at' => $sortOrder]])->toArray();
+        file_put_contents('/tmp/mongo_debug.log', "Sorting order: " . ($ascending ? "Ascending" : "Descending") . "\n", FILE_APPEND);
+        file_put_contents('/tmp/mongo_debug.log', "Elements to show: " . $elements . "\n", FILE_APPEND);
+        file_put_contents('/tmp/mongo_debug.log', "First element: " . $firstElement . "\n", FILE_APPEND);
+        foreach ($files as $file) {
+            $uploadTime = $file['uploaded_at'] instanceof UTCDateTime ? $file['uploaded_at']->toDateTime()->format('Y-m-d H:i:s') : 'Unknown';
+            file_put_contents('/tmp/mongo_debug.log', "File: " . $file['filename'] . " Uploaded at: " . $uploadTime . "\n", FILE_APPEND);
+        }
+
+        if ($elements === 0) {
+            return $files;
+        }
         return array_slice($files, $firstElement, $elements);
     }
-    public function getFilesSortedByUsername($elements = 5, $firstElement = 0)
+    public function getFilesSortedByUsername($user_uuid, $ascending = true, $elements = 5, $firstElement = 0)
     {
         $this->connect();
         if (!$this->conn) {
             throw new Exception("Database connection not established.");
         }
         $collection = $this->getCollection();
-        $sortOrder = 1; // Ascending order
-        $files = $collection->find([], ['sort' => ['user_uuid' => $sortOrder]])->toArray();
-
+        $sortOrder = $ascending ? 1 : -1;
+        $files = $collection->find(['user_uuid' => $user_uuid], ['sort' => ['uploaded_at' => $sortOrder]])->toArray();
+        if ($elements === 0) {
+            return $files;
+        }
         return array_slice($files, $firstElement, $elements);
     }
     public function getTotalFilesCount()
@@ -238,6 +261,16 @@ class DocumentDB
         }
         $collection = $this->getCollection();
         $count = $collection->countDocuments();
+        return $count;
+    }
+    public function getFilesCountByUser($user_uuid)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $count = $collection->countDocuments(['user_uuid' => $user_uuid]);
         return $count;
     }
 }
