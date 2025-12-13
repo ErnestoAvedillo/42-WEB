@@ -207,4 +207,37 @@ class DocumentDB
         }
         return $file['user_uuid'] ?? null;
     }
+    public function getFilesSortedByDate($ascending = true, $elements = 5, $firstElement = 0)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $sortOrder = $ascending ? 1 : -1;
+        $files = $collection->find([], ['sort' => ['uploaded_at' => $sortOrder]])->toArray();
+        return array_slice($files, $firstElement, $elements);
+    }
+    public function getFilesSortedByUsername($elements = 5, $firstElement = 0)
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $sortOrder = 1; // Ascending order
+        $files = $collection->find([], ['sort' => ['user_uuid' => $sortOrder]])->toArray();
+
+        return array_slice($files, $firstElement, $elements);
+    }
+    public function getTotalFilesCount()
+    {
+        $this->connect();
+        if (!$this->conn) {
+            throw new Exception("Database connection not established.");
+        }
+        $collection = $this->getCollection();
+        $count = $collection->countDocuments();
+        return $count;
+    }
 }

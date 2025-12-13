@@ -39,51 +39,34 @@ if (!SessionManager::getSessionKey('uuid')) {
     <?php $users = $userInstance->getAllUsers(); ?>
     <?php $client = new DocumentDB($container); ?>
     <?php $client->connect(); ?>
-    <div class="user-gallery">
-      <?php $foundPictures = false; ?>
-      <?php foreach ($users as $user) { ?>
-        <?php $photos = $client->getUserPhotos($user['uuid']); ?>
-        <div class="user-section">
-          <?php if (!empty($photos)) { ?>
-            <?php $foundPictures = true; ?>
-            <div class="user-header">
-              <h3><?php echo htmlspecialchars($user['username']); ?>'s Photos</h3>
-            </div>
-            <div class="photo-grid">
-              <?php foreach ($photos as $photo) { ?>
-                <?php if (isset($photo['filedata'])) { ?>
-                  <?php $mime = $photo['mime_type'] ?? 'image/png'; // Cambiar si usas otro tipo MIME 
-                  ?>
-                  <?php $base64 = base64_encode($photo['filedata']->getData()); ?>
-                  <?php $imgTag = '<img loading="lazy" src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">'; ?>
-                  <?php $photoId = isset($photo['_id']) ? (string)$photo['_id'] : ''; ?>
-                  <div class="photo">
-                    <?php if ($user['uuid'] === SessionManager::getSessionKey('uuid')) { ?>
-                      <div class="photo-actions">
-                        <a href="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" download="<?php echo htmlspecialchars($photo['filename']); ?>" class="download-icon">📥</a>
-                        <a class="delete-image" href="#" data-image-id="<?php echo htmlspecialchars($photoId); ?>" data-container="<?php echo htmlspecialchars($container); ?>" class="delete-icon">🗑️</a>
-                      </div>
-                    <?php } ?>
-                    <!-- <img src="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" alt="<?php echo htmlspecialchars($photo['filename']); ?>" width="200"> -->
-                    <a href="/pages/picture/picture.php?picture_uuid=<?php echo urlencode($photoId); ?>"><?php echo $imgTag; ?></a>
-                  </div>
-                <?php } ?>
-              <?php } ?>
-            </div>
-          <?php } ?>
-        </div>
-      <?php } ?>
-      <?php if (!$foundPictures) { ?>
-        <div class="no-photos-message">
-          <p>Upload your photos to make collages in our <a href="/pages/combine/combine.php">collage maker</a>.</p>
-        </div>
-      <?php } ?>
+    <div class="filter-bar">
+      <label for="sort-select">Sort by:</label>
+      <select class="sort-select">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="username">Username</option>
+      </select>
+      <label for="number_elements">Pictures per page:</label>
+      <select id="number_elements" class="number-elements-select">
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="all">all</option>
+      </select>
     </div>
-    <?php
-    include __DIR__ . '/../../pages/right_bar/right_bar.php';
-    include __DIR__ . '/../../pages/footer/footer.php';
-    ?>
-    <script src="/pages/gallery/gallery.js"></script>
+    <div class="user-gallery">
+      <a> Texto para visualizar el div correctamente </a>
+    </div>
+    <div id="pagination_div" class="pagination_div">
+      <button class="pagination">"1"</button>
+    </div>
+  </div>
+  <?php
+  include __DIR__ . '/../../pages/right_bar/right_bar.php';
+  include __DIR__ . '/../../pages/footer/footer.php';
+  ?>
+  <script src="/pages/gallery/gallery.js"></script>
 </body>
 
 </html>
