@@ -15,6 +15,7 @@ $client = new DocumentDB('uploads');
     <ul>
       <?php if ($isLoggedIn = isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { ?>
         <div class="user-info" id="userInfo">
+          <a href="/pages/logout/logout.php" class="logout-link"> <span class="icon">🚪</span></a>
           <div class="avatar">
             <?php
             $userData = $user->getUserProfile($_SESSION['uuid']);
@@ -43,4 +44,5 @@ $client = new DocumentDB('uploads');
       <?php } ?>
     </ul>
   </nav>
+  <script src="/pages/header/header.js"></script>
 </header>
