@@ -5,18 +5,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode($contents, true);
     $comment = "";
     $picture = $data['picture'] ?? null;
+    
+    // Limpiar los datos de la imagen si vienen en formato data URL
+    if ($picture && strpos($picture, 'data:') === 0) {
+        // Extraer el MIME type del data URL
+        $mimeType = substr($picture, 5, strpos($picture, ';') - 5);
+        // Extraer solo los datos base64
+        $picture = substr($picture, strpos($picture, ',') + 1);
+    } else {
+        $mimeType = 'image/jpeg'; // Valor por defecto
+    }
+    
+    foreach ($data as $key => $value) {
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Key: " . $key . " Value: " . (is_string($value) ? substr($value, 0, 100) : print_r($value, true)) . "\n", FILE_APPEND);
+    }
+    file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Extracted mime type: " . $mimeType . "\n", FILE_APPEND);
+    file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Clean base64 data: " . substr($picture, 0, 100) . "\n", FILE_APPEND);
     if ($picture) {
-        $postData = json_encode(['picture' => $picture]);
-        $ch = curl_init('http://python:6000/autofill');
+        $apiKey = getenv('GOOGLE_API_KEY');
+        if (!$apiKey) {
+            file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
+            echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
+            exit;
+        }
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey;
+        // 3. Estructura del Payload para visión multimodal
+        $payload = [
+            "contents" => [
+                [
+                    "parts" => [
+                        ["text" => "Describe esta foto de manera creativa, jocosa y breve."],
+                        [
+                            "inline_data" => [
+                                "mime_type" => $mimeType,
+                                "data" => $picture
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        
+        // 4. Ejecutar la llamada con cURL
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($postData)
-        ]);
-        $comment = curl_exec($ch);
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " CURL error: " . $comment . "\n", FILE_APPEND);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+    
+        if ($httpCode !== 200) {
+            file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
+            return "Error de API (Código $httpCode): " . $response;
+        }
+    
+        $result = json_decode($response, true);
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API response: " . print_r($result, true) . "\n", FILE_APPEND);
+
+        // 5. Extraer y devolver el texto
+        $comment = $result['candidates'][0]['content']['parts'][0]['text'] ?? FALSE;
+        file_put_contents($autofilllog, "Autofill comentario: " . date('Y-m-d H:i:s') . " CURL error: " . $comment . "\n", FILE_APPEND);
         if ($comment === false) {
             $error = curl_error($ch);
             file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " CURL error: " . $error . "\n", FILE_APPEND);
