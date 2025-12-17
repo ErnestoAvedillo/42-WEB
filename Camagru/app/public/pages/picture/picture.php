@@ -39,8 +39,7 @@ require_once __DIR__ . '/../../database/posts.php';
     $photo = $client->getFileById($picture_uuid);
     ?>
     <div class="picture-container">
-        <h2>Your Photo</h2>
-        <p>Here is the photo you have uploaded:</p>
+        <h2>Comment this file!!</h2>
         <div class="picture-grid">
             <?php
             if (empty($photo)) {

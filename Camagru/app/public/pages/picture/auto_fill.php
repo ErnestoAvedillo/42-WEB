@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode($contents, true);
     $comment = "";
     $picture = $data['picture'] ?? null;
-    
+
     // Limpiar los datos de la imagen si vienen en formato data URL
     if ($picture && strpos($picture, 'data:') === 0) {
         // Extraer el MIME type del data URL
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $mimeType = 'image/jpeg'; // Valor por defecto
     }
-    
+
     foreach ($data as $key => $value) {
         file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Key: " . $key . " Value: " . (is_string($value) ? substr($value, 0, 100) : print_r($value, true)) . "\n", FILE_APPEND);
     }
@@ -28,13 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
             exit;
         }
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $apiKey;
+        $model = getenv('USE_MODEL');
+        $url = "https://generativelanguage.googleapis.com/v1beta/" . $model . ":generateContent?key=" . $apiKey;
         // 3. Estructura del Payload para visión multimodal
         $payload = [
+            "system_instruction" => [
+                "parts" => [
+                    ["text" => "Eres un generador de subtítulos estricto. Responde ÚNICAMENTE con el comentario solicitado. Prohibido usar introducciones como 'Claro que sí', 'Aquí tienes' o cualquier saludo."]
+                ]
+            ],
             "contents" => [
                 [
                     "parts" => [
-                        ["text" => "Describe esta foto de manera creativa, jocosa y breve."],
+                        ["text" => "Genera solamente un comentario creativo, jocoso y breve para la siguiente foto."],
                         [
                             "inline_data" => [
                                 "mime_type" => $mimeType,
@@ -46,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]
         ];
 
-        
+
         // 4. Ejecutar la llamada con cURL
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -55,40 +61,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-    
+
         if ($httpCode !== 200) {
             file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
             return "Error de API (Código $httpCode): " . $response;
         }
-    
+
         $result = json_decode($response, true);
         file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API response: " . print_r($result, true) . "\n", FILE_APPEND);
 
         // 5. Extraer y devolver el texto
-        $comment = $result['candidates'][0]['content']['parts'][0]['text'] ?? FALSE;
-        file_put_contents($autofilllog, "Autofill comentario: " . date('Y-m-d H:i:s') . " CURL error: " . $comment . "\n", FILE_APPEND);
-        if ($comment === false) {
+        $caption = $result['candidates'][0]['content']['parts'][0]['text'] ?? FALSE;
+        file_put_contents($autofilllog, "Autofill comentario: " . date('Y-m-d H:i:s') . " CURL error: " . $caption . "\n", FILE_APPEND);
+        if ($caption === false) {
             $error = curl_error($ch);
             file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " CURL error: " . $error . "\n", FILE_APPEND);
             echo json_encode(['success' => false, 'caption' => 'Error in CURL request', 'error' => $error]);
-            curl_close($ch);
+            unset($ch);
             exit;
         }
-        curl_close($ch);
+        unset($ch);
 
-        $commentData = json_decode($comment, true);
-        if ($commentData === null) {
-            file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
-            echo json_encode(['success' => false, 'caption' => 'Error decoding JSON', 'error' => json_last_error_msg()]);
-            exit;
-        }
-
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Received data: " . print_r($commentData, true) . "\n", FILE_APPEND);
-        $caption =  $commentData['caption'] ?? '';
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Received data: " . $caption . "\n", FILE_APPEND);
         echo json_encode(['success' => true, 'caption' => $caption]);
     } else {
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Raw output shell_exec: " . print_r($comment, true) . "\n", FILE_APPEND);
+        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Error no pictuire provided \n", FILE_APPEND);
         echo json_encode(['success' => false, 'caption' => 'picture data not detected', 'error' => 'No picture provided']);
     }
 } else {
