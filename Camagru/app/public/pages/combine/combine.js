@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typeof stopWait === 'function') stopWait();
       if (parsedData.success && Array.isArray(parsedData.images) && parsedData.images.length > 0) {
         // Store the image data globally
-        lastCombinedImage = parsedData.images[0];
+        lastCombinedImage = parsedData.images[0].img;
         if (lastCombinedImage == null) {
           console.error('No image data received from magic combine.');
           alert('Magic combine failed: No image data received.');
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear existing images and display the new combined image
         combinedImages.innerHTML = '';
         const img = new Image();
-        img.src = parsedData.images[0];
+        img.src = parsedData.images[0].img;
         img.style.position = 'absolute'; // Ensure it's positioned correctly
         // img.style.top = '0';
         // img.style.left = '0';

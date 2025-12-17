@@ -23,9 +23,11 @@ if (empty($data)) {
   exit;
 };
 
+$parts = [
+  ['text' => $data['prompt']]
+];
 $images = $data['images'];
-$prompt = $data['prompt'];
-
+// Prepare data for llm
 foreach ($images as $key => $image) {
   preg_match('/^data:(.*?);base64,(.*)$/', $image['img'], $matches);
   $mime = $matches[1];
@@ -33,61 +35,61 @@ foreach ($images as $key => $image) {
   if (!$base64Data) {
     continue; // Skip if no data
   }
-  // Decode the base64 data and create an image resource
-  $decodedData = base64_decode($base64Data);
-  $img = imagecreatefromstring($decodedData);
-  file_put_contents(
-    $autofilling,
-    "Combine ==> magic_combine- image dimensions: " . imagesx($img) . "x" . imagesy($img) .
-      ", left: " . $image['left'] . ", top: " . $image['top'] .
-      ", width: " . $image['width'] . ", height: " . $image['height'] . ")\n",
-    FILE_APPEND
-  );
-  if ($img === false) {
-    echo json_encode(['success' => false, 'message' => 'Invalid image data']);
-    exit;
-  }
-}
-// Prepare data for Python script
-$pythonData = [
-  'images' => [],
-  'prompt' => $prompt
-];
-foreach ($images as $image) {
-  $pythonData['images'][] = [
-    'img' => $image['img']
+  $parts[] = [
+    'inline_data' => [
+      'data' => $base64Data,
+      'mime_type' => $mime,
+    ]
   ];
 }
-
-
-
-file_put_contents($autofilling, "Sending data to Python: " . json_encode($pythonData) . "\n", FILE_APPEND);
 // Call the Python script
-$ch = curl_init('http://python:6000/magic_combine');
+$model = getenv('IMAGE_MODEL');
+$apiKey = getenv('GOOGLE_API_KEY');
+if (!$apiKey) {
+  file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
+  echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
+  exit;
+}
+$url = "https://generativelanguage.googleapis.com/v1beta/" . $model . ":generateContent?key=" . $apiKey;
+$payload = [
+  "system_instruction" => [
+    "parts" => [
+      ["text" => "Actúa como un generador de contenido visual puro. Tu respuesta debe contener única y exclusivamente una imagen. Está terminantemente prohibido incluir saludos, explicaciones, comentarios, etiquetas de Markdown (como ```) o cualquier texto adicional."]
+    ]
+  ],
+  "contents" => [
+    [
+      "parts" => $parts
+    ]
+  ]
+];
 file_put_contents($autofilling, "Paso \n", FILE_APPEND);
+$ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pythonData));
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
   'Content-Type: application/json',
-  'Content-Length: ' . strlen(json_encode($pythonData))
+  'Content-Length: ' . strlen(json_encode($payload))
 ]);
 
 file_put_contents($autofilling, "Paso 1\n", FILE_APPEND);
 
 $response = curl_exec($ch);
-file_put_contents($autofilling, "Paso 2\n", FILE_APPEND);
-if (curl_errno($ch)) {
-  $error_msg = curl_error($ch);
-  file_put_contents($autofilling, "Curl error: " . $error_msg . "\n", FILE_APPEND);
-  echo json_encode(['success' => false, 'message' => 'Curl error: ' . $error_msg]);
+file_put_contents($autofilling, "CURL response: " . substr($response, 0, 500) . "\n", FILE_APPEND);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+if ($httpCode !== 200) {
+  file_put_contents($autofilling, "API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
+  echo json_encode(['success' => false, 'message' => "API error (Código $httpCode): " . $response]);
+  unset($ch);
   exit;
 }
-curl_close($ch);
-file_put_contents($autofilling, "Response from Python: " . substr($response, 0, 500) . "\n", FILE_APPEND);
+file_put_contents($autofilling, "Paso 2\n", FILE_APPEND);
+unset($ch);
+file_put_contents($autofilling, "Response from LLM: " . substr($response, 0, 500) . "\n", FILE_APPEND);
 
 // The response is already JSON, just decode it
-$responseData = json_decode($response, true);
+$result = json_decode($response, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
   $error_msg = json_last_error_msg();
   file_put_contents($autofilling, "JSON decode error: " . $error_msg . "\n", FILE_APPEND);
@@ -95,6 +97,25 @@ if (json_last_error() !== JSON_ERROR_NONE) {
   exit;
 }
 
+$image = null;
+$mimetype = null;
+$response_parts = $result['candidates'][0]['content']['parts'] ?? [];
+foreach ($response_parts as $part) {
+    if (isset($part['inlineData'])) {
+        $image = $part['inlineData']['data'] ?? null;
+        $mimetype = $part['inlineData']['mimeType'] ?? null;
+        break; // Salimos del bucle una vez que encontramos la imagen
+    }
+}
+if (!$image) {
+  file_put_contents($autofilling, "No images found in response\n", FILE_APPEND);
+  echo json_encode(['success' => false, 'message' => 'No images found in response']);
+  exit;
+}
 // Return the decoded response directly (not double-encoded)
+$imageData = [
+  'img' => 'data:' . $mimetype . ';base64,' . $image,
+];
+$response = json_encode(['success' => true, 'images' => [$imageData]]);
 echo $response;
 exit;
