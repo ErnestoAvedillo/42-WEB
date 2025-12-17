@@ -1,6 +1,11 @@
 <?php
 $autofilllog = '/tmp/facturas.log';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF token check
+    if (!isset($data['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $data['csrf_token'])) {
+        echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+        exit;
+    }
     $contents = file_get_contents('php://input');
     $data = json_decode($contents, true);
     $comment = "";
