@@ -15,12 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $mimeType = 'image/jpeg'; // Valor por defecto
     }
-
-    foreach ($data as $key => $value) {
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Key: " . $key . " Value: " . (is_string($value) ? substr($value, 0, 100) : print_r($value, true)) . "\n", FILE_APPEND);
-    }
-    file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Extracted mime type: " . $mimeType . "\n", FILE_APPEND);
-    file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Clean base64 data: " . substr($picture, 0, 100) . "\n", FILE_APPEND);
     if ($picture) {
         $apiKey = getenv('GOOGLE_API_KEY');
         if (!$apiKey) {
@@ -51,8 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]
             ]
         ];
-
-
         // 4. Ejecutar la llamada con cURL
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -66,10 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
             return "Error de API (Código $httpCode): " . $response;
         }
-
         $result = json_decode($response, true);
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " API response: " . print_r($result, true) . "\n", FILE_APPEND);
-
         // 5. Extraer y devolver el texto
         $caption = $result['candidates'][0]['content']['parts'][0]['text'] ?? FALSE;
         file_put_contents($autofilllog, "Autofill comentario: " . date('Y-m-d H:i:s') . " CURL error: " . $caption . "\n", FILE_APPEND);
@@ -81,8 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         unset($ch);
-
-        file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " Received data: " . $caption . "\n", FILE_APPEND);
         echo json_encode(['success' => true, 'caption' => $caption]);
     } else {
         file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . "Error no pictuire provided \n", FILE_APPEND);
