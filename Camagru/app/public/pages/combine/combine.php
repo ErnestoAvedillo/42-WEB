@@ -107,9 +107,9 @@ if (!SessionManager::getSessionKey('uuid')) {
         $MasterInstance = new DocumentDB('masters');
         $MasterInstance->connect();
         $photos = $MasterInstance->getAllFilesFromUser($user_uuid);
-        file_put_contents('/tmp/combine_debug.log', "Processing photo: "  . htmlspecialchars($photoId) . "\n", FILE_APPEND);
         // Display images
         if (!empty($photos)) {
+          file_put_contents('/tmp/combine_debug.log', "Processing photo: "  . htmlspecialchars($photoId) . "\n", FILE_APPEND);
           // Loop through each photo and display it
           foreach ($photos as $photo) {
             file_put_contents('/tmp/combine_debug.log', "Processing photo: "  . htmlspecialchars($photoId) . "\n", FILE_APPEND);
