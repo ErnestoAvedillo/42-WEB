@@ -151,10 +151,6 @@
     border-radius: 3px;
 }
 
-#right::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
-
 /* Animation for links */
 @keyframes slideIn {
     from {
