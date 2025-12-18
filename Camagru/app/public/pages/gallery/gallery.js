@@ -13,7 +13,7 @@ async function showPictures(csrfToken, sortBy = null, nrElements = null, user = 
             'page': page
         };
         console.log('Request sent to server:', requestData);
-        
+
         const response = await fetch('/pages/gallery/sort-pictures.php', {
             method: 'POST',
             headers: {
@@ -21,7 +21,7 @@ async function showPictures(csrfToken, sortBy = null, nrElements = null, user = 
             },
             body: `csrf_token=${encodeURIComponent(csrfToken)}&sort-by=${encodeURIComponent(sortValue)}&nr_elements=${encodeURIComponent(elementsValue)}&user=${encodeURIComponent(userSortValue)}&page=${encodeURIComponent(page)}`,
         });
-        
+
 
         const result = await response.text();
         const galleryContainer = document.querySelector('.user-gallery');
@@ -40,7 +40,7 @@ async function createPagination(csrfToken, sortBy = null, nrElements = null, use
     const sortValue = sortBy || document.querySelector('.sort-select')?.value || 'date_desc';
     const userSortValue = user || document.querySelector('.user-sort-select')?.value || 'all';
     const elementsValue = nrElements || document.querySelector('.number-elements-select')?.value || '10';
-    
+
     console.log('Creating pagination with sort:', sortValue, 'elements:', elementsValue, 'page:', page);
     try {
         const response = await fetch('/pages/gallery/create_pagination.php', {
@@ -97,25 +97,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Usar delegación de eventos para los botones de paginación
+    // Usar delegación de eventos para los botones de paginación y borrado
     document.addEventListener('click', async function (event) {
         if (event.target.classList.contains('pagination-button')) {
             const selectedPage = parseInt(event.target.value);
             console.log('Pagination button clicked, page:', selectedPage);
             await showPictures(csrfToken, sortSelect[0]?.value, nr_elements[0]?.value, userSortSelect[0]?.value, selectedPage);
         }
-    });
 
-    const iconsDelete = document.getElementsByClassName('delete-image');
-    for (let i = 0; i < iconsDelete.length; i++) {
-        iconsDelete[i].addEventListener('click', async function (event) {
+        const deleteLink = event.target.closest('.delete-image');
+        if (deleteLink) {
             event.preventDefault();
             if (!confirm('Are you sure you want to delete this image?')) {
                 return;
             }
             console.log('Delete icon clicked');
-            const container = this.dataset.container;
-            const imageId = this.dataset.imageId;
+            const container = deleteLink.dataset.container;
+            const imageId = deleteLink.dataset.imageId;
             console.log('Container:', container);
             console.log('Image ID:', imageId);
             try {
@@ -129,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await response.text();
                 const resultJson = JSON.parse(result);
                 if (response.ok && resultJson.status === 'success') {
-                    this.closest('.photo').remove();
+                    deleteLink.closest('.photo').remove();
                     console.log('Image deleted successfully:', resultJson.message);
                 } else {
                     console.error('Error deleting image:', resultJson.message);
@@ -138,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error deleting image:', error);
                 alert('An error occurred while deleting the image.');
             }
-        });
-    }
+        }
+    });
 });
 

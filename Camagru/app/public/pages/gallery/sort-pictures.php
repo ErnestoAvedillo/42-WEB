@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 $csrf_token = $_SESSION['csrf_token'] ?? null;
+$container = 'combines';
 file_put_contents('/tmp/sort_debug.log', "Current session data: " . print_r($_SESSION, true) . "\n", FILE_APPEND);
 if (!$csrf_token) {
     $csrf_token = bin2hex(random_bytes(32));
@@ -29,7 +30,7 @@ file_put_contents('/tmp/sort_debug.log', "POST data received in sort-pictures: "
 $uuid = SessionManager::getSessionKey('uuid');
 $sort_type = $_POST['sort-by'] ?? 'newest';
 $number_elements = intval($_POST['nr_elements'] ?? 10);
-$page = intval($_POST['page']); 
+$page = intval($_POST['page']);
 $user_filter = $_POST['user'] ?? 'all';
 
 file_put_contents('/tmp/sort_debug.log', "!Number of elements: $number_elements, Page: $page, User filter: $user_filter\n", FILE_APPEND);
