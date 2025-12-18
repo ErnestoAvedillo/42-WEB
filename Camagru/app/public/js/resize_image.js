@@ -143,8 +143,8 @@ function createFloatingImage(src, container) {
   const img = document.createElement('div');
   const innersrc = document.createElement('img');
   innersrc.src = src;
-  innersrc.style.top = '10px';
-  innersrc.style.left = '10px';
+  innersrc.style.top = '10%';
+  innersrc.style.left = '10%';
   innersrc.style.width = '80%';
   innersrc.style.height = '80%';
   innersrc.style.userSelect = 'none'; // Prevent image selection

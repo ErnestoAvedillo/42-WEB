@@ -9,12 +9,6 @@ export const cameraButton = document.getElementById('open_camera');
 export const closeCameraButton = document.getElementById('close_camera');
 export const snapshotButton = document.getElementById('take_snapshot');
 export const maxImageHeight = "100%";
-// const maxImageWidth = "auto";
-// const maxImageHeight = document.getElementById('CombinedImages').offsetHeight;
-// export const maxImageHeight = document.getElementById('CombinedImages').style.height.replace('px', '');
-// Maximum width for combined images
-// const maxImageWidth = document.getElementById('CombinedImages').offsetWidth;
-// export const maxImageWidth = document.getElementById('CombinedImages').style.width.replace('px', '');
 window.sharedState = {
   allowDragFromMyPictures: true,
 };
@@ -29,9 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function getLastCombinedImage() {
     return lastCombinedImage;
   }
-  // closeCameraButton.disabled = true;
-  // snapshotButton.disabled = true;
-  // Handle scroll buttons for MyPictures container
   document.getElementById('mypictures-scroll-up').addEventListener('click', () => {
     console.log('scroll up MyPictures');
     myPictures.scrollBy({ top: -200, behavior: 'smooth' });
@@ -52,9 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('scroll down Master');
     myMasters.scrollBy({ top: 200, behavior: 'smooth' });
   });
-
-
-
   // Function to handle image selection
   function selectImage(image) {
     // Deselect the previously selected image, if any
@@ -65,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedImage = image;
     selectedImage.classList.add('selected');
   }
-
   // Handle the clean button click
   cleanButton.addEventListener('click', (event) => {
     event.preventDefault();
@@ -81,11 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Cleared images. Dragging from MyPictures re-enabled.');
   });
-
   // Handle the saveButton click
   const referenceWidth = combinedImages.offsetWidth; // Reference width of the container
   const referenceHeight = combinedImages.offsetHeight; // Reference height of the container
-
   const tooltip = document.createElement('div');
   tooltip.textContent = 'Click to combine images using Gemini AI';
   Object.assign(tooltip.style, {
@@ -117,6 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
   magicButton.addEventListener('mouseleave', hideTooltip);
 
   magicButton.addEventListener('click', async (event) => {
+    const container = document.getElementById('CombinedImages');
+    const containerRect = container.getBoundingClientRect(); // Referencia del contenedor padre
     event.preventDefault();
     // Prepare the data to be sent
     const imagesData = [];
@@ -130,38 +117,19 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("waitOverlay displayed.");
     }
     images.forEach(img => {
-      console.log('Processing top, left, width, height for image:');
-      const parentDiv = img.parentElement;
-      console.log('Top:', parentDiv.style.top);
-      console.log('Left:', parentDiv.style.left);
-      console.log('Width:', parentDiv.style.width);
-      console.log('Height:', parentDiv.style.height);
-
-      // Convert percentage values to pixels based on reference dimensions
-      const top = parentDiv.style.top.includes('%')
-        ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
-        : parseFloat(parentDiv.style.top);
-      const left = parentDiv.style.left.includes('%')
-        ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
-        : parseFloat(parentDiv.style.left);
-      const width = parentDiv.style.width.includes('auto')
-        ? referenceWidth
-        : parentDiv.style.width.includes('%')
-          ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
-          : parseFloat(parentDiv.style.width);
-      const height = parentDiv.style.height.includes('auto')
-        ? referenceHeight
-        : parentDiv.style.height.includes('%')
-          ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
-          : parseFloat(parentDiv.style.height);
+      const rect = img.getBoundingClientRect();
+      // Calculamos la posición RELATIVA al contenedor principal
+      const relativeTop = rect.top - containerRect.top;
+      const relativeLeft = rect.left - containerRect.left;
 
       imagesData.push({
-        top: Math.trunc(top),
-        left: Math.trunc(left),
-        width: Math.trunc(width),
-        height: Math.trunc(height),
+        top: Math.round(relativeTop),
+        left: Math.round(relativeLeft),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
         img: img.src,
       });
+
     });
     console.log('imagesData for magic combine:', imagesData);
     console.log('Prompt:', document.getElementById('prompt').value);
@@ -170,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
       images: imagesData,
       csrf_token: window.CSRF_TOKEN
     };
-
 
     // Send the data to the server
     try {
@@ -257,33 +224,58 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     // Prepare the data to be sent
     const imagesData = [];
+    const container = document.getElementById('CombinedImages');
+    const containerRect = container.getBoundingClientRect(); // Referencia del contenedor padre
+
     const images = combinedImages.querySelectorAll('img');
     images.forEach(img => {
-      // ...existing code...
-      const parentDiv = img.parentElement;
-      const top = parentDiv.style.top.includes('%')
-        ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
-        : parseFloat(parentDiv.style.top);
-      const left = parentDiv.style.left.includes('%')
-        ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
-        : parseFloat(parentDiv.style.left);
-      const width = parentDiv.style.width.includes('auto')
-        ? referenceWidth
-        : parentDiv.style.width.includes('%')
-          ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
-          : parseFloat(parentDiv.style.width);
-      const height = parentDiv.style.height.includes('auto')
-        ? referenceHeight
-        : parentDiv.style.height.includes('%')
-          ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
-          : parseFloat(parentDiv.style.height);
+      const rect = img.getBoundingClientRect();
+
+      // Calculamos la posición RELATIVA al contenedor principal
+      const relativeTop = rect.top - containerRect.top;
+      const relativeLeft = rect.left - containerRect.left;
+
       imagesData.push({
-        top: Math.trunc(top),
-        left: Math.trunc(left),
-        width: Math.trunc(width),
-        height: Math.trunc(height),
+        top: Math.round(relativeTop),
+        left: Math.round(relativeLeft),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
         img: img.src,
       });
+      // const parentDiv = img.parentElement;
+      // console.log('Processing top, left, width, height for image:');
+      // console.log('Top:', parentDiv.style.top);
+      // console.log('Left:', parentDiv.style.left);
+      // console.log('Width:', parentDiv.style.width);
+      // console.log('Height:', parentDiv.style.height);
+      // const top = parentDiv.style.top.includes('%')
+      //   ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
+      //   : parseFloat(parentDiv.style.top);
+      // const left = parentDiv.style.left.includes('%')
+      //   ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
+      //   : parseFloat(parentDiv.style.left);
+      // const width = parentDiv.style.width.includes('auto')
+      //   ? referenceWidth
+      //   : parentDiv.style.width.includes('%')
+      //     ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
+      //     : parseFloat(parentDiv.style.width);
+      // const height = parentDiv.style.height.includes('auto')
+      //   ? referenceHeight
+      //   : parentDiv.style.height.includes('%')
+      //     ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
+      //     : parseFloat(parentDiv.style.height);
+
+      // console.log('Saving image with data - Top:', top, 'Left:', left, 'Width:', width, 'Height:', height);
+      // imagesData.push({
+      //   top: Math.trunc(top),
+      //   left: Math.trunc(left),
+      //   width: Math.trunc(width),
+      //   height: Math.trunc(height),
+      //   img: img.src,
+      // });
+
+      console.log('Saving image with data - Top:', img.style.top, 'Left:', img.style.left, 'Width:', img.style.width, 'Height:', img.style.height);
+
     });
 
     // Send the data to the server
@@ -409,8 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
       img.onload = () => {
         // Set combinedImages dimensions to the image dimensions
         img.style.position = 'absolute'; // Ensure it's positioned correctly
-        // img.style.top = '0';
-        // img.style.left = '0';
+        // img.style.top = '0px';
+        // img.style.left = '0px';
         img.draggable = false; // Prevent default drag behavior for base image
         img.style.userSelect = 'none'; // Prevent image selection
 
@@ -431,8 +423,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
-        // imageContainer.style.top = '0%';
-        // imageContainer.style.left = '0%';
+        // imageContainer.style.top = '0px';
+        // imageContainer.style.left = '0px';
         imageContainer.style.width = img.style.width;
         // Ensure the container has height so absolutely positioned children are visible
         imageContainer.style.height = img.style.height;
