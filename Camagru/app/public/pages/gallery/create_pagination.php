@@ -3,22 +3,22 @@ require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
 $csrf_token = $_SESSION['csrf_token'] ?? null;
 if (!$csrf_token) {
-    $csrf_token = bin2hex(random_bytes(32));
-    $_SESSION['csrf_token'] = $csrf_token;
+  $csrf_token = bin2hex(random_bytes(32));
+  $_SESSION['csrf_token'] = $csrf_token;
 }
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
 // Validate CSRF token
 if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $csrf_token) {
-    file_put_contents('/tmp/sort_debug.log', "CSRF token validation failed. Expected: $csrf_token, Received: " . ($_POST['csrf_token'] ?? 'null') . "\n", FILE_APPEND);
-    http_response_code(403);
-    echo json_encode(['error' => 'Invalid CSRF token']);
-    exit();
+  file_put_contents('/tmp/sort_debug.log', "CSRF token validation failed. Expected: $csrf_token, Received: " . ($_POST['csrf_token'] ?? 'null') . "\n", FILE_APPEND);
+  http_response_code(403);
+  echo json_encode(['error' => 'Invalid CSRF token']);
+  exit();
 }
 
 if (!SessionManager::getSessionKey('uuid')) {
-    header('Location: /pages/login/login.php');
-    exit();
+  header('Location: /pages/login/login.php');
+  exit();
 }
 file_put_contents('/tmp/pagination_debug.log', "POST data received for pagination: " . print_r($_POST, true) . "\n", FILE_APPEND);
 $uuid = SessionManager::getSessionKey('uuid');
@@ -34,9 +34,9 @@ else:
   $total_pictures = $client->getFilesCountByUser($user_data['uuid']);
 endif;
 if ($number_elements <= 0) {
-    return ""; // Default value
+  return ""; // Default value
 }
-$total_buttons = ceil($total_pictures / $number_elements) ;
+$total_buttons = ceil($total_pictures / $number_elements);
 if ($page > 1):
   $first_button = $page - 1;
 else:
@@ -44,6 +44,23 @@ else:
 endif;
 file_put_contents('/tmp/pagination_debug.log', "Total pictures: $total_pictures, Number elements: $number_elements, Total buttons-: $total_buttons, First button: $first_button\n", FILE_APPEND);
 ?>
-<?php for ($i = $first_button; $i <= $total_buttons; $i++): ?>
+<?php if ($first_button > 1): ?>
+  <button class="pagination-button" value="1">1</button>
+  <?php if ($first_button > 2): ?>
+    <span class="ellipsis">...</span>
+  <?php endif; ?>
+<?php endif; ?>
+<?php if ($total_buttons <= $first_button + 4): ?>
+  <?php $end_button = $total_buttons; ?>
+<?php else: ?>
+  <?php $end_button = $first_button + 4; ?>
+<?php endif; ?>
+<?php for ($i = $first_button; $i <= $end_button; $i++): ?>
   <button class="pagination-button" value="<?php echo $i; ?>"><?php echo $i; ?></button>
 <?php endfor; ?>
+<?php if ($total_buttons > $first_button + 4): ?>
+  <?php if ($total_buttons > $first_button + 5): ?>
+    <span class="ellipsis">...</span>
+  <?php endif; ?>
+  <button class="pagination-button" value="<?php echo $total_buttons; ?>"><?php echo $total_buttons; ?></button>
+<?php endif; ?>
