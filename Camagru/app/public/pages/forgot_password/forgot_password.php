@@ -15,8 +15,8 @@ $_SESSION['csrf_token'] = $csrf_token;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/pages/create_new_password/create_new_password.css">
-    <title>Create New Password</title>
+    <link rel="stylesheet" href="/pages/forgot_password/forgot_password.css">
+    <title>Forgot Password</title>
 </head>
 
 <body>
@@ -35,17 +35,10 @@ $_SESSION['csrf_token'] = $csrf_token;
     ?>
     <div class="new-password-container">
         <h2>Create a New Password</h2>
-        <form action="create_new_password_handler.php" method="POST" autocomplete="off">
+        <form action="forgot_password_handler.php" method="POST" autocomplete="off">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <input type="hidden" name="username" value="<?php echo htmlspecialchars($username); ?>">
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-            <label for="current-password">Current Password:</label>
-            <div class="password-input-container">
-                <input type="password" id="current-password" name="current-password" required autocomplete="current-password">
-                <button type="button" class="password-toggle" onclick="togglePassword('current-password')">
-                    <span class="toggle-text" id="current-password-toggle-text">👁️</span>
-                </button>
-            </div>
             <label for="new-password">New Password:</label>
             <div class="password-input-container">
                 <input type="password" id="new-password" name="new-password" required autocomplete="new-password">
@@ -68,6 +61,6 @@ $_SESSION['csrf_token'] = $csrf_token;
     <?php include __DIR__ . '/../../pages/right_bar/right_bar.php'; ?>
     <?php include __DIR__ . '/../../pages/footer/footer.php'; ?>
 </body>
-<script src="/pages/create_new_password/create_new_password.js"></script>
+<script src="/pages/forgot_password/forgot_password.js"></script>
 
 </html>

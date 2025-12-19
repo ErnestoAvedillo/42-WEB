@@ -27,7 +27,7 @@ if (!SessionManager::getSessionKey('uuid')) {
 <body>
   <input type="hidden" id="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
   <?php
-  $pageTitle = "Home - Camagru";
+  $pageTitle = "Gallery - Camagru";
   include __DIR__ . '/../../pages/header/header.php';
   include __DIR__ . '/../../pages/left_bar/left_bar.php';
   $container = 'combines';

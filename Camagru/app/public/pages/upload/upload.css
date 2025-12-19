@@ -1,5 +1,5 @@
 /* uopload Form Styles */
-.uopload-container {
+.upload-container {
     max-width: 500px;
     margin: 30px auto;
     padding: 40px 30px;
@@ -8,14 +8,14 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.uopload-container h1 {
+.upload-container h1 {
     text-align: center;
     color: #333;
     margin-bottom: 30px;
     font-size: 2rem;
 }
 
-.uopload-container p {
+.upload-container p {
     text-align: center;
     color: #666;
     margin-bottom: 20px;
@@ -23,7 +23,7 @@
 }
 
 /* Form Styles */
-.uopload-form {
+.upload-form {
     display: flex;
     flex-direction: column;
     gap: 15px;

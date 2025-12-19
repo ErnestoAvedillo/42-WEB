@@ -46,7 +46,7 @@ foreach ($images as $key => $image) {
 $model = getenv('IMAGE_MODEL');
 $apiKey = getenv('GOOGLE_API_KEY');
 if (!$apiKey) {
-  file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
+  file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
   echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
   exit;
 }

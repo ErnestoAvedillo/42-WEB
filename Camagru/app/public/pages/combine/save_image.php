@@ -9,7 +9,7 @@ if (!SessionManager::getSessionKey('uuid')) {
   exit();
 }
 header('Content-Type: application/json');
-$autofilling = '/tmp/combine.log';
+$autofilling = '/tmp/save_image.log';
 // save_image.php
 
 // Get the JSON data from the request

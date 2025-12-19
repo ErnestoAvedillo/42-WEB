@@ -682,4 +682,23 @@ class User
       return false;
     }
   }
+  public function setUserEmailByOldEmail($old_email, $new_email)
+  {
+    try {
+      $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET email = :new_email
+                WHERE email = :old_email
+            ");
+
+      $stmt->execute([
+        ':new_email' => $new_email,
+        ':old_email' => $old_email
+      ]);
+
+      return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+      return false;
+    }
+  }
 }

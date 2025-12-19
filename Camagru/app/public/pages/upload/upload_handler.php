@@ -6,7 +6,7 @@ if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/request_login/request_login.php');
     exit();
 }
-$autofilling = '/tmp/camagru.log';
+$autofilling = '/tmp/upload_handler.log';
 require_once __DIR__ . '/../../database/mongo_db.php'; // Adjust path since we're in upload_handler.php
 //$client = new DocumentDB();
 //$client->connect();

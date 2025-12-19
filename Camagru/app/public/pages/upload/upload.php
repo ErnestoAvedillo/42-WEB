@@ -28,11 +28,11 @@ if (!SessionManager::getSessionKey('uuid')) {
 <body>
   <?php
   //    include __DIR__ . '/../../views/debugger.php';
-  $pageTitle = "Home - Camagru";
+  $pageTitle = "Upload - Camagru";
   include __DIR__ . '/../../pages/header/header.php';
   include __DIR__ . '/../../pages/left_bar/left_bar.php';
   ?>
-  <div class="uopload-container">
+  <div class="upload-container">
     <?php
     $type = $_GET['type'] ?: null;
     // if ($successMessage != '') {

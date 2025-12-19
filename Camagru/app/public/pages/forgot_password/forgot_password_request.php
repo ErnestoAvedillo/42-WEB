@@ -14,7 +14,7 @@ $userInstance = new User();
 $recoveryTokenSet = $userInstance->setRecoveryToken($userId, $token);
 if ($username && $userId && $recoveryTokenSet) {
     error_log("Recovery token set for user: $username");
-    header("Location: /pages/create_new_password/create_new_password.php?username=" . urlencode($username) . "&token=" . urlencode($token));
+    header("Location: /pages/forgot_password/forgot_password.php?username=" . urlencode($username) . "&token=" . urlencode($token));
     exit();
 }
 error_log("Failed to set recovery token for user: $username");

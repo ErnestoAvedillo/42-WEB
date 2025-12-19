@@ -14,8 +14,6 @@
         <li><a href="/pages/upload/upload.php?type=master" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'upload.php' && $_GET['type'] == 'master') ? 'class="active"' : ''; ?>><span class="icon">🪟</span>Upload masters</a></li>
         <li><a href="/pages/combine/combine.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'combine.php') ? 'class="active"' : ''; ?>><span class="icon">🌁</span>Combine</a></li>
         <li><a href="/pages/gallery/gallery.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'gallery.php') ? 'class="active"' : ''; ?>><span class="icon">🖼️</span>Gallery</a></li>
-        <li><a href="/pages/facturas/factura.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'factura.php') ? 'class="active"' : ''; ?>><span class="icon">🧾</span>Start a factura</a></li>
-        <li><a href="/pages/demandas/demandas.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'demandas.php') ? 'class="active"' : ''; ?>><span class="icon">⚖️</span>Start a demanda</a></li>
       <?php } else { ?>
         <li><a href="/pages/login/login.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'login.php') ? 'class="active"' : ''; ?>><span class="icon">🔑</span>Login</a></li>
         <li><a href="/pages/register/register.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'register.php') ? 'class="active"' : ''; ?>><span class="icon">📝</span>Register</a></li>

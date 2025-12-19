@@ -19,7 +19,9 @@ $client = new DocumentDB('uploads');
           <div class="avatar">
             <?php
             $userData = $user->getUserProfile($_SESSION['uuid']);
-            // Check if user has a photo UUID and fetch the photo
+
+            $username = $user->getUserByUUID($_SESSION['uuid'])['username'] ?? 'Unknown User';
+             // Check if user has a photo UUID and fetch the photo
             $photo = $client->getFileById($userData);
             if ($userData && isset($userData)) {
               if ($photo && isset($photo['filedata'])) {
@@ -34,7 +36,7 @@ $client = new DocumentDB('uploads');
             ?>
           </div>
           <div class="user-details">
-            <span class="username">Guest User</span>
+            <span class="username"><?php echo htmlspecialchars($username); ?></span>
             <span class="status">Online</span>
           </div>
         </div>
