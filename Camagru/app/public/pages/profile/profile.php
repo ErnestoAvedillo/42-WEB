@@ -45,12 +45,13 @@ if (!$csrf_token) {
         <form class="profile-update-form" action="/pages/profile/profile_handler.php" method="post" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" disabled aria-readonly="true">
+                <input type="hidden" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>">
             </div>
             <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_data['email']); ?>" required>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user_data['username']); ?>" required>
             </div>
             <div class="form-group">
                 <label for="send_notifications">Send Notifications:</label>
