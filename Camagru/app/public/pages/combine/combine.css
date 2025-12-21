@@ -19,16 +19,17 @@ h1 {
     align-items: baseline;
     /* --header-height: var(--header-height, 80px); */
     /* --footer-height: var(--footer-height, 80px); */
-    position: fixed;
-    top: var(--header-height, 80px);
-    bottom: var(--footer-height, 64px);
+    /* position: fixed; */
+    position: relative;
+    /* top: var(--header-height, 80px); */
+    /* bottom: var(--footer-height, 64px); */
     /* left: var(--left-sidebar-width, 0); */
     /* right: var(--right-sidebar-width, 0); */
-    width: auto;
+    width: 100%;
     height: auto;
-    max-height: none;
+    max-height: 1200px;
     overflow-y: auto;
-    margin: 10px;
+    margin-bottom: 30px;
 }
 
 .working-area>div {
@@ -105,6 +106,7 @@ h1 {
     flex: 0 0 auto;
     justify-self: center;
     align-self: center;
+    margin: 4px 0px;
 }
 
 .scroll-button:hover {
