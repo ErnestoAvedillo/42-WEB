@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     'last_name' => $_GET['last_name'] ?? ''
   ];
 
-  // header('Location: /pages/register/register.php');
-  header('Content-Type: application/json'); // Indicar error en la respuesta
+  header('Location: /pages/register/register.php');
+  //header('Content-Type: application/json'); // Indicar error en la respuesta
   echo json_encode(['success' => false]);
   exit();
 }
@@ -91,9 +91,9 @@ if (!empty($errors)) {
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  // header('Location: /pages/register/register.php');
-  header('Content-Type: application/json'); // Indicar error en la respuesta
-  echo json_encode(['success' => false]);
+  header('Location: /pages/register/register.php');
+  // header('Content-Type: application/json'); // Indicar error en la respuesta
+  // echo json_encode(['success' => false]);
   exit();
 }
 
@@ -125,9 +125,9 @@ try {
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  // header('Location: /pages/register/register.php');
-  header('Content-Type: application/json'); // Indicar error en la respuesta
-  echo json_encode(['success' => false]);
+  header('Location: /pages/register/register.php');
+  // header('Content-Type: application/json'); // Indicar error en la respuesta
+  // echo json_encode(['success' => false]);
   exit();
 }
 // Guardar registro pendiente
@@ -142,19 +142,27 @@ if (!$pendingReg->createPendingRegistration($username, $email, $password, $first
     'first_name' => $firstName,
     'last_name' => $lastName
   ];
-  // header('Location: /pages/register/register.php');
-  header('Content-Type: application/json'); // Indicar error en la respuesta
-  echo json_encode(['success' => false]);
+  header('Location: /pages/register/register.php');
+  // header('Content-Type: application/json'); // Indicar error en la respuesta
+  // echo json_encode(['success' => false]);
   exit();
 }
 // Si se presionó el botón secundario (enviar link), responder con JSON para evitar redirección
 if (isset($_GET['send_link'])) {
   file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending link created successfully for user: " . json_encode($username) . "\n", FILE_APPEND);
-  header('Content-Type: application/json');
-  echo json_encode(['success' => true]);
+  // header('Content-Type: application/json');
+  // echo json_encode(['success' => true]);
+  header('Location: /pages/register/register.php');
   exit();
 }
 file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending created successfully for user: " . json_encode($username) . "\n", FILE_APPEND);
 // Redirigir a la página de confirmación en el caso de que reuiera confirmacion por token
-header('Location: /pages/register/confirm.php?username=' . urlencode($username) . '&validation_token=' . urlencode($validationToken));
+$_SESSION['register_data'] = [
+  'username' => $username,
+  'email' => $email,
+  'first_name' => $firstName,
+  'last_name' => $lastName,
+  'token' => $validationToken
+];
+header('Location: /pages/register/confirm.php');
 exit();
