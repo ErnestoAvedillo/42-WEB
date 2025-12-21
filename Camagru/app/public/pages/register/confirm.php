@@ -20,13 +20,13 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
 <body>
 
     <div class="confirm-registration">
-        <?php $validationToken = $_GET['validation_token'] ?? ''; ?>
-        <?php if (!empty($_GET['error'])): ?>
+        <?php $validationToken = $_SESSION['register_data']['token'] ?? ''; ?>
+        <?php if (!empty($_SESSION['error'])): ?>
             <div class="error-message">
                 <?php
-                if (isset($_GET['error'])) {
+                if (isset($_SESSION['error'])) {
                     echo "<p class='error'>Los tokens de validación no coinciden.</p>";
-                    unset($_GET['error']);
+                    unset($_SESSION['error']);
                 }
                 ?>
             </div>
