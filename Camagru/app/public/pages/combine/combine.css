@@ -118,8 +118,9 @@ h1 {
     height: 95%;
     overflow-x: scroll;
     overflow-y: auto;
-    white-space: nowrap;
+    /* white-space: nowrap; */
     justify-self: center;
+    word-break: break-word;
     align-self: center;
 }
 
@@ -176,6 +177,7 @@ h1 {
     align-self: stretch;
     justify-self: stretch;
     overflow: hidden;
+    max-height: inherit;
 }
 
 /* 
@@ -258,6 +260,7 @@ textarea#prompt {
     padding: 5px;
     text-align: center;
     transition: background-color 0.3s;
+    margin-bottom: 30px;
 }
 
 .dropzone.drag-over {

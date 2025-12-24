@@ -242,37 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
         height: Math.round(rect.height),
         img: img.src,
       });
-      // const parentDiv = img.parentElement;
-      // console.log('Processing top, left, width, height for image:');
-      // console.log('Top:', parentDiv.style.top);
-      // console.log('Left:', parentDiv.style.left);
-      // console.log('Width:', parentDiv.style.width);
-      // console.log('Height:', parentDiv.style.height);
-      // const top = parentDiv.style.top.includes('%')
-      //   ? (parseFloat(parentDiv.style.top) / 100) * referenceHeight
-      //   : parseFloat(parentDiv.style.top);
-      // const left = parentDiv.style.left.includes('%')
-      //   ? (parseFloat(parentDiv.style.left) / 100) * referenceWidth
-      //   : parseFloat(parentDiv.style.left);
-      // const width = parentDiv.style.width.includes('auto')
-      //   ? referenceWidth
-      //   : parentDiv.style.width.includes('%')
-      //     ? (parseFloat(parentDiv.style.width) / 100) * referenceWidth
-      //     : parseFloat(parentDiv.style.width);
-      // const height = parentDiv.style.height.includes('auto')
-      //   ? referenceHeight
-      //   : parentDiv.style.height.includes('%')
-      //     ? (parseFloat(parentDiv.style.height) / 100) * referenceHeight
-      //     : parseFloat(parentDiv.style.height);
-
-      // console.log('Saving image with data - Top:', top, 'Left:', left, 'Width:', width, 'Height:', height);
-      // imagesData.push({
-      //   top: Math.trunc(top),
-      //   left: Math.trunc(left),
-      //   width: Math.trunc(width),
-      //   height: Math.trunc(height),
-      //   img: img.src,
-      // });
 
       console.log('Saving image with data - Top:', img.style.top, 'Left:', img.style.left, 'Width:', img.style.width, 'Height:', img.style.height);
 
@@ -380,6 +349,22 @@ document.addEventListener('DOMContentLoaded', () => {
     combinedImages.classList.remove('drag-over');
   });
 
+  function fitImageInside(img, container) {
+    const maxW = container.clientWidth;
+    const maxH = container.clientHeight;
+
+    const imgRatio = img.naturalWidth / img.naturalHeight;
+    const containerRatio = maxW / maxH;
+
+    if (imgRatio > containerRatio) {
+      img.style.width = `${maxW}px`;
+      img.style.height = `${maxW / imgRatio}px`;
+    } else {
+      img.style.height = `${maxH}px`;
+      img.style.width = `${maxH * imgRatio}px`;
+    }
+  }
+
   // Handle drop event
   combinedImages.addEventListener('drop', (event) => {
     event.preventDefault();
@@ -406,35 +391,47 @@ document.addEventListener('DOMContentLoaded', () => {
         img.draggable = false; // Prevent default drag behavior for base image
         img.style.userSelect = 'none'; // Prevent image selection
 
-        let aspectRatio = img.height / img.width;
-        if (img.width >= img.height) {
-          const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
-          img.style.width = `${finalImageWidth}px`;
-          img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
-        } else {
-          const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
-          img.style.height = `${finalImageHeight}px`;
-          img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
-        }
-        img.style.display = "block";
-        img.style.margin = "0 auto";
-        img.style.alignSelf = 'center';
+
+        // Ajustar imagen SIN cambiar el contenedor
+        fitImageInside(img, combinedImages);
+        // Centrar la imagen
+        img.style.top = '50%';
+        img.style.left = '50%';
+        img.style.transform = 'translate(-50%, -50%)';
+
+        // let aspectRatio = img.height / img.width;
+        // if (img.width >= img.height) {
+        //   const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
+        //   img.style.width = `${finalImageWidth}px`;
+        //   img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
+        // } else {
+        //   const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
+        //   img.style.height = `${finalImageHeight}px`;
+        //   img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
+        // }
+        // img.style.display = "block";
+        // img.style.margin = "0 auto";
+        // img.style.alignSelf = 'center';
 
         // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
         const imageContainer = document.createElement('div');
-        imageContainer.style.position = 'absolute';
+        // imageContainer.style.position = 'absolute';
+        // Centrar la imagen
+        img.style.top = '50%';
+        img.style.left = '50%';
+        img.style.transform = 'translate(-50%, -50%)';
         // imageContainer.style.top = '0px';
         // imageContainer.style.left = '0px';
-        imageContainer.style.width = img.style.width;
+        // imageContainer.style.width = img.style.width;
         // Ensure the container has height so absolutely positioned children are visible
-        imageContainer.style.height = img.style.height;
-        imageContainer.style.justifySelf = 'center';
-        imageContainer.style.alignSelf = 'center';
+        // imageContainer.style.height = img.style.height;
+        // imageContainer.style.justifySelf = 'center';
+        // imageContainer.style.alignSelf = 'center';
         imageContainer.appendChild(img);
         combinedImages.appendChild(imageContainer);
-        combinedImages.style.width = `${img.style.width}`;
-        combinedImages.style.height = `${img.style.height}`;
-        combinedImages.style.justifySelf = 'center';
+        // combinedImages.style.width = `${img.style.width}`;
+        // combinedImages.style.height = `${img.style.height}`;
+        // combinedImages.style.justifySelf = 'center';
         window.sharedState.allowDragFromMyPictures = false;
         cameraButton.disabled = true;
         closeCameraButton.disabled = true;
