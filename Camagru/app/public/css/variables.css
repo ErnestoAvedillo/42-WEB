@@ -9,8 +9,8 @@
     --max-combined-images-height: 600px;
 
     /* Layout: header/footer heights (valores por defecto) */
-    --header-height: var(--header-height, 80px);
-    --footer-height: var(--footer-height, 80px);
+    --header-height: 30px;
+    --footer-height: 10px;
 
     /* Colors */
     --color-primary: #007BFF;

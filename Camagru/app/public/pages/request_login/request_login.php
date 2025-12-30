@@ -22,7 +22,7 @@ if (!$csrf_token) {
 <body>
     <?php
     //    include __DIR__ . '/../../views/debugger.php';
-    $pageTitle = "Home - Camagru";
+    $pageTitle = "Login - Camagru";
     include __DIR__ . '/../../pages/header/header.php';
     $pageTitle = "sidebar - Camagru";
     include __DIR__ . '/../../pages/left_bar/left_bar.php';

@@ -19,7 +19,7 @@ if (!$csrf_token) {
     $csrf_token = bin2hex(random_bytes(32));
     $_SESSION['csrf_token'] = $csrf_token;
 }
-$autofilling = '/tmp/Camagru.log';
+$autofilling = '/tmp/login.log';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,7 +35,7 @@ $autofilling = '/tmp/Camagru.log';
 
 <body>
     <?php
-    $pageTitle = "Home - Camagru";
+    $pageTitle = "Login - Camagru";
     include __DIR__ . '/../../pages/header/header.php';
 
     $pageTitle = "sidebar - Camagru";

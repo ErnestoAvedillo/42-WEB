@@ -12,6 +12,10 @@ document.getElementById('auto-fill').addEventListener('mouseleave', function () 
 document.getElementById('auto-fill').addEventListener('click', function () {
 
    console.log("Submitting form data...");
+   var data_received = {
+      csrf_token: document.querySelector('input[name="csrf_token"]').value,
+      picture: document.getElementById('picture').currentSrc
+   };
    if (typeof startWait === 'function') {
       startWait('Generando comentario...');
       console.log("startWait function called.");
@@ -22,30 +26,36 @@ document.getElementById('auto-fill').addEventListener('click', function () {
    }
 
    console.log("Fetching...");
+   console.log("Data received:", data_received);
    var file = document.getElementById('picture').currentSrc;
    fetch('/pages/picture/auto_fill.php', {
       method: 'POST',
       headers: {
          'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ picture: file })
+      body: JSON.stringify(data_received)
    })
-
-      .then(response => response.json())
-      .then(data => {
+   .then(response => {
+         console.log("Raw response status:", response.status);
+         console.log("Raw response headers:", response.headers);
+         return response.json();
+      })
+   .then(data => {
          console.log("response received...", data);
          if (data.success) {
             document.getElementById('caption').value = data.caption;
             console.log('Caption set to:', data.caption);
          } else {
-            console.error('Error fetching caption:', data.error);
+            console.error('Error fetching caption:', data.error || data.message || 'Unknown error');
+            console.error('Full error response:', data);
          }
       })
       .catch(error => {
          if (typeof stopWait === 'function') stopWait();
          else document.getElementById("waitOverlay").style.display = "none";
-         console.log('Error mi error es:', error);
-         console.error('Error:', error);
+         console.log('Network/Parse error:', error);
+         console.error('Full error object:', error);
+         alert('Error de red o parsing: ' + error.message);
       })
       .finally(() => {
          if (typeof stopWait === 'function') stopWait();

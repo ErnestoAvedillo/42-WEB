@@ -24,7 +24,7 @@ SessionManager::getInstance();
         // Destruir la sesión completamente
         SessionManager::destroySession();
     }
-    $pageTitle = "Home - Camagru";
+    $pageTitle = "Logout - Camagru";
     include __DIR__ . '/../../pages/header/header.php';
     include __DIR__ . '/../../pages/left_bar/left_bar.php';
     ?>

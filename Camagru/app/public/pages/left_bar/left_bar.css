@@ -1,9 +1,10 @@
+@import url('../../css/variables.css');
 /* Modern Sidebar Styles */
 #left {
     position: fixed;
     /* Use header height variable so sidebar positions itself correctly
        under the fixed header even if header height changes. */
-    top: var(--header-height, 80px);
+    top: var(--header-height, 95px);
     left: 0;
     height: calc(100vh - var(--header-height, 80px));
     width: var(--left-sidebar-width, 280px);
@@ -16,7 +17,7 @@
     z-index: 999;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 #left.hidden {

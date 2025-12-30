@@ -1,7 +1,10 @@
+
+@import url('../../css/variables.css');
+
 /* Modern Sidebar Styles */
 #right {
     position: fixed;
-    top: 70px;
+    top: var(--header-height, 95px);
     /* Match header height */
     right: 0px;
     height: calc(100vh - 70px);
@@ -15,7 +18,7 @@
     z-index: 999;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 #right.hidden {

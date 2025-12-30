@@ -1,8 +1,11 @@
+@import '../../css/variables.css';
+/* Header styles */
 header {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
+	height: var(--header-height);
 	background-color: var(--header_color);
 	color: var(--text-color);
 	padding: var(--header-padding);

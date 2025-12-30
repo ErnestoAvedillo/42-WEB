@@ -17,7 +17,7 @@ $data = $_POST;
 // CSRF token check
 if (!isset($data['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $data['csrf_token'])) {
     $_SESSION['errors'] = 'Invalid CSRF token.';
-    header('Location: /pages/profile/profile.php');
+    header('Location: /pages/login/login.php');
     exit();
 }
 
