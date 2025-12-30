@@ -54,7 +54,6 @@ if (!SessionManager::getSessionKey('uuid')) {
             if (isset($photo['filedata'])) {
               $mime = $photo['mimetype']; // Cambia si usas otro tipo MIME
               if ($mime == 'image/png' || $mime == 'image/jpeg' || $mime == 'image/jpg' || $mime == 'image/gif' || $mime == 'image/avif') {
-                echo ('<script>console.log("' . $mime . '")</script>');
                 $base64 = base64_encode($photo['filedata']->getData());
                 // $imgTag = '<img src="data:' . $mime . ';base64,' . $base64 . '" alt="' . htmlspecialchars($photo['filename']) . '" width="200">';
                 $photoId = isset($photo['_id']) ? (string)$photo['_id'] : '';
@@ -65,7 +64,7 @@ if (!SessionManager::getSessionKey('uuid')) {
                 // $photoId = is
                 // echo '<a href="/pages/picture/picture.php?picture_uuid=' . urlencode($photoId) . '">' . $imgTag . '</a>';
               } else {
-                echo ('<script>console.log("Unsupported image format: ' . $mime . ' fichero: ' . htmlspecialchars($photo['filename']) . '")</script>');
+                echo ('<script>console.error("Unsupported image format: ' . $mime . ' fichero: ' . htmlspecialchars($photo['filename']) . '")</script>');
               }
             }
           }
@@ -109,10 +108,8 @@ if (!SessionManager::getSessionKey('uuid')) {
         $photos = $MasterInstance->getAllFilesFromUser($user_uuid);
         // Display images
         if (!empty($photos)) {
-          file_put_contents('/tmp/combine_debug.log', "Processing photo: "  . htmlspecialchars($photoId) . "\n", FILE_APPEND);
           // Loop through each photo and display it
           foreach ($photos as $photo) {
-            file_put_contents('/tmp/combine_debug.log', "Processing photo: "  . htmlspecialchars($photoId) . "\n", FILE_APPEND);
             if (isset($photo['filedata'])) {
               $mime = $photo['mime_type'] ?? 'image/png'; // Cambia si usas otro tipo MIME
               $base64 = base64_encode($photo['filedata']->getData());

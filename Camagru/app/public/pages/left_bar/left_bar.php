@@ -6,8 +6,6 @@
   <nav class="left-bar-nav">
     <ul>
       <?php $isLoggedIn = isset($_SESSION['logged_in']) && $_SESSION['logged_in'];
-      file_put_contents('/tmp/debug.log', "Server variable" . $_SERVER['SCRIPT_NAME']  . "\n", FILE_APPEND);
-      file_put_contents('/tmp/debug.log', "Server variable" . $_SERVER['QUERY_STRING']  . "\n", FILE_APPEND);
       if ($isLoggedIn) { ?>
         <li><a href="/index.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'index.php') ? 'class="active"' : ''; ?>><span class="icon">🏠</span>Home</a></li>
         <li><a href="/pages/upload/upload.php?type=photo" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'upload.php' && $_GET['type'] == 'photo') ? 'class="active"' : ''; ?>><span class="icon">📷</span>Upload pictures</a></li>

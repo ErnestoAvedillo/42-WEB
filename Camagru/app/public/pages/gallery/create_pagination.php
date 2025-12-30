@@ -10,7 +10,6 @@ require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/User.php';
 // Validate CSRF token
 if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $csrf_token) {
-  file_put_contents('/tmp/sort_debug.log', "CSRF token validation failed. Expected: $csrf_token, Received: " . ($_POST['csrf_token'] ?? 'null') . "\n", FILE_APPEND);
   http_response_code(403);
   echo json_encode(['error' => 'Invalid CSRF token']);
   exit();
@@ -20,7 +19,6 @@ if (!SessionManager::getSessionKey('uuid')) {
   header('Location: /pages/login/login.php');
   exit();
 }
-file_put_contents('/tmp/pagination_debug.log', "POST data received for pagination: " . print_r($_POST, true) . "\n", FILE_APPEND);
 $uuid = SessionManager::getSessionKey('uuid');
 $user = $_POST['user'] ?? 'all';
 $number_elements = intval($_POST['nr_elements'] ?? 10);
@@ -42,7 +40,6 @@ if ($page > 1):
 else:
   $first_button = $page;
 endif;
-file_put_contents('/tmp/pagination_debug.log', "Total pictures: $total_pictures, Number elements: $number_elements, Total buttons-: $total_buttons, First button: $first_button\n", FILE_APPEND);
 ?>
 <?php if ($first_button > 1): ?>
   <button class="pagination-button" value="1">1</button>

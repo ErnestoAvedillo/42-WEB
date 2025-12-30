@@ -19,7 +19,6 @@ if (!$csrf_token) {
     $csrf_token = bin2hex(random_bytes(32));
     $_SESSION['csrf_token'] = $csrf_token;
 }
-$autofilling = '/tmp/login.log';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,12 +46,6 @@ $autofilling = '/tmp/login.log';
     $successMessage = $_SESSION['success_message'] ?? '';
     // Verificar si viene del registro
     $fromRegister = isset($_GET['registered']) && $_GET['registered'] == '1';
-    // $registeredUser = $_SESSION['registered_user'] ?? '';
-    // debugger
-    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Errors: " . json_encode($errors) . "\n", FILE_APPEND);
-    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Edit link: " . json_encode($data) . "\n", FILE_APPEND);
-    file_put_contents($autofilling, "Login ==> login.php - " . $fromRegister . ": " . date('Y-m-d H:i:s') . "Success msg: " . json_encode($successMessage) . "\n", FILE_APPEND);
-    // file_put_contents($autofilling, "Login ==> login.php - fromRegister: " . date('Y-m-d H:i:s') . "Registered user: " . $registeredUser . "\n", FILE_APPEND);
     // Limpiar mensajes después de mostrarlos
     unset($_SESSION['error_messages']);
     unset($_SESSION['login_data']);
@@ -115,9 +108,6 @@ $autofilling = '/tmp/login.log';
         <p class="register-link">Don't have an account? <a href="/pages/register/register.php">Register here</a></p>
     </div>
     <?php
-    $pageTitle = "left side bar - Camagru";
-    include __DIR__ . '/../../pages/right_bar/right_bar.php';
-
     include __DIR__ . '/../../pages/footer/footer.php';
     ?>
 </body>

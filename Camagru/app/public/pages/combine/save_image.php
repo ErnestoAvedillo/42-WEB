@@ -9,9 +9,6 @@ if (!SessionManager::getSessionKey('uuid')) {
   exit();
 }
 header('Content-Type: application/json');
-$autofilling = '/tmp/save_image.log';
-// save_image.php
-
 // Get the JSON data from the request
 $data = json_decode(file_get_contents('php://input'), true);
 foreach ($data as $key => $value) {
@@ -20,7 +17,6 @@ foreach ($data as $key => $value) {
   } else {
     $logVal = print_r($value, true);
   }
-  file_put_contents($autofilling, "Save_image.php: " . date('Y-m-d H:i:s') . " Key: " . $key . " Value: " . $logVal . "\n", FILE_APPEND);
 }
 
 // CSRF token check
@@ -53,13 +49,6 @@ $images = $data['images'];
 //I use the first image to get the dimensions of the canvas
 $width = $images[0]['width'];
 $height = $images[0]['height'];
-
-//I create the canvas and fill it with a white background
-file_put_contents(
-  $autofilling,
-  "Combine ==> save_image- Creating canvas with dimensions: " . $width . "x" . $height . "\n",
-  FILE_APPEND
-);
 $canvas = imagecreatetruecolor($width, $height);
 $white = imagecolorallocate($canvas, 255, 255, 255);
 imagefill($canvas, 0, 0, $white);
@@ -75,25 +64,9 @@ foreach ($images as $image) {
   $decodedData = base64_decode($base64Data);
   $img = imagecreatefromstring($decodedData);
   if ($img !== false) {
-    file_put_contents(
-      $autofilling,
-      "Combine ==> save_image- imagecopyresampled(canvas dimensions before orientation: " . imagesx($canvas) . "x" . imagesy($canvas) .
-        ", img dimensions: " . imagesx($img) . "x" . imagesy($img) .
-        ", left: " . $image['left'] . ", top: " . $image['top'] .
-        ", width: " . $image['width'] . ", height: " . $image['height'] . ")\n",
-      FILE_APPEND
-    );
     imagealphablending($img, true);
     imagesavealpha($img, true);
     $img = correctImageOrientation($img, $decodedData); // Correct the orientation
-    file_put_contents(
-      $autofilling,
-      "Combine ==> save_image- imagecopyresampled(canvas dimensions after orientation: " . imagesx($canvas) . "x" . imagesy($canvas) .
-        ", img dimensions: " . imagesx($img) . "x" . imagesy($img) .
-        ", left: " . $image['left'] . ", top: " . $image['top'] .
-        ", width: " . $image['width'] . ", height: " . $image['height'] . ")\n",
-      FILE_APPEND
-    );
     // Use the provided dimensions and positions
     $Top2Save = isset($image['top']) ? (int)$image['top'] : 0;
     $Left2Save = isset($image['left']) ? (int)$image['left'] : 0;
@@ -112,16 +85,6 @@ foreach ($images as $image) {
       $Height2Save, // Destination dimensions
       imagesx($img),
       imagesy($img) // Source dimensions
-    );
-    file_put_contents(
-      $autofilling,
-      "Combine ==> save_image- After imagecopyresampled(canvas dimensions: " . imagesx($img) . "x" . imagesy($img) . ")\n",
-      FILE_APPEND
-    );
-    file_put_contents(
-      $autofilling,
-      "Combine ==> save_image- After imagecopyresampled(canvas dimensions: " . imagesx($canvas) . "x" . imagesy($canvas) . ")\n",
-      FILE_APPEND
     );
     imagedestroy($img);
   }

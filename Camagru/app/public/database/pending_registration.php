@@ -41,7 +41,7 @@ class pendingRegistration
             ]);
             return true;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error creating pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error creating pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -52,7 +52,7 @@ class pendingRegistration
             $stmt->execute([':token' => $token]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error fetching pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error fetching pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
             return null;
         }
     }
@@ -63,7 +63,7 @@ class pendingRegistration
             $stmt->execute([':username' => $username, ':email' => $email]);
             return true;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error deleting pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error deleting pending registration: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -86,7 +86,7 @@ class pendingRegistration
             }
             return true;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error confirming registration: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error confirming registration: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -101,7 +101,7 @@ class pendingRegistration
             ]);
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error checking user existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error checking user existence: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -116,7 +116,7 @@ class pendingRegistration
             ]);
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error checking email existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error checking email existence: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -132,7 +132,7 @@ class pendingRegistration
             ]);
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
-            file_put_contents($this->logfile, "Error checking username non-existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            error_log("Error checking username non-existence: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }

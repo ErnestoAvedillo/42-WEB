@@ -24,23 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return lastCombinedImage;
   }
   document.getElementById('mypictures-scroll-up').addEventListener('click', () => {
-    console.log('scroll up MyPictures');
     myPictures.scrollBy({ top: -200, behavior: 'smooth' });
   });
 
   document.getElementById('mypictures-scroll-down').addEventListener('click', () => {
-    console.log('scroll down MyPictures');
     myPictures.scrollBy({ top: 200, behavior: 'smooth' });
   });
 
   // Handle scroll buttons for Master container
   document.getElementById('master-scroll-up').addEventListener('click', () => {
-    console.log('scroll up Master');
     myMasters.scrollBy({ top: -200, behavior: 'smooth' });
   });
 
   document.getElementById('master-scroll-down').addEventListener('click', () => {
-    console.log('scroll down Master');
     myMasters.scrollBy({ top: 200, behavior: 'smooth' });
   });
   // Function to handle image selection
@@ -65,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cameraButton.disabled = false;
     closeCameraButton.disabled = true;
     snapshotButton.disabled = true;
-
-    console.log('Cleared images. Dragging from MyPictures re-enabled.');
   });
   // Handle the saveButton click
   const referenceWidth = combinedImages.offsetWidth; // Reference width of the container
@@ -110,11 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const images = combinedImages.querySelectorAll('img');
     if (typeof startWait === 'function') {
       startWait('Creating your new picture...');
-      console.log("startWait function called.");
     }
     else {
       document.getElementById("waitOverlay").style.display = "flex";
-      console.log("waitOverlay displayed.");
     }
     images.forEach(img => {
       const rect = img.getBoundingClientRect();
@@ -131,8 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
     });
-    console.log('imagesData for magic combine:', imagesData);
-    console.log('Prompt:', document.getElementById('prompt').value);
     const DataToSend = {
       prompt: document.getElementById('prompt').value,
       images: imagesData,
@@ -149,22 +139,15 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(DataToSend)
       });
       const data = await response.text();
-      console.log('Raw response:', data);
       const parsedData = JSON.parse(data);
-      console.log('Response parsed as JSON.');
-      console.log('Parsed Data:', parsedData);
       if (typeof stopWait === 'function') stopWait();
       if (parsedData.success && Array.isArray(parsedData.images) && parsedData.images.length > 0) {
         // Store the image data globally
         lastCombinedImage = parsedData.images[0].img;
         if (lastCombinedImage == null) {
-          console.error('No image data received from magic combine.');
           alert('Magic combine failed: No image data received.');
           return;
-        } else {
-          console.log('Image data received from magic combine.');
         }
-        console.log('Last combined image updated.');
         // Clear existing images and display the new combined image
         combinedImages.innerHTML = '';
         const img = new Image();
@@ -175,36 +158,63 @@ document.addEventListener('DOMContentLoaded', () => {
         img.draggable = false; // Prevent default drag behavior
         img.style.userSelect = 'none'; // Prevent image selection
         img.onload = function () {
-          // Ahora img.width y img.height tienen los valores correctos
-          let aspectRatio = img.height / img.width;
-          if (img.width >= img.height) {
-            const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
-            img.style.width = `${finalImageWidth}px`;
-            img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
+          // Calculate maximum available height based on viewport and reserved space for controls
+          const viewportHeight = window.innerHeight;
+          const reservedSpaceForControls = 150; // Reduced reserved space to allow larger images
+          const maxHeight = Math.max(300, viewportHeight - reservedSpaceForControls); // Increased minimum height
+          
+          // Calculate the aspect ratio using natural dimensions
+          const aspectRatio = img.naturalWidth / img.naturalHeight;
+          
+          // Calculate new dimensions maintaining aspect ratio and respecting available space
+          let newWidth, newHeight;
+          if (img.naturalHeight > maxHeight) {
+            newHeight = maxHeight;
+            newWidth = maxHeight * aspectRatio;
           } else {
-            const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
-            img.style.height = `${finalImageHeight}px`;
-            img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
+            // Use a reasonable scaling factor for smaller images
+            const scaleFactor = Math.min(1, maxHeight / img.naturalHeight);
+            newHeight = img.naturalHeight * scaleFactor;
+            newWidth = img.naturalWidth * scaleFactor;
           }
+          
+          // Ensure minimum size for better visibility in Chrome
+          const minSize = 300;
+          if (newWidth < minSize && newHeight < minSize) {
+            if (aspectRatio > 1) { // wider than tall
+              newWidth = minSize;
+              newHeight = minSize / aspectRatio;
+            } else { // taller than wide
+              newHeight = minSize;
+              newWidth = minSize * aspectRatio;
+            }
+          }
+          
+          // Set the image dimensions
+          img.style.width = `${newWidth}px`;
+          img.style.height = `${newHeight}px`;
           img.style.display = "block";
-          img.style.margin = "0 auto";
-          img.style.alignSelf = 'center';
+          
+          // Center the image in the container
+          img.style.top = '50%';
+          img.style.left = '50%';
+          img.style.transform = 'translate(-50%, -50%)';
 
-          // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
           const imageContainer = document.createElement('div');
-          imageContainer.style.position = 'absolute';
-          // imageContainer.style.top = '0%';
-          // imageContainer.style.left = '0%';
-          imageContainer.style.width = img.style.width;
-          // Ensure the container has height so absolutely positioned children are visible
-          imageContainer.style.height = img.style.height;
-          imageContainer.style.justifySelf = 'center';
-          imageContainer.style.alignSelf = 'center';
+          imageContainer.style.position = 'relative';
+          imageContainer.style.width = '100%';
+          imageContainer.style.height = '100%';
           imageContainer.appendChild(img);
           combinedImages.appendChild(imageContainer);
-          combinedImages.style.width = `${img.style.width}`;
-          combinedImages.style.height = `${img.style.height}`;
-          combinedImages.style.justifySelf = 'center';
+          
+          // Set the container dimensions to match the image
+          combinedImages.style.width = `${newWidth}px`;
+          combinedImages.style.height = `${newHeight}px`;
+          
+          // Center the combinedImages container horizontally
+          combinedImages.style.margin = '10px auto';
+          combinedImages.style.marginBottom = 'var(--combined-margin-bottom)';
+          
           // Optionally, provide user feedback
           alert('Magic combine successful!');
           closeCameraButton.disabled = true;
@@ -246,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         img: img.src,
       });
 
-      console.log('Saving image with data - Top:', img.style.top, 'Left:', img.style.left, 'Width:', img.style.width, 'Height:', img.style.height);
 
     });
 
@@ -256,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
         images: imagesData,
         csrf_token: window.CSRF_TOKEN
       };
-      console.log('DataToSend:', DataToSend);
       const response = await fetch('/pages/combine/save_image.php', {
         method: 'POST',
         headers: {
@@ -265,9 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(DataToSend)
       });
       const data = await response.text();
-      console.log('Success:', data);
       const parsedData = JSON.parse(data);
-      console.log('Parsed Data:', parsedData);
       if (parsedData.success) {
         // Optionally, provide user feedback
         alert('Images saved successfully!');
@@ -275,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(parsedData.message || 'Error saving images.');
       }
     } catch (error) {
-      console.error('Error:', error);
       // Optionally, provide user feedback
       alert('Error saving images.');
     }
@@ -301,7 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
   myPictures.addEventListener('dragstart', (event) => {
     if (!window.sharedState.allowDragFromMyPictures) {
       event.preventDefault(); // Prevent dragging if not allowed
-      console.log('Dragging from MyPictures is not allowed right now.');
       return;
     }
 
@@ -313,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback for environments without DataTransfer (touch, some webviews)
         window.__dragImageSrc = target.src;
       }
-      console.log('Dragging from MyPictures allowed.', window.sharedState.allowDragFromMyPictures);
     }
   });
 
@@ -324,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
   myMasters.addEventListener('dragstart', (event) => {
     if (window.sharedState.allowDragFromMyPictures) {
       event.preventDefault(); // Prevent dragging from Masters if MyPictures is still allowed
-      console.log('Dragging from Masters is not allowed until MyPictures is used.');
       return;
     }
 
@@ -335,20 +337,17 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         window.__dragImageSrc = target.src;
       }
-      console.log('Dragging from Masters allowed.', window.sharedState.allowDragFromMyPictures);
     }
   });
 
   // Add dragover event to the dropzone
   combinedImages.addEventListener('dragover', (event) => {
     event.preventDefault(); // Allow dropping
-    console.log('drag over');
     combinedImages.classList.add('drag-over'); // Add highlight
   });
 
   // Remove highlight when drag leaves the dropzone
   combinedImages.addEventListener('dragleave', () => {
-    console.log('drag leave');
     combinedImages.classList.remove('drag-over');
   });
 
@@ -386,71 +385,79 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.sharedState.allowDragFromMyPictures) {
       const img = new Image();
       img.src = droppedSrc;
-      img.onload = () => {
-        // Set combinedImages dimensions to the image dimensions
-        img.style.position = 'absolute'; // Ensure it's positioned correctly
-        // img.style.top = '0px';
-        // img.style.left = '0px';
+        img.onload = () => {
+        img.style.position = 'absolute';
         img.draggable = false; // Prevent default drag behavior for base image
         img.style.userSelect = 'none'; // Prevent image selection
 
-
-        // Ajustar imagen SIN cambiar el contenedor
-        fitImageInside(img, combinedImages);
-        // Centrar la imagen
+        // Calculate maximum available height based on viewport and reserved space for controls
+        const viewportHeight = window.innerHeight;
+        const reservedSpaceForControls = 150; // Reduced reserved space to allow larger images
+        const maxHeight = Math.max(300, viewportHeight - reservedSpaceForControls); // Increased minimum height
+        
+        // Calculate the aspect ratio of the image
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        
+        // Calculate new dimensions maintaining aspect ratio and respecting available space
+        let newWidth, newHeight;
+        if (img.naturalHeight > maxHeight) {
+          newHeight = maxHeight;
+          newWidth = maxHeight * aspectRatio;
+        } else {
+          // Use a reasonable scaling factor for smaller images
+          const scaleFactor = Math.min(1, maxHeight / img.naturalHeight);
+          newHeight = img.naturalHeight * scaleFactor;
+          newWidth = img.naturalWidth * scaleFactor;
+        }
+        
+        // Ensure minimum size for better visibility in Chrome
+        const minSize = 300;
+        if (newWidth < minSize && newHeight < minSize) {
+          if (aspectRatio > 1) { // wider than tall
+            newWidth = minSize;
+            newHeight = minSize / aspectRatio;
+          } else { // taller than wide
+            newHeight = minSize;
+            newWidth = minSize * aspectRatio;
+          }
+        }
+        
+        // Set the container dimensions to match the image
+        combinedImages.style.width = `${newWidth}px`;
+        combinedImages.style.height = `${newHeight}px`;
+        
+        // Center the combinedImages container horizontally
+        combinedImages.style.margin = '10px auto';
+        combinedImages.style.marginBottom = 'var(--combined-margin-bottom)';
+        
+        // Set the image dimensions to fill the container
+        img.style.width = `${newWidth}px`;
+        img.style.height = `${newHeight}px`;
+        
+        // Center the image in the container
         img.style.top = '50%';
         img.style.left = '50%';
         img.style.transform = 'translate(-50%, -50%)';
-
-        // let aspectRatio = img.height / img.width;
-        // if (img.width >= img.height) {
-        //   const finalImageWidth = Math.min(Math.floor(img.height), combinedImages.offsetWidth);
-        //   img.style.width = `${finalImageWidth}px`;
-        //   img.style.height = `${Math.round(finalImageWidth * aspectRatio)}px`;
-        // } else {
-        //   const finalImageHeight = Math.min(Math.floor(img.width), combinedImages.offsetHeight);
-        //   img.style.height = `${finalImageHeight}px`;
-        //   img.style.width = `${Math.round(finalImageHeight / aspectRatio)}px`;
-        // }
-        // img.style.display = "block";
-        // img.style.margin = "0 auto";
-        // img.style.alignSelf = 'center';
-
-        // const maxImageHeight = Math.min(Math.floor(window.innerHeight * 0.8), img.height);
+        
         const imageContainer = document.createElement('div');
-        // imageContainer.style.position = 'absolute';
-        // Centrar la imagen
-        img.style.top = '50%';
-        img.style.left = '50%';
-        img.style.transform = 'translate(-50%, -50%)';
-        // imageContainer.style.top = '0px';
-        // imageContainer.style.left = '0px';
-        // imageContainer.style.width = img.style.width;
-        // Ensure the container has height so absolutely positioned children are visible
-        // imageContainer.style.height = img.style.height;
-        // imageContainer.style.justifySelf = 'center';
-        // imageContainer.style.alignSelf = 'center';
+        imageContainer.style.position = 'relative';
+        imageContainer.style.width = '100%';
+        imageContainer.style.height = '100%';
         imageContainer.appendChild(img);
         combinedImages.appendChild(imageContainer);
-        // combinedImages.style.width = `${img.style.width}`;
-        // combinedImages.style.height = `${img.style.height}`;
-        // combinedImages.style.justifySelf = 'center';
+        
         window.sharedState.allowDragFromMyPictures = false;
         cameraButton.disabled = true;
         closeCameraButton.disabled = true;
         snapshotButton.disabled = true;
-        console.log('Base image added from MyPictures. Further drags must be from Masters.');
         // Clear fallback after use
         window.__dragImageSrc = null;
       };
     } else {
       // Get the dropped image source and create a floating image
-      console.log('Max image window size:', window.innerWidth, window.innerHeight);
       createFloatingImage(droppedSrc, combinedImages);
       // Clear fallback after use
       window.__dragImageSrc = null;
     }
   });
 });
-// Note: previously there was an accidental self-import here which caused a circular import.
-// The camera module should import the exported elements from this file instead.

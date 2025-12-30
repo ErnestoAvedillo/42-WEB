@@ -40,7 +40,7 @@ class User
         return false;
       }
     } catch (PDOException $e) {
-      file_put_contents($this->logfile, "Error copying registration from pending: " . $e->getMessage() . "\n", FILE_APPEND);
+      error_log("Error copying registration from pending: " . $e->getMessage() . "\n", FILE_APPEND);
       return false;
     }
   }
@@ -325,8 +325,6 @@ class User
    */
   public function isUsernameTaken($username, $uuid = null)
   {
-    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
-
     $params = [':username' => $username];
     $sql = "SELECT COUNT(*) FROM users WHERE username = :username";
 
@@ -336,9 +334,7 @@ class User
     }
 
     $stmt = $this->pdo->prepare($sql);
-    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 2\n", FILE_APPEND);
     $stmt->execute($params);
-    file_put_contents($this->logfile, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 3\n", FILE_APPEND);
     return $stmt->fetchColumn() > 0;
   }
   /**

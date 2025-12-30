@@ -226,12 +226,8 @@ class DocumentDB
         $collection = $this->getCollection();
         $sortOrder = $ascending ? 1 : -1;
         $files = $collection->find([], ['sort' => ['uploaded_at' => $sortOrder]])->toArray();
-        file_put_contents('/tmp/mongo_debug.log', "Sorting order: " . ($ascending ? "Ascending" : "Descending") . "\n", FILE_APPEND);
-        file_put_contents('/tmp/mongo_debug.log', "Elements to show: " . $elements . "\n", FILE_APPEND);
-        file_put_contents('/tmp/mongo_debug.log', "First element: " . $firstElement . "\n", FILE_APPEND);
         foreach ($files as $file) {
             $uploadTime = $file['uploaded_at'] instanceof UTCDateTime ? $file['uploaded_at']->toDateTime()->format('Y-m-d H:i:s') : 'Unknown';
-            file_put_contents('/tmp/mongo_debug.log', "File: " . $file['filename'] . " Uploaded at: " . $uploadTime . "\n", FILE_APPEND);
         }
 
         if ($elements === 0) {

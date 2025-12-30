@@ -4,7 +4,6 @@ SessionManager::getInstance();
 require_once '../../database/User.php';
 require_once '../../database/Profiles.php';
 require_once '../../database/pending_registration.php';
-$autofilling = '/tmp/Camagru.log';
 // Intentar registrar al usuario
 try {
     // Verificar que la petición sea POST
@@ -18,7 +17,6 @@ try {
     $confirmValidationToken = $_POST['confirm_validation_token'] ?? 'n/b';
     // Validar los datos obtenidos del formulario
     if (!$register_data) {
-        file_put_contents($autofilling, "Register ==> confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registro no encontrado\n", FILE_APPEND);
         throw new Exception('Invalid token. Please use the registration form.');
     }
     // Validar que los tokens coincidan

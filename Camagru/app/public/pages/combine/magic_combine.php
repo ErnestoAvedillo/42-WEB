@@ -7,7 +7,6 @@ if (!SessionManager::getSessionKey('uuid')) {
   exit();
 }
 header('Content-Type: application/json');
-$autofilling = '/tmp/combine.log';
 
 // get the JSON data from the request
 $data = json_decode(file_get_contents('php://input'), true);
@@ -46,7 +45,6 @@ foreach ($images as $key => $image) {
 $model = getenv('IMAGE_MODEL');
 $apiKey = getenv('GOOGLE_API_KEY');
 if (!$apiKey) {
-  file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
   echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
   exit;
 }
@@ -63,7 +61,6 @@ $payload = [
     ]
   ]
 ];
-file_put_contents($autofilling, "Paso \n", FILE_APPEND);
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
@@ -72,27 +69,18 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
   'Content-Type: application/json',
   'Content-Length: ' . strlen(json_encode($payload))
 ]);
-
-file_put_contents($autofilling, "Paso 1\n", FILE_APPEND);
-
 $response = curl_exec($ch);
-file_put_contents($autofilling, "CURL response: " . substr($response, 0, 500) . "\n", FILE_APPEND);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 if ($httpCode !== 200) {
-  file_put_contents($autofilling, "API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
   echo json_encode(['success' => false, 'message' => "API error (Código $httpCode): " . $response]);
   unset($ch);
   exit;
 }
-file_put_contents($autofilling, "Paso 2\n", FILE_APPEND);
 unset($ch);
-file_put_contents($autofilling, "Response from LLM: " . substr($response, 0, 500) . "\n", FILE_APPEND);
-
 // The response is already JSON, just decode it
 $result = json_decode($response, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
   $error_msg = json_last_error_msg();
-  file_put_contents($autofilling, "JSON decode error: " . $error_msg . "\n", FILE_APPEND);
   echo json_encode(['success' => false, 'message' => 'JSON decode error: ' . $error_msg]);
   exit;
 }
@@ -108,7 +96,6 @@ foreach ($response_parts as $part) {
     }
 }
 if (!$image) {
-  file_put_contents($autofilling, "No images found in response\n", FILE_APPEND);
   echo json_encode(['success' => false, 'message' => 'No images found in response']);
   exit;
 }

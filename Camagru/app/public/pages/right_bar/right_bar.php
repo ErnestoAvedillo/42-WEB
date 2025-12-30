@@ -14,7 +14,6 @@ require_once __DIR__ . '/../../class_session/session.php';
       <li><a href="/pages/create_new_password/new_password_request.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == 'new_password_request.php') ? 'class="active"' : ''; ?>><span class="icon">🔑</span>Change password</a></li>
       <?php
       $is2FAEnabled = SessionManager::getSessionKey('two_factor_enabled');
-      file_put_contents('/tmp/debug.log', "Current 2FA status: " . var_export($is2FAEnabled, true) . "\n", FILE_APPEND);
       if (!$is2FAEnabled) { ?>
         <li><a href="/pages/2FA_config/2FA_config.php" <?php echo (basename($_SERVER['SCRIPT_NAME']) == '2FA_config.php') ? 'class="active"' : ''; ?>><span class="icon">🔒</span>Enable 2FA</a></li>
       <?php } else { ?>
@@ -24,12 +23,5 @@ require_once __DIR__ . '/../../class_session/session.php';
   </nav>
 </aside>
 <?php
-// Debug logging comentado para evitar spam en logs
-/*
-foreach ($_SESSION as $key => $value) {
-  file_put_contents('/tmp/debug.log', "Session Key: $key => Value: " . var_export($value, true) . " Get en Session:" . var_export(SessionManager::getSessionKey($key), true) . "\n", FILE_APPEND);
-}
-*/
-// Debugging line to check current 2FA status
 ?>
 <script src="/pages/right_bar/hide_right_bar.js"></script>

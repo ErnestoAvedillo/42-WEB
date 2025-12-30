@@ -5,7 +5,6 @@ $csrf_token = $_SESSION['csrf_token'] ?? null;
 if (!$csrf_token) {
     $csrf_token = bin2hex(random_bytes(32));
     $_SESSION['csrf_token'] = $csrf_token;
-    file_put_contents('/tmp/debug.log', "Generating new CSRF token: ".$csrf_token."\n", FILE_APPEND);
 }
 require_once __DIR__ . '/../../database/mongo_db.php';
 require_once __DIR__ . '/../../database/likes.php';
@@ -13,12 +12,7 @@ require_once __DIR__ . '/../../database/likes.php';
 // Debug logging para diagnosticar el problema
 $uuid = SessionManager::getSessionKey('uuid');
 $logged_in = SessionManager::getSessionKey('logged_in');
-file_put_contents('/tmp/debug.log', "Picture.php - UUID: " . ($uuid ? $uuid : 'NULL') . "\n", FILE_APPEND);
-file_put_contents('/tmp/debug.log', "Picture.php - Logged in: " . ($logged_in ? 'true' : 'false') . "\n", FILE_APPEND);
-file_put_contents('/tmp/debug.log', "Picture.php - Session active: " . (SessionManager::isSessionActive() ? 'true' : 'false') . "\n", FILE_APPEND);
-
 if (!$uuid || !$logged_in) {
-    file_put_contents('/tmp/debug.log', "User not properly logged in - UUID: " . ($uuid ? 'exists' : 'missing') . ", logged_in: " . ($logged_in ? 'true' : 'false') . "\n", FILE_APPEND);
     header('Location: /pages/login/login.php?forward=/pages/picture/picture.php?picture_uuid=' . urlencode($_GET['picture_uuid'] ?? ''));
     exit();
 }

@@ -56,9 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = new User();
         if ($user->save2FAsecret($user_id, $secret, true)) {
             SessionManager::getInstance()->setSessionKey('two_factor_enabled', true);
-
-            file_put_contents("/tmp/debug.log", "2FA enabled for user: " . print_r($_SESSION, true) . "\n", FILE_APPEND);
-
             echo '<p style="color: green;">Two-Factor Authentication has been enabled successfully.</p>';
             echo '<a method="GET" href="/index.php">Back to main page</a>';
         } else {

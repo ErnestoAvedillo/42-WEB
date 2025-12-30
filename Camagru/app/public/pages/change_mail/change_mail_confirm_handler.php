@@ -4,8 +4,6 @@ SessionManager::getInstance();
 require_once '../../database/User.php';
 require_once '../../database/Profiles.php';
 require_once '../../database/pending_registration.php';
-$autofilling = '/tmp/change_mail_confirm_handler.log';
-file_put_contents($autofilling, "Register ==> change_mail_confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Full POST data: " . print_r($_POST, true) . "\n", FILE_APPEND);
 try {
     // Verificar que la petición sea POST
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -18,18 +16,16 @@ try {
     $new_email = $_POST['new_email'] ?? '';
     // Validar que los tokens coincidan
     if ($validationToken !== $confirmValidationToken) {
-        file_put_contents($autofilling, "Register ==> change_mail_confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Token mismatch: " . json_encode($validationToken) . " !== " . json_encode($confirmValidationToken) . "\n", FILE_APPEND);
         throw new Exception('Token not match. Please try again.');
     }
     // Registrar al usuario
     $user = new User();
     if ($user->setUserEmailByOldEmail($old_email, $new_email)) {
-        file_put_contents($autofilling, "Register ==> change_mail_confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " User email updated successfully: " . json_encode($new_email) . "\n", FILE_APPEND);
         // Limpiar los datos de cambio de email de la sesión
         unset($_SESSION['change_mail_data']);
         $_SESSION['success_message'] = 'Email changed successfully!';
     } else {
-        file_put_contents($autofilling, "Register ==> change_mail_confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Failed to update user email: " . json_encode($new_email) . "\n", FILE_APPEND);
+        error_log("Register ==> change_mail_confirm_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Failed to update user email: " . json_encode($new_email) . "\n", FILE_APPEND);
         throw new Exception('Failed to update user email.');
     }
     header('Location: /index.php');

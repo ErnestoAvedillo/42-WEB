@@ -45,7 +45,6 @@ $data = [
   <div class="register-container">
     <h1>Change register email</h1>
     <?php if (!empty($errors)) { ?>
-      <?php file_put_contents("/tmp/Camagru.log", "Register ==> register.php - fromRegister: " . date('Y-m-d H:i:s') . " Showing errors: " . print_r($errors, true) . "\n", FILE_APPEND); ?>
       <div class="alert-error">
         <h2>Please fix the following errors:</h2>
         <ul>

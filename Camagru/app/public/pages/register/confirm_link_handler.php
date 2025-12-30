@@ -4,7 +4,6 @@ require_once __DIR__ . '/../../database/Profiles.php';
 require_once __DIR__ . '/../../database/pending_registration.php';
 include_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
-$autofilling = '/tmp/Camagru.log';
 try {
     $pendingReg = new pendingRegistration();
     // Support both GET (from email link) and POST (from form) methods

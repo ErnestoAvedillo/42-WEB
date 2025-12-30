@@ -4,13 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const mainContent = document.querySelector('main');
   const footContent = document.querySelector('footer');
 
-  console.log('User Info clicked:', toggleBtn);
-  console.log('right_bar: right', right_bar);
-  console.log('Main content:', mainContent);
-  console.log('Foot content:', footContent);
-
-  if (!toggleBtn || !right_bar) {
-    console.error('Required elements not found!');
+  if (!toggleBtn) {
+    console.error('Required toggle button not found!');
+    return;
+  }
+  if (!right_bar) {
+    console.error('Required right bar not found!');
     return;
   }
 
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   toggleBtn.addEventListener('click', function () {
-    console.log('Toggle button clicked! Current state:', rightright_barVisible);
     if (rightright_barVisible) {
       // Hide right_bar
       right_bar.classList.remove('show');
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
         footContent.classList.add('full-width');
       }
       rightright_barVisible = false;
-      console.log('right_bar hidden');
     } else {
       // Show right_bar
       right_bar.classList.remove('hidden');
@@ -52,8 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       rightright_barVisible = true;
-      console.log('right_bar shown');
     }
   });
 });
-console.log("hide_right_bar.js loaded");

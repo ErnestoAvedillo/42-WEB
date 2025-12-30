@@ -11,9 +11,6 @@ if (!isset($_SESSION['csrf_token']) || $_SESSION['csrf_token'] !== ($_GET['csrf_
   echo json_encode(['success' => false, 'message' => 'Token CSRF inválido']);
   exit();
 }
-// use PHPMailer\PHPMailer\Exception;
-
-$autofilling = '/tmp/change_mail_handler.log';
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   $_SESSION['error_messages'] = ['Método no permitido. Por favor, utiliza el formulario de registro.'];
@@ -29,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   echo json_encode(['success' => false]);
   exit();
 }
-file_put_contents($autofilling, "Register ==> change_mail_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Full GET data: " . print_r($_GET, true) . "\n", FILE_APPEND);
 // Obtener datos del formulario
 $new_email = trim($_GET['email'] ?? '');
 $old_email = trim($_GET['current_email'] ?? '');
@@ -39,7 +35,6 @@ $errors = [];
 
 $Users = new User();
 $pendingReg = new pendingRegistration();
-file_put_contents($autofilling, "Register ==> change_mail_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
 if ($Users->isEmailTaken($new_email)) {
   $errors[] = 'El email ya está en uso';
 }
@@ -54,7 +49,6 @@ if (!filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // Si hay errores, regresar al formulario
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . json_encode($errors) . "\n", FILE_APPEND);
 if (!empty($errors)) {
   $_SESSION['error_messages'] = $errors;
   $_SESSION['new_email'] = $new_email;
@@ -69,12 +63,10 @@ try {
   $ipAddress = EnvLoader::get('APP_ADDR');
   $portAddress = EnvLoader::get('APP_PORT');
   // Enviar correo con link o token según el botón presionado
-  file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Sending code email to: " . json_encode($new_email) . " from: http://" . $ipAddress . ":" . $portAddress . "\n", FILE_APPEND);
   // Enviar correo con token de validación
   $validationToken = send_validation_token($new_email, $username);
   if ($validationToken === null) {
     //Si ha fallado el envío del correo generar una excepcion
-    file_put_contents($autofilling, "Failed to send validation email.\n", FILE_APPEND);
     header('location: /pages/change_mail/change_mail.php');
     exit();
   }
@@ -88,11 +80,9 @@ try {
 
 // Si se presionó el botón secundario (enviar link), responder con JSON para evitar redirección
 if (isset($_GET['send_link'])) {
-  file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending link created successfully for user: " . json_encode($new_email) . "\n", FILE_APPEND);
   header('location: /pages/change_mail/change_mail.php');
   exit();
 }
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending created successfully for user: " . json_encode($new_email) . "\n", FILE_APPEND);
 // Almacenar datos en la sesión en lugar de pasarlos por URL
 $_SESSION['change_mail_data'] = [
     'old_email' => $old_email,

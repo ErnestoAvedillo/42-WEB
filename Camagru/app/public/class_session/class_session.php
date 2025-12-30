@@ -51,7 +51,6 @@ class SessionManager
     }
     public static function getSessionData($key)
     {
-        file_put_contents('/tmp/debug.log', "Getting session data for key: $key" . $_SESSION[$key] . "\n", FILE_APPEND);
         return $_SESSION[$key] ?? null;
     }
     public static function setSessionKey($key, $value)
@@ -66,6 +65,10 @@ class SessionManager
     {
         foreach ($data as $key => $value) {
             $_SESSION[$key] = $value;
+        }
+        // Compatibilidad: si existe 'id', también guardarlo como 'user_id'
+        if (isset($data['id'])) {
+            $_SESSION['user_id'] = $data['id'];
         }
         //para visualizar lo que guarda
         $_SESSION['logged_in'] = true;

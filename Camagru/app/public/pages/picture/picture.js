@@ -54,8 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function sendLikeRequest(pictureUuid, action) {
-        console.log('Sending request:', { pictureUuid, action, csrfToken });
-        
         fetch('/pages/picture/like_handler.php', {
             method: 'POST',
             headers: {
@@ -68,9 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
             })
         })
         .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
             // Verificar si la respuesta es exitosa
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -89,10 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
             if (data.success) {
                 updateLikeDislikeButtons(data);
-                console.log(data.message);
             } else {
                 console.error('Server error:', data.message);
                 alert('Error: ' + data.message);

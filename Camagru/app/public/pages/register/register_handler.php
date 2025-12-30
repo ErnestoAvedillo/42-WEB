@@ -9,9 +9,13 @@ SessionManager::getInstance();
 
 // use PHPMailer\PHPMailer\Exception;
 
-$autofilling = '/tmp/Camagru.log';
 // Verificar que la petición sea POST
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+  if (isset($_GET['send_link'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Método no permitido. Por favor, utiliza el formulario de registro.']);
+    exit();
+  }
   $_SESSION['error_messages'] = ['Método no permitido. Por favor, utiliza el formulario de registro.'];
   $_SESSION['register_data'] = [
     'username' => $_GET['username'] ?? '',
@@ -21,12 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   ];
 
   header('Location: /pages/register/register.php');
-  //header('Content-Type: application/json'); // Indicar error en la respuesta
-  echo json_encode(['success' => false]);
   exit();
 }
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Get data from GET\n", FILE_APPEND);
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Full GET data: " . print_r($_GET, true) . "\n", FILE_APPEND);
 // Obtener datos del formulario
 $username = trim($_GET['username'] ?? '');
 $email = trim($_GET['email'] ?? '');
@@ -40,12 +40,10 @@ $errors = [];
 
 $Users = new User();
 $pendingReg = new pendingRegistration();
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " username: " . json_encode($username) . " email: " . json_encode($email) . "\n", FILE_APPEND);
 
 if ($Users->isUsernameTaken($username)) {
   $errors[] = 'El nombre de usuario ya está en uso';
 }
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 1\n", FILE_APPEND);
 if ($Users->isEmailTaken($email)) {
   $errors[] = 'El email ya está en uso';
 }
@@ -65,7 +63,6 @@ if (empty($password)) {
 if ($password !== $confirmPassword) {
   $errors[] = 'Las contraseñas no coinciden';
 }
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " make checks 2\n", FILE_APPEND);
 
 $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -82,8 +79,12 @@ if ($pendingReg->usernameExists($username)) {
   $errors[] = 'Ya existe un registro pendiente con este nombre de usuario. Por favor, utiliza otro nombre de usuario.';
 }
 // Si hay errores, regresar al formulario
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Errors: " . json_encode($errors) . "\n", FILE_APPEND);
 if (!empty($errors)) {
+  if (isset($_GET['send_link'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'errors' => $errors]);
+    exit();
+  }
   $_SESSION['error_messages'] = $errors;
   $_SESSION['register_data'] = [
     'username' => $username,
@@ -92,8 +93,6 @@ if (!empty($errors)) {
     'last_name' => $lastName
   ];
   header('Location: /pages/register/register.php');
-  // header('Content-Type: application/json'); // Indicar error en la respuesta
-  // echo json_encode(['success' => false]);
   exit();
 }
 
@@ -104,20 +103,22 @@ try {
   $portAddress = EnvLoader::get('APP_PORT');
   // Enviar correo con link o token según el botón presionado
   if (isset($_GET['send_link'])) {
-    file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Sending link email to: " . json_encode($email) . " from: http://" . $ipAddress . ":" . $portAddress . "\n", FILE_APPEND);
     // Enviar correo con link de validación
     $validationToken = send_validation_link($email, $username);
   } else {
-    file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Sending code email to: " . json_encode($email) . " from: http://" . $ipAddress . ":" . $portAddress . "\n", FILE_APPEND);
     // Enviar correo con token de validación
     $validationToken = send_validation_token($email, $username);
   }
   if ($validationToken === null) {
     //Si ha fallado el envío del correo generar una excepcion
-    file_put_contents($autofilling, "Failed to send validation email.\n", FILE_APPEND);
     throw new Exception('Error al generar o enviar el correo electrónico de validación. Por favor, inténtalo de nuevo más tarde.');
   }
 } catch (Exception $e) {
+  if (isset($_GET['send_link'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Error al enviar el correo de confirmación: ' . $e->getMessage()]);
+    exit();
+  }
   $_SESSION['error_messages'] = ['Error al enviar el correo de confirmación: ' . $e->getMessage()];
   $_SESSION['register_data'] = [
     'username' => $username,
@@ -126,15 +127,17 @@ try {
     'last_name' => $lastName
   ];
   header('Location: /pages/register/register.php');
-  // header('Content-Type: application/json'); // Indicar error en la respuesta
-  // echo json_encode(['success' => false]);
   exit();
 }
 // Guardar registro pendiente
 $pendingReg = new pendingRegistration();
 if (!$pendingReg->createPendingRegistration($username, $email, $password, $firstName, $lastName, $validationToken)) {
   // Si hay error al guardar, regresar al formulario
-  file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Error saving pending registration for user: " . json_encode($username) . "\n", FILE_APPEND);
+  if (isset($_GET['send_link'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Error al guardar el registro pendiente. Por favor, inténtalo de nuevo más tarde.']);
+    exit();
+  }
   $_SESSION['error_messages'] = ['Error al guardar el registro pendiente. Por favor, inténtalo de nuevo más tarde.'];
   $_SESSION['register_data'] = [
     'username' => $username,
@@ -143,19 +146,14 @@ if (!$pendingReg->createPendingRegistration($username, $email, $password, $first
     'last_name' => $lastName
   ];
   header('Location: /pages/register/register.php');
-  // header('Content-Type: application/json'); // Indicar error en la respuesta
-  // echo json_encode(['success' => false]);
   exit();
 }
 // Si se presionó el botón secundario (enviar link), responder con JSON para evitar redirección
 if (isset($_GET['send_link'])) {
-  file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending link created successfully for user: " . json_encode($username) . "\n", FILE_APPEND);
-  // header('Content-Type: application/json');
-  // echo json_encode(['success' => true]);
-  header('Location: /pages/register/register.php');
+  header('Content-Type: application/json');
+  echo json_encode(['success' => true]);
   exit();
 }
-file_put_contents($autofilling, "Register ==> register_handler.php - fromRegister: " . date('Y-m-d H:i:s') . " Registration pending created successfully for user: " . json_encode($username) . "\n", FILE_APPEND);
 // Redirigir a la página de confirmación en el caso de que reuiera confirmacion por token
 $_SESSION['register_data'] = [
   'username' => $username,

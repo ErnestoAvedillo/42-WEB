@@ -6,7 +6,6 @@ if (!SessionManager::getSessionKey('uuid')) {
     header('Location: /pages/request_login/request_login.php');
     exit();
 }
-$autofilling = '/tmp/upload_handler.log';
 require_once __DIR__ . '/../../database/mongo_db.php'; // Adjust path since we're in upload_handler.php
 //$client = new DocumentDB();
 //$client->connect();
@@ -46,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
         exit();
     }
 
-    file_put_contents($autofilling, "Camagru: Upload Handler ==>: " .  print_r($_FILES, true) . "\n", FILE_APPEND);
     foreach ($_FILES['file']['name'] as $key => $filename) {
         $filedata = ['name' => $filename, 'tmp_name' => $_FILES['file']['tmp_name'][$key], 'type' => $_FILES['file']['type'][$key], 'error' => $_FILES['file']['error'][$key], 'size' => $_FILES['file']['size'][$key]];
         $result = $documentDB->uploadFile($filedata, $user_uuid); // Pass the file path and user UUID

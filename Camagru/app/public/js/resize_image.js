@@ -150,18 +150,12 @@ function createFloatingImage(src, container) {
   innersrc.style.userSelect = 'none'; // Prevent image selection
   innersrc.draggable = false; // Prevent default drag behavior
   img.appendChild(innersrc);
-  // img.style.width = `${innersrc.width}px`;
-  // img.style.height = `${innersrc.height}px`;
   img.style.top = '0px';
   img.style.left = '0px';
   img.style.position = 'absolute';
   img.draggable = false; // Prevent default drag behavior
 
   innersrc.onload = () => {
-    console.log('Image loaded:', innersrc.naturalWidth, innersrc.naturalHeight);
-    // img.style.width = innersrc.naturalWidth + 'px';
-    // img.style.height = innersrc.naturalHeight + 'px';
-    console.log('Image resized:', container.style.naturalWidth, container.style.naturalHeight);
     img.style.width = container.style.width;
     img.style.height = container.style.height;
   };

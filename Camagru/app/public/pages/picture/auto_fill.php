@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
-$autofilling = '/tmp/auto_fill.log';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contents = file_get_contents('php://input');
     $data = json_decode($contents, true);
     // CSRF token check
     if (!isset($data['csrf_token']) || !isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $data['csrf_token'])) {
-        file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " Invalid CSRF token soll ". $_SESSION['csrf_token'] . " is " . $data['csrf_token'] . "\n", FILE_APPEND);
         echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
         exit;
     }
@@ -26,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($picture) {
         $apiKey = getenv('GOOGLE_API_KEY');
         if (!$apiKey) {
-            file_put_contents($autofilllog, "Autofill: " . date('Y-m-d H:i:s') . " JSON decode error: " . json_last_error_msg() . "\n", FILE_APPEND);
             echo json_encode(['success' => false, 'caption' => 'API key not set', 'error' => 'API key not set']);
             exit;
         }
@@ -64,17 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_close($ch);
     
         if ($httpCode !== 200) {
-            file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " API error (Código $httpCode): " . $response . "\n", FILE_APPEND);
             echo json_encode(['success' => false, 'error' => "Error de API (Código $httpCode): " . $response]);
             exit;
         }
         $result = json_decode($response, true);
         // 5. Extraer y devolver el texto
         $caption = $result['candidates'][0]['content']['parts'][0]['text'] ?? FALSE;
-        file_put_contents($autofilling, "Autofill comentario: " . date('Y-m-d H:i:s') . " CURL error: " . $caption . "\n", FILE_APPEND);
         if ($caption === false) {
             $error = curl_error($ch);
-            file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " CURL error: " . $error . "\n", FILE_APPEND);
             echo json_encode(['success' => false, 'caption' => 'Error in CURL request', 'error' => $error]);
             unset($ch);
             exit;
@@ -82,12 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($ch);
         $returned_text = ['success' => true, 'caption' => $caption];
         echo json_encode($returned_text);
-        file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . " Completed successfully " . json_encode($returned_text) . "\n", FILE_APPEND);
     } else {
-        file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . "Error no pictuire provided \n", FILE_APPEND);
         echo json_encode(['success' => false, 'caption' => 'picture data not detected', 'error' => 'No picture provided']);
     }
 } else {
-    file_put_contents($autofilling, "Autofill: " . date('Y-m-d H:i:s') . "Invalid request method\n", FILE_APPEND);
     echo json_encode(['success' => false, 'caption' => 'Invalid request method', 'error' => 'Invalid request method']);
 }

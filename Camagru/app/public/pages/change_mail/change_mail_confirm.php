@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
-$autofilling = '/tmp/confirm.log';
 // Log the incoming GET parameters for debugging
-file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Validation token generated: " . print_r($_GET, true) . "\n", FILE_APPEND);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,8 +13,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/pages/register/confirm.css">
 </head>
-<?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Loaded header confirm.php page\n", FILE_APPEND); ?>
-
 <body>
 <?php
   //include __DIR__ . '/../../views/debugger.php';
@@ -40,8 +36,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
         $validationToken = $changeMailData['validation_token'] ?? '';
         $old_mail = $changeMailData['old_email'] ?? '';
         $new_mail = $changeMailData['new_email'] ?? '';
-        
-        file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Getting variables from session: " . json_encode($changeMailData) . "\n", FILE_APPEND);
         ?>
         <?php if (!empty($_SESSION['error_messages'])): ?>
             <div class="error-message">
@@ -53,7 +47,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
                 ?>
             </div>
         <?php endif; ?>
-        <?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Getting variables: " . json_encode($validationToken) . "\n", FILE_APPEND); ?>
         <form class="confirm-form" action="/pages/change_mail/change_mail_confirm_handler.php" method="post">
             <h1>Confirm your email change</h1>
             <input type="hidden" name="old_email" value="<?php echo $old_mail; ?>">
@@ -63,7 +56,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
             <button type="submit">Confirm change mail</button>
             <p>Please check your email for a confirmation code.</p>
         </form>
-        <?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Loaded confirm form\n", FILE_APPEND); ?>
     </div>
     <?php
   $pageTitle = "footer - Camagru";

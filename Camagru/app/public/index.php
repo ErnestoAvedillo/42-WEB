@@ -18,18 +18,12 @@ SessionManager::getInstance();
   $pageTitle = "Home - Camagru";
   include __DIR__ . '/pages/header/header.php';
 
-  $pageTitle = "left_bar - Camagru";
   include __DIR__ . '/pages/left_bar/left_bar.php';
   ?>
   <div class="home-container">
     <div class="hero-section">
       <h2>Welcome to Camagru</h2>
       <p>A modern photo sharing platform where you can upload, edit, and share your favorite images with the world.</p>
-      <!-- <div class="feature-buttons">
-        <a href="/pages/upload/upload.php?type=photo" class="btn btn-primary">Upload Photos</a>
-        <a href="/pages/upload/upload.php?type=master" class="btn btn-secondary">Upload Masters</a>
-        <a href="/pages/gallery/gallery.php" class="btn btn-tertiary">View Gallery</a>
-      </div> -->
     </div>
     <div class="features-section">
       <h3>Key Features</h3>
@@ -62,9 +56,11 @@ SessionManager::getInstance();
     </div>
   </div>
   <link rel="stylesheet" href="css/home.css">
+  
   <?php
-  $pageTitle = "right sidebar - Camagru";
-  include __DIR__ . '/pages/right_bar/right_bar.php';
+  if (isset($_SESSION) && !empty($_SESSION['user_id'])) {
+    include __DIR__ . '/pages/right_bar/right_bar.php';
+  }
 
   include __DIR__ . '/pages/footer/footer.php';
   ?>

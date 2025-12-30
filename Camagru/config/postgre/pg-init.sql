@@ -134,3 +134,16 @@ CREATE INDEX idx_facturas_document_uuid ON facturas(document_uuid);
 CREATE INDEX idx_facturas_acreedor_nombre ON facturas(acreedor_nombre);
 CREATE INDEX idx_facturas_deudor_nombre ON facturas(deudor_nombre);
 CREATE INDEX idx_facturas_demanda_numero ON facturas(id_demanda);
+
+CREATE TABLE likes (
+    id SERIAL PRIMARY KEY,
+    document_uuid UUID NOT NULL,
+    user_uuid UUID NOT NULL REFERENCES users(uuid),
+    like_status BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_uuid, document_uuid)
+);
+CREATE INDEX idx_likes_document_uuid ON likes(document_uuid);
+CREATE INDEX idx_likes_user_uuid ON likes(user_uuid);
+CREATE INDEX idx_likes_status ON likes(like_status);
+CREATE INDEX idx_likes_document_status ON likes(document_uuid, like_status);

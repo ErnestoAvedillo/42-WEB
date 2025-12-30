@@ -9,13 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     openCameraButton.addEventListener('click', () => {
         (async () => {
-            // const existing = combinedImages.querySelector('#cameraPreview');
-            // if (existing) {
-            // toggle off
-            // existing.remove();
-            // return;
-            // }
-            console.log('creating video element...');
             const vid = document.createElement('video');
             vid.id = 'cameraPreview';
             vid.autoplay = true;
@@ -27,8 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
             combinedImages.appendChild(vid);
 
             try {
-                console.log('starting camera...');
-                // Request camera (must be served over HTTPS except localhost)
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                 vid.srcObject = stream;
                 closeCameraButton.disabled = false;
@@ -70,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Camera is not open!');
             return;
         }
-        console.log('disabling buttons snapshot.');
         closeCameraButton.disabled = true;
         snapshotButton.disabled = true;
         // Create a canvas to capture the snapshot
@@ -82,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         video.srcObject = null;
         video.remove();
         // Convert the canvas to an image
-        console.log('creating snapshot image...');
         const img = document.createElement('img');
         img.src = canvas.toDataURL('image/png');
         img.style.maxWidth = '100%';
@@ -105,21 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
             img.style.height = `${Math.round(finalImageWidth / aspectRatio)}px`;
         }
 
-        console.log("Creating a div element to contain the image");
         const imageContainer = document.createElement('div');
         imageContainer.style.position = 'absolute';
-        // imageContainer.style.top = '0%';
-        // imageContainer.style.left = '0%';
         imageContainer.style.width = img.style.width;
         imageContainer.style.height = img.style.height;
-        console.log("Appending the image to the container and the container to the dropzone");
         imageContainer.appendChild(img);
-        console.log("Appending to combinedImages");
         combinedImages.appendChild(imageContainer);
         combinedImages.style.width = img.style.width;
         combinedImages.style.height = img.style.height;
         combinedImages.style.justifySelf = 'center';
-        console.log('dimensions combinedImages:', combinedImages.style.width, combinedImages.style.height);
         window.sharedState.allowDragFromMyPictures = false;
     });
 });

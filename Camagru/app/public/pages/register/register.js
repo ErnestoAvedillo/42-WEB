@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		const password = passwordInput.value;
 		const confirmPassword = confirmPasswordInput.value;
 		const terms = document.getElementById('terms').checked;
-		console.log("Submitting form data...");
 		if (password !== confirmPassword) {
 			e.preventDefault();
 			alert('Las contraseñas no coinciden');
@@ -79,18 +78,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		submitBtn.disabled = true;
 		const formData = new FormData(document.querySelector('form'));
 		const params = new URLSearchParams(formData);
-		console.log(params.toString());
-		// fetch('/pages/register/register_handler.php?send_link=0&' + params.toString())
-		// 	.then(response => response.json())
-		// 	.then(data => {
-		// 		console.log(data);
-		// 		if (!data.success) {
-		// 			submitBtn.disabled = true;
-		// 			window.location.href = '/pages/register/register.php';
-		// 		}
-		// 	});
-		// En lugar de fetch, hacer submit normal del formulario
-		// Esto permitirá que PHP haga la redirección directamente
 		const form = document.querySelector('form');
 		form.action = '/pages/register/register_handler.php';
 		form.method = 'GET';
@@ -101,10 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		const password = passwordInput.value;
 		const confirmPassword = confirmPasswordInput.value;
 		const terms = document.getElementById('terms').checked;
-		console.log("Submitting form data...");
 		if (typeof startWait === 'function') {
 			startWait('Generando comentario...');
-			console.log("startWait function called.");
 		}
 		if (password !== confirmPassword) {
 			e.preventDefault();
@@ -131,30 +116,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		const formData = new FormData(document.querySelector('form'));
 		const params = new URLSearchParams(formData);
-		console.log(params.toString());
 		fetch('/pages/register/register_handler.php?send_link=1&' + params.toString())
-			.then(response => response.json())
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json();
+			})
 			.then(data => {
-				console.log(data);
 				if (data.success) {
-					console.log("Registration pending link created, starting status check.");
 					btnText.style.display = 'none';
 					btnLoading.style.display = 'inline';
 					secondaryBtn.disabled = true;
 					setInterval(() => {
 						fetch('/pages/register/check_status.php?' + params.toString())
-							.then(response => response.json())
+							.then(response => {
+								if (!response.ok) {
+									throw new Error(`HTTP error! status: ${response.status}`);
+								}
+								return response.json();
+							})
 							.then(data => {
 								if (data.success === true) {
 									if (typeof stopWait === 'function') stopWait();
 									else document.getElementById("waitOverlay").style.display = "none";
 									window.location.href = '/pages/login/login.php';
 								}
+							})
+							.catch(error => {
+								console.error('Error checking status:', error);
 							});
 					}, 2000);
 				} else {
+					console.error('Registration failed:', data.message || data.errors);
+					if (typeof stopWait === 'function') stopWait();
+					else document.getElementById("waitOverlay").style.display = "none";
 					window.location.href = '/pages/register/register.php';
 				}
+			})
+			.catch(error => {
+				console.error('Error in registration request:', error);
+				if (typeof stopWait === 'function') stopWait();
+				else document.getElementById("waitOverlay").style.display = "none";
+				alert('Error en el registro. Por favor, inténtalo de nuevo.');
+				btnText.style.display = 'inline';
+				btnLoading.style.display = 'none';
+				secondaryBtn.disabled = false;
 			});
 	});
 });

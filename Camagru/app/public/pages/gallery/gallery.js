@@ -3,7 +3,6 @@ async function showPictures(csrfToken, sortBy = null, nrElements = null, user = 
     const userSortValue = user || document.querySelector('.user-sort-select')?.value || 'all';
     const elementsValue = nrElements || document.querySelector('.number-elements-select')?.value || '10';
 
-    console.log('Loading pictures with sort:', sortValue, 'elements:', elementsValue, 'user:', userSortValue, 'page:', page);
     try {
         const requestData = {
             'csrf_token': csrfToken,
@@ -12,8 +11,6 @@ async function showPictures(csrfToken, sortBy = null, nrElements = null, user = 
             'user': userSortValue,
             'page': page
         };
-        console.log('Request sent to server:', requestData);
-
         const response = await fetch('/pages/gallery/sort-pictures.php', {
             method: 'POST',
             headers: {
@@ -29,8 +26,6 @@ async function showPictures(csrfToken, sortBy = null, nrElements = null, user = 
             galleryContainer.innerHTML = result;
         }
         createPagination(csrfToken, sortValue, elementsValue, userSortValue, page);
-        console.log('Pictures loaded successfully');
-        console.log('Response received, length:', result.length);
     } catch (error) {
         console.error('Error loading pictures:', error);
     }
@@ -40,8 +35,6 @@ async function createPagination(csrfToken, sortBy = null, nrElements = null, use
     const sortValue = sortBy || document.querySelector('.sort-select')?.value || 'date_desc';
     const userSortValue = user || document.querySelector('.user-sort-select')?.value || 'all';
     const elementsValue = nrElements || document.querySelector('.number-elements-select')?.value || '10';
-
-    console.log('Creating pagination with sort:', sortValue, 'elements:', elementsValue, 'page:', page);
     try {
         const response = await fetch('/pages/gallery/create_pagination.php', {
             method: 'POST',
@@ -68,31 +61,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ejecutar showPictures al cargar el documento
     if (csrfToken) {
-        console.log('CSRF Token found:', csrfToken);
         showPictures(csrfToken);
         createPagination(csrfToken);
     }
 
     for (let i = 0; i < nr_elements.length; i++) {
         nr_elements[i].addEventListener('change', async function (event) {
-            // event.preventDefault();
-            console.log('Number of elements selected: ' + this.value);
             await showPictures(csrfToken, sortSelect.value, this.value, userSortSelect.value);
         });
     }
 
     for (let i = 0; i < sortSelect.length; i++) {
         sortSelect[i].addEventListener('change', async function (event) {
-            // event.preventDefault();
-            console.log('Sort option selected: ' + this.value);
             await showPictures(csrfToken, this.value, nr_elements.value, userSortSelect.value);
         });
     }
 
     for (let i = 0; i < userSortSelect.length; i++) {
         userSortSelect[i].addEventListener('change', async function (event) {
-            // event.preventDefault();
-            console.log('User sort option selected: ' + this.value);
             await showPictures(csrfToken, sortSelect.value, nr_elements.value, this.value);
         });
     }
@@ -101,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', async function (event) {
         if (event.target.classList.contains('pagination-button')) {
             const selectedPage = parseInt(event.target.value);
-            console.log('Pagination button clicked, page:', selectedPage);
             await showPictures(csrfToken, sortSelect[0]?.value, nr_elements[0]?.value, userSortSelect[0]?.value, selectedPage);
         }
 
@@ -111,11 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!confirm('Are you sure you want to delete this image?')) {
                 return;
             }
-            console.log('Delete icon clicked');
             const container = deleteLink.dataset.container;
             const imageId = deleteLink.dataset.imageId;
-            console.log('Container:', container);
-            console.log('Image ID:', imageId);
             try {
                 const response = await fetch('/pages/gallery/delete_image.php', {
                     method: 'POST',
@@ -128,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resultJson = JSON.parse(result);
                 if (response.ok && resultJson.status === 'success') {
                     deleteLink.closest('.photo').remove();
-                    console.log('Image deleted successfully:', resultJson.message);
                 } else {
                     console.error('Error deleting image:', resultJson.message);
                 }

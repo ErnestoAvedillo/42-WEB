@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
-$autofilling = '/tmp/Camagru.log';
 // Log the incoming GET parameters for debugging
-file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Validation token generated: " . print_r($_GET, true) . "\n", FILE_APPEND);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,8 +13,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/pages/register/confirm.css">
 </head>
-<?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Loaded header confirm.php page\n", FILE_APPEND); ?>
-
 <body>
 
     <div class="confirm-registration">
@@ -31,7 +27,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
                 ?>
             </div>
         <?php endif; ?>
-        <?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Getting variables: " . json_encode($validationToken) . "\n", FILE_APPEND); ?>
         <form class="confirm-form" action="/pages/register/confirm_handler.php" method="post">
             <h1>Confirm Your Registration</h1>
             <input type="hidden" name="validation_token" value="<?php echo $validationToken; ?>">
@@ -41,7 +36,6 @@ file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . da
             <p>Please check your email for a confirmation code.</p>
             <p>If you haven't received it, please check your spam folder or <a href="/pages/register/register.php">try registering again</a>.</p>
         </form>
-        <?php file_put_contents($autofilling, "Register ==> confirm.php - fromRegister: " . date('Y-m-d H:i:s') . " Loaded confirm form\n", FILE_APPEND); ?>
     </div>
 </body>
 

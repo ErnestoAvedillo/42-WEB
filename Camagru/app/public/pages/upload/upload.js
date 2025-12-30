@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const container = this.dataset.container;
             const imageId = this.dataset.imageId;
-            console.log('Container:', container);
-            console.log('Image ID:', imageId);
             try {
                 const response = await fetch('/pages/upload/delete_image.php', {
                     method: 'POST',
@@ -22,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const resultJson = JSON.parse(result);
                 if (response.ok && resultJson.status === 'success') {
                     this.closest('.photo').remove();
-                    console.log('Image deleted successfully:', resultJson.message);
                 } else {
                     console.error('Error deleting image:', resultJson.message);
                 }
@@ -36,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.querySelector('.upload-form').addEventListener('submit', function (event) {
     const files = document.querySelector('input[name="file[]"]');
-    console.log(files.files);
     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
     let SumSizes = 0
     for (let i = 0; i < files.files.length; i++) {
