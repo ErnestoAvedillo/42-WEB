@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             vid.muted = true;
             vid.style.maxWidth = '100%';
             vid.style.height = 'auto';
+            vid.style.alignSelf = 'center';
             combinedImages.appendChild(vid);
 
             try {

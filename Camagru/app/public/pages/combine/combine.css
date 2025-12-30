@@ -27,7 +27,7 @@ h1 {
     /* right: var(--right-sidebar-width, 0); */
     width: 100%;
     height: auto;
-    max-height: 1200px;
+    max-height: 900px;
     overflow-y: auto;
     margin-bottom: 30px;
 }

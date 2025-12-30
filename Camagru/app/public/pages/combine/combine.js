@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesData = [];
     const images = combinedImages.querySelectorAll('img');
     if (typeof startWait === 'function') {
-      startWait('Generando comentario...');
+      startWait('Creating your new picture...');
       console.log("startWait function called.");
     }
     else {
@@ -207,6 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
           combinedImages.style.justifySelf = 'center';
           // Optionally, provide user feedback
           alert('Magic combine successful!');
+          closeCameraButton.disabled = true;
+          snapshotButton.disabled = true;
+          cameraButton.disabled = true;
         };
       } else {
         alert(parsedData.error || parsedData.message || 'Magic combine failed.');
