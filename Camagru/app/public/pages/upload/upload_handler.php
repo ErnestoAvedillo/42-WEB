@@ -46,6 +46,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     }
 
     foreach ($_FILES['file']['name'] as $key => $filename) {
+        // Security validation
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $max_file_size = 10 * 1024 * 1024; // 10MB
+
+        $file_extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $file_size = $_FILES['file']['size'][$key];
+        
+        // Validate file extension
+        if (!in_array($file_extension, $allowed_extensions)) {
+            $_SESSION['error_messages'] = ["File type '$file_extension' not allowed. Allowed types: " . implode(', ', $allowed_extensions)];
+            header('Location: /pages/upload/upload.php?type=' . urlencode($typeFile));
+            exit();
+        }
+        
+        // Validate file size
+        if ($file_size > $max_file_size) {
+            $_SESSION['error_messages'] = ["File size too large. Maximum size: 5MB"];
+            header('Location: /pages/upload/upload.php?type=' . urlencode($typeFile));
+            exit();
+        }
+        
+        // Sanitize filename
+        $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', $filename);
+        
         $filedata = ['name' => $filename, 'tmp_name' => $_FILES['file']['tmp_name'][$key], 'type' => $_FILES['file']['type'][$key], 'error' => $_FILES['file']['error'][$key], 'size' => $_FILES['file']['size'][$key]];
         $result = $documentDB->uploadFile($filedata, $user_uuid); // Pass the file path and user UUID
         if ($_FILES['file']['error'][$key] !== UPLOAD_ERR_OK) {

@@ -45,7 +45,7 @@ SessionManager::getInstance();
         <?php endif; ?>
         <form class="confirm-form" action="/pages/register/confirm_handler.php" method="post">
             <h1>Confirm Your Registration</h1>
-            <input type="hidden" name="validation_token" value="<?php echo $validationToken; ?>">
+            <input type="hidden" name="validation_token" value="<?php echo htmlspecialchars($validationToken); ?>">
             <input type="number" name="confirm_validation_token" placeholder="Enter your confirmation code" required>
             <button type="submit">Confirm Registration</button>
             <h1>Confirm Your Registration.</h1>

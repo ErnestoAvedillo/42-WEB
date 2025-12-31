@@ -10,7 +10,7 @@ SessionManager::getInstance();
 // use PHPMailer\PHPMailer\Exception;
 
 // Verificar que la petición sea POST
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   if (isset($_GET['send_link'])) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Método no permitido. Por favor, utiliza el formulario de registro.']);
@@ -18,22 +18,22 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
   }
   $_SESSION['error_messages'] = ['Método no permitido. Por favor, utiliza el formulario de registro.'];
   $_SESSION['register_data'] = [
-    'username' => $_GET['username'] ?? '',
-    'email' => $_GET['email'] ?? '',
-    'first_name' => $_GET['first_name'] ?? '',
-    'last_name' => $_GET['last_name'] ?? ''
+    'username' => $_POST['username'] ?? '',
+    'email' => $_POST['email'] ?? '',
+    'first_name' => $_POST['first_name'] ?? '',
+    'last_name' => $_POST['last_name'] ?? ''
   ];
 
   header('Location: /pages/register/register.php');
   exit();
 }
 // Obtener datos del formulario
-$username = trim($_GET['username'] ?? '');
-$email = trim($_GET['email'] ?? '');
-$password = $_GET['password'] ?? '';
-$firstName = trim($_GET['first_name'] ?? '');
-$lastName = trim($_GET['last_name'] ?? '');
-$confirmPassword = $_GET['confirm_password'] ?? '';
+$username = trim($_POST['username'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$password = $_POST['password'] ?? '';
+$firstName = trim($_POST['first_name'] ?? '');
+$lastName = trim($_POST['last_name'] ?? '');
+$confirmPassword = $_POST['confirm_password'] ?? '';
 
 // Validaciones básicas
 $errors = [];
@@ -80,7 +80,7 @@ if ($pendingReg->usernameExists($username)) {
 }
 // Si hay errores, regresar al formulario
 if (!empty($errors)) {
-  if (isset($_GET['send_link'])) {
+  if (isset($_POST['send_link'])) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'errors' => $errors]);
     exit();
@@ -102,7 +102,7 @@ try {
   $ipAddress = EnvLoader::get('APP_ADDR');
   $portAddress = EnvLoader::get('APP_PORT');
   // Enviar correo con link o token según el botón presionado
-  if (isset($_GET['send_link'])) {
+  if (isset($_POST['send_link'])) {
     // Enviar correo con link de validación
     $validationToken = send_validation_link($email, $username);
   } else {
@@ -114,7 +114,7 @@ try {
     throw new Exception('Error al generar o enviar el correo electrónico de validación. Por favor, inténtalo de nuevo más tarde.');
   }
 } catch (Exception $e) {
-  if (isset($_GET['send_link'])) {
+  if (isset($_POST['send_link'])) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Error al enviar el correo de confirmación: ' . $e->getMessage()]);
     exit();
@@ -133,7 +133,7 @@ try {
 $pendingReg = new pendingRegistration();
 if (!$pendingReg->createPendingRegistration($username, $email, $password, $firstName, $lastName, $validationToken)) {
   // Si hay error al guardar, regresar al formulario
-  if (isset($_GET['send_link'])) {
+  if (isset($_POST['send_link'])) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Error al guardar el registro pendiente. Por favor, inténtalo de nuevo más tarde.']);
     exit();
@@ -149,7 +149,7 @@ if (!$pendingReg->createPendingRegistration($username, $email, $password, $first
   exit();
 }
 // Si se presionó el botón secundario (enviar link), responder con JSON para evitar redirección
-if (isset($_GET['send_link'])) {
+if (isset($_POST['send_link'])) {
   header('Content-Type: application/json');
   echo json_encode(['success' => true]);
   exit();

@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		const params = new URLSearchParams(formData);
 		const form = document.querySelector('form');
 		form.action = '/pages/register/register_handler.php';
-		form.method = 'GET';
+		form.method = 'POST';
 		form.submit();
 	});
 
@@ -115,8 +115,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		const secondaryBtn = document.getElementById('secondaryBtn');
 
 		const formData = new FormData(document.querySelector('form'));
-		const params = new URLSearchParams(formData);
-		fetch('/pages/register/register_handler.php?send_link=1&' + params.toString())
+		// Add the send_link parameter to indicate this is the secondary button
+		formData.append('send_link', '1');
+		
+		fetch('/pages/register/register_handler.php', {
+			method: 'POST',
+			body: formData
+		})
 			.then(response => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! status: ${response.status}`);
@@ -128,8 +133,17 @@ document.addEventListener('DOMContentLoaded', function () {
 					btnText.style.display = 'none';
 					btnLoading.style.display = 'inline';
 					secondaryBtn.disabled = true;
+					
+					// Create form data for status checking (without sensitive data)
+					const statusData = new FormData();
+					statusData.append('username', document.querySelector('input[name="username"]').value);
+					statusData.append('email', document.querySelector('input[name="email"]').value);
+					
 					setInterval(() => {
-						fetch('/pages/register/check_status.php?' + params.toString())
+						fetch('/pages/register/check_status.php', {
+							method: 'POST',
+							body: statusData
+						})
 							.then(response => {
 								if (!response.ok) {
 									throw new Error(`HTTP error! status: ${response.status}`);

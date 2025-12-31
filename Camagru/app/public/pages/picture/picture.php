@@ -107,7 +107,7 @@ require_once __DIR__ . '/../../database/posts.php';
             <form class="picture-action-form" action="/pages/picture/add_post.php" method="post">
                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                 <input type="hidden" name="picture_uuid" value="<?php echo htmlspecialchars($picture_uuid); ?>">
-                <input type="hidden" name="user_uuid" value="<?php echo $_SESSION['uuid']; ?>">
+                <input type="hidden" name="user_uuid" value="<?php echo htmlspecialchars($_SESSION['uuid']); ?>">
                 <textarea id="caption" name="caption" placeholder="Add a caption..." required></textarea>
                 <button class="button" type="submit">Post</button>
                 <button class="button" type="button" id="auto-fill">Auto Fill</button>

@@ -102,10 +102,10 @@ if (!SessionManager::getSessionKey('uuid')) {
           ?>
           <div class="photo">
           <div class="photo-actions">
-            <a href="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" download="<?php echo htmlspecialchars($photo['filename']); ?>" class="download-icon">📥</a>
+            <a href="data:<?php echo htmlspecialchars($mime); ?>;base64,<?php echo htmlspecialchars($base64); ?>" download="<?php echo htmlspecialchars($photo['filename']); ?>" class="download-icon">📥</a>
             <a class="delete-image" href="#" <?php echo htmlspecialchars($postData); ?> class="delete-icon">🗑️</a>
           </div>
-          <img src="data:<?php echo $mime; ?>;base64,<?php echo $base64; ?>" alt="<?php echo htmlspecialchars($photo['filename']); ?>" width="200">
+          <img src="data:<?php echo htmlspecialchars($mime); ?>;base64,<?php echo htmlspecialchars($base64); ?>" alt="<?php echo htmlspecialchars($photo['filename']); ?>" width="200">
       </div>
     <?php
             } else {
