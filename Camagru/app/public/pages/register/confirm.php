@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../class_session/session.php';
 SessionManager::getInstance();
+
 // Log the incoming GET parameters for debugging
 ?>
 <!DOCTYPE html>
@@ -13,17 +14,32 @@ SessionManager::getInstance();
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/pages/register/confirm.css">
 </head>
+
 <body>
 
     <div class="confirm-registration">
         <?php $validationToken = $_SESSION['register_data']['token'] ?? ''; ?>
-        <?php if (!empty($_SESSION['error'])): ?>
+        <?php if (isset($_SESSION['error_messages'])): ?>
             <div class="error-message">
                 <?php
-                if (isset($_SESSION['error'])) {
-                    echo "<p class='error'>Los tokens de validación no coinciden.</p>";
-                    unset($_SESSION['error']);
-                }
+                echo "<p class='error'>Los tokens de validación no coinciden.</p>";
+                unset($_SESSION['error_messages']);
+                ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error_messages'])): ?>
+            <div class="error-message">
+                <?php
+                echo "<p class='error'>Los tokens de validación no coinciden.</p>";
+                unset($_SESSION['error_messages']);
+                ?>
+            </div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['info_messages'])): ?>
+            <div class="error-message info">
+                <?php
+                echo "<p class='info'>{$_SESSION['info_messages']}</p>";
+                unset($_SESSION['info_messages']);
                 ?>
             </div>
         <?php endif; ?>
@@ -34,7 +50,7 @@ SessionManager::getInstance();
             <button type="submit">Confirm Registration</button>
             <h1>Confirm Your Registration.</h1>
             <p>Please check your email for a confirmation code.</p>
-            <p>If you haven't received it, please check your spam folder or <a href="/pages/register/register.php">try registering again</a>.</p>
+            <p>If you haven't received it, please check your spam folder or <a href="/pages/register/resend_token.php">send code again</a>.</p>
         </form>
     </div>
 </body>

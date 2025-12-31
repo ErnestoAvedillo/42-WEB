@@ -29,7 +29,7 @@ class pendingRegistration
                 $stmt->execute([':username' => $username]);
             }
             $stmt = $this->pdo->prepare("
-                        INSERT INTO pending_registrations (username, email, password, first_name, last_name, validation_token) 
+                        INSERT INTO pending_registrations (username, email, password, first_name, last_name, validation_token)
                         VALUES (:username, :email, :password, :first_name, :last_name, :validation_token)");
             $stmt->execute([
                 ':username' => $username,
@@ -71,8 +71,8 @@ class pendingRegistration
     {
         try {
             $stmt = $this->pdo->prepare("
-                        UPDATE pending_registrations 
-                        SET token_validated = TRUE 
+                        UPDATE pending_registrations
+                        SET token_validated = TRUE
                         WHERE username = :username AND validation_token = :token");
             $stmt->execute([
                 ':username' => $username,
@@ -94,7 +94,7 @@ class pendingRegistration
     {
         try {
             $stmt = $this->pdo->prepare("
-                        SELECT * FROM pending_registrations 
+                        SELECT * FROM pending_registrations
                         WHERE username = :username");
             $stmt->execute([
                 ':username' => $username,
@@ -109,7 +109,7 @@ class pendingRegistration
     {
         try {
             $stmt = $this->pdo->prepare("
-                        SELECT * FROM pending_registrations 
+                        SELECT * FROM pending_registrations
                         WHERE email = :email");
             $stmt->execute([
                 ':email' => $email,
@@ -124,7 +124,7 @@ class pendingRegistration
     {
         try {
             $stmt = $this->pdo->prepare("
-                        SELECT * FROM pending_registrations 
+                        SELECT * FROM pending_registrations
                         WHERE username = :username AND email = :email");
             $stmt->execute([
                 ':username' => $username,
@@ -133,6 +133,24 @@ class pendingRegistration
             return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
         } catch (PDOException $e) {
             error_log("Error checking username non-existence: " . $e->getMessage() . "\n", FILE_APPEND);
+            return false;
+        }
+    }
+    public function resend_token($username, $email, $validation_token)
+    {
+        try {
+            $stmt = $this->pdo->prepare("
+                        UPDATE pending_registrations
+                        SET validation_token = :validation_token
+                        WHERE username = :username AND email = :email");
+            $stmt->execute([
+                ':validation_token' => $validation_token,
+                ':username' => $username,
+                ':email' => $email
+            ]);
+            return true;
+        } catch (PDOException $e) {
+            error_log("Error resending token: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }

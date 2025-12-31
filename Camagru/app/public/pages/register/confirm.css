@@ -36,7 +36,7 @@
     color: #c33;
 }
 
-.error-message.success {
+.error-message.info {
     background: #efe;
     border: 1px solid #cfc;
     color: #3c3;
